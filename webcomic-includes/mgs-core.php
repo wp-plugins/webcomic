@@ -51,15 +51,19 @@ abstract class mgs_core {
 	 * @package mgs_core
 	 * @version 1
 	 */
-	final function __construct() {
+	final public function __construct() {
 		if ( !$this->name )    $this->name    = 'mgs_core';
 		if ( !$this->version ) $this->version = 1;
 		if ( !$this->file )    $this->file    = __FILE__;
 		if ( !$this->type )    $this->type    = 'plugin';
 		
+		//$upload = wp_upload_dir();
+		
 		$this->base    = ( 'plugin' == $this->type ) ? plugin_basename( $this->file ) : dirname( $this->file );
-		$this->cdir    = ( is_multisite() ) ? BLOGUPLOADDIR : WP_CONTENT_DIR;
-		$this->curl    = ( is_multisite() ) ? trailingslashit( get_bloginfo( 'url' ) ) . 'files' : WP_CONTENT_URL;
+		//$this->cdir  = $upload[ 'basedir' ];
+		//$this->curl  = $upload[ 'baseurl' ];
+		$this->cdir    = is_multisite() ? BLOGUPLOADDIR : WP_CONTENT_DIR;
+		$this->curl    = is_multisite() ? trailingslashit( get_bloginfo( 'url' ) ) . 'files' : WP_CONTENT_URL;
 		$this->update  = array();
 		$this->errors  = array();
 		$this->options = $this->option();
@@ -114,7 +118,7 @@ abstract class mgs_core {
 	 * @package mgs_core
 	 * @since 1
 	 */
-	final function deactivate( $t = false ) {
+	final public function deactivate( $t = false ) {
 		$this->option( null );
 	}
 	
@@ -129,7 +133,7 @@ abstract class mgs_core {
 	 * @package mgs_core
 	 * @since 1
 	 */
-	final function domain() {
+	final public function domain() {
 		if ( 'plugin' == $this->type && realpath( dirname( $this->file ) ) !== realpath( WPMU_PLUGIN_DIR ) )
 			load_muplugin_textdomain( $this->name, $this->dir . '/' . $this->name . '-includes/languages' );
 		elseif ( 'plugin' == $this->type )
@@ -159,7 +163,7 @@ abstract class mgs_core {
 	 * @param str|null The new value for the option specified in $o, or null to delete the option.
 	 * @return Return all options, the specified options, true when updating options, or false on error.
 	 */
-	final function option( $o = false, $v = false ) {
+	final public function option( $o = false, $v = false ) {
 		if ( false === $o ) {
 			return get_option( $this->name . '_options', array() );
 		} elseif ( null === $o ) {
@@ -203,9 +207,9 @@ abstract class mgs_core {
 	 * @package mgs_core
 	 * @since 1
 	 */
-	abstract function install();
-	abstract function upgrade();
-	abstract function downgrade();
-	abstract function uninstall();
+	abstract public function install();
+	abstract public function upgrade();
+	abstract public function downgrade();
+	abstract public function uninstall();
 }
 ?>
