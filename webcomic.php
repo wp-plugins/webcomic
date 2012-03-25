@@ -4,7 +4,7 @@ Text Domain: webcomic
 Plugin Name: Webcomic
 Plugin URI: http://webcomicms.net/
 Description: Comic publishing power for WordPress. Create, manage, and share webcomics like never before.
-Version: 3.0.9
+Version: 3.0.10
 Author: Michael Sisk
 Author URI: http://mgsisk.com/
 
@@ -42,7 +42,7 @@ if ( !class_exists( 'mgs_core' ) ) require_once( 'webcomic-includes/mgs-core.php
 class webcomic extends mgs_core {
 	/** Override mgs_core variables */
 	protected $name    = 'webcomic';
-	protected $version = '3.0.9';
+	protected $version = '3.0.10';
 	protected $file    = __FILE__;
 	protected $type    = 'plugin';
 	
@@ -418,9 +418,11 @@ class webcomic extends mgs_core {
 			}
 		}
 		
+		$r = apply_filters( 'webcomic_get_relative', $r, $id, $taxonomy, $terms );
+		
 		wp_cache_add( $ck, $r, 'get_relative_webcomics' );
 		
-		return apply_filters( 'webcomic_get_relative', $r, $id, $taxonomy, $terms );
+		return $r;
 	}
 	
 	/**
@@ -815,9 +817,11 @@ class webcomic extends mgs_core {
 		if ( empty( $query ) )
 			return false;
 		
+		$query = apply_filters( 'webcomic_get_buffer', $query, $term, $taxonomy );
+		
 		wp_cache_add( $ck, $query, 'get_buffer_webcomics' );
 		
-		return apply_filters( 'webcomic_get_buffer', $query, $term, $taxonomy );
+		return $query;
 	}
 	
 	/**
@@ -1865,9 +1869,11 @@ class webcomic extends mgs_core {
 			}
 		}
 		
+		$r = apply_filters( 'webcomic_get_relative_terms', $r, $taxonomy, $term, $orderby );
+		
 		wp_cache_add( $ck, $r, 'get_relative_webcomic_terms' );
 		
-		return apply_filters( 'webcomic_get_relative_terms', $r, $taxonomy, $term, $orderby );
+		return $r;
 	}
 	
 	/**
@@ -3163,13 +3169,13 @@ class webcomic extends mgs_core {
 	 * @package webcomic
 	 * @since 3
 	 */
-	public function hook_loop_start() {
+	public function hook_loop_start( $query ) {
 		if ( !$this->option( 'integrate_toggle' ) )
 			return false;
 		
 		global $post;
 		
-		if ( is_home() || is_front_page() ) {
+		if ( ( is_home() || is_front_page() ) and !$query->query ) {
 			$webcomics = new WP_Query( 'post_type=webcomic_post&posts_per_page=1' ); if ( $webcomics->posts ) { $_post = $post; foreach ( $webcomics->posts as $p ) {
 				$post = $p;
 				?>
