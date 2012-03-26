@@ -2,7 +2,7 @@
 Contributors: mgsisk
 Donate link: http://mgsisk.com/webcomicms.net/
 Tags: webcomic, comic, multiple comics, storylines, chapters, library, management, themes, posts, publish, custom post type, custom taxonomy, template tags, widgets
-Requires at least: 3.0
+Requires at least: 3.3
 Tested up to: 3.3.1
 Stable tag: 3.0.10
 
