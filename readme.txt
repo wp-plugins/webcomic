@@ -57,10 +57,6 @@ Once installed and activated you can use Webcomic in one of three ways:
 - [Issue Tracker](//github.com/mgsisk/webcomic/issues)
 - [Email Support](mailto:support@webcomic.nu)
 
-= Using Webcomic =
-
-Webcomic's *Integrate* feature allows it to be used with any WordPress theme right out of the box, but to get the most out of Webcomic you may want to check out one of the [official Webcomic themes](http://mgsisk.com/webcomicms.net/support/manual/themes) or build your own theme using Webcomic's extensive selection of widgets, template tags, actions, and filters.
-
 == Changelog ==
 
 = 4 =
