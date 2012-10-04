@@ -16,7 +16,7 @@ Webcomic provides a host of features for creating, managing, and sharing webcomi
 
 [**Existing Webcomic users should read this before upgrading.**](https://github.com/mgsisk/webcomic/wiki/Upgrading#Upgrading-from-Webcomic-1%2C-2%2C-or-3)
 
-**[★ New in Webcomic 4 ★](//vimeo.com/channels/webcomic)**
+= ★ New in Webcomic 4 ★ =
 
 _**Everything!**_ Webcomic has been rebuilt to provide you with leaner, meaner webcomic management. Highlights include:
 
