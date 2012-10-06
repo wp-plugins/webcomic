@@ -61,13 +61,14 @@ Once installed and activated you can use Webcomic in one of three ways:
 
 = 4 =
 
-All Webcomic changes can be followed at [the master GitHub repository](https://github.com/mgsisk/webcomic/commits/master).
+- **[Existing Webcomic users should read this before upgrading](//github.com/mgsisk/webcomic/wiki/Upgrading)**
+- All Webcomic changes can be followed at [the master GitHub repository](https://github.com/mgsisk/webcomic/commits/master).
 
 == Upgrade Notice ==
 
 = 4 =
 
-Existing Webcomic users should read this before upgrading: github.com/mgsisk/webcomic/wiki/Upgrading
+Existing Webcomic users should read this before upgrading: https://github.com/mgsisk/webcomic/wiki/Upgrading
 
 == Special Thanks ==
 
