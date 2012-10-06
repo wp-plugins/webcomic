@@ -4,7 +4,7 @@ Text Domain: webcomic
 Plugin Name: Webcomic
 Plugin URI: http://webcomic.nu
 Description: Comic publishing power for the web.
-Version: 4
+Version: 4.0.1
 Author: Michael Sisk
 Author URI: http://mgsisk.com
 License: GPL2
