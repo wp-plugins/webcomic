@@ -1,52 +1,75 @@
 === Webcomic ===
 Contributors: mgsisk
-Donate link: http://mgsisk.com/webcomicms.net/
-Tags: webcomic, comic, multiple comics, storylines, chapters, library, management, themes, posts, publish, custom post type, custom taxonomy, template tags, widgets
-Requires at least: 3.3
-Tested up to: 3.3.1
-Stable tag: 3.0.10
+Donate link: http://webcomic.nu
+Tags: webcomic, comic, multiple comics, storylines, custom post type, custom taxonomy, template tags, shortcodes, widgets
+Requires at least: 3.4
+Tested up to: 3.4.2
+Stable tag: 4.0.1
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Comic publishing power for WordPress.
+Comic publishing power for the web.
 
 == Description ==
 
-Please see the [official Webcomic site](http://mgsisk.com/webcomicms.net/) for the users manual, video tutorials, support forum, bug reports, and feature requests. For more direct assistance, contact [&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#064;&#119;&#101;&#098;&#099;&#111;&#109;&#105;&#099;&#109;&#115;&#046;&#110;&#101;&#116;](&#109;&#097;&#105;&#108;&#116;&#111;:&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#064;&#119;&#101;&#098;&#099;&#111;&#109;&#105;&#099;&#109;&#115;&#046;&#110;&#101;&#116;).
+Webcomic provides a host of features for creating, managing, and sharing webcomics. Take control of your webcomic with multi-comic management, theme integration, dynamic navigation, and more.
 
-= &#10030; Inkblot &amp; Archimedes Users &#10030; =
+[**Existing Webcomic users should read this before upgrading.**](https://github.com/mgsisk/webcomic/wiki/Upgrading#Upgrading-from-Webcomic-1%2C-2%2C-or-3)
 
-*If you are upgrading from Webcomic 3.0.4* you must update your theme functions.php file and the mgs_core.php file found in the theme `/includes` directory after updating. You can download the latest versions of both Inkblot and Archimedes at [http://mgsisk.com/webcomicms.net/themes/](http://mgsisk.com/webcomicms.net/themes/).
+= ★ New in Webcomic 4 ★ =
 
-= Upgrading from Webcomic 1 or 2? =
+_**Everything!**_ Webcomic has been rebuilt to provide you with leaner, meaner webcomic management. Highlights include:
 
-**Back up everything.** WordPress has a really handy export tool you can use to backup your data that we highly suggest you use before you attempt to upgrade. Upgrading directly from Webcomic 1 is *not* supported. Please upgrade to Webcomic 2 before you attempt to upgrade to Webcomic 3. You should also take note of the order of your chapters and anything else you'd really hate to lose, and watch this video:
-
-[vimeo http://vimeo.com/12500716]
-
-Webcomic adds a number of features related to creating, managing, and sharing webcomics. Key features include:
-
-- **Integration:** Turn any WordPress theme into a Webcomic site with the flip of a switch. Webcomic 3's new integration option makes getting up and running easier than ever.
-- **Management:** Manage webcomic posts, files, storylines, characters, print selling options, collection access, age restrictions, transcribing, buffers, and more.
-- **Multiplicity:** Manage any number of collections on a single WordPress site or a network of sites.
-- **Internationalization:** If Webcomic isn't already available in your language you can translate it into any language you speak using WordPress' own internationalization functions.
-- **Extensibility:** Build your own Webcomic-powered WordPress themes using a collection of new template tags, or modify the way Webcomic works using action and filter hooks.
+- [OpenGraph](//ogp.me) support for any Webcomic-related page.
+- [Twitter](//twitter.com) integration for automatically tweeting new webcomics.
+- [File management](//github.com/mgsisk/webcomic/wiki/Media) handled through the WordPress Media Library.
+- Each [collection](//github.com/mgsisk/webcomic/wiki/Webcomic-Collections) is now a custom post type with unique [storyline](//github.com/mgsisk/webcomic/wiki/Storylines) and [character](//github.com/mgsisk/webcomic/wiki/Characters) taxonomies.
+- [More](//github.com/mgsisk/webcomic/wiki/General-Settings) [collection](//github.com/mgsisk/webcomic/wiki/Transcript-Settings)-[specific](//github.com/mgsisk/webcomic/wiki/Commerce-Settings) [settings](//github.com/mgsisk/webcomic/wiki/Access-Settings) [provide](//github.com/mgsisk/webcomic/wiki/Post-Settings) [greater](//github.com/mgsisk/webcomic/wiki/Permalink-Settings) [control](//github.com/mgsisk/webcomic/wiki/Twitter-Settings) over each webcomic on your site.
+- [Transcripts](//github.com/mgsisk/webcomic/wiki/Transcripts) are now a custom post type, taking full advantage of the administrative features WordPress provides.
+- Improved [theme integration](//github.com/mgsisk/webcomic/wiki/Configuring) makes it easier than ever to start using Webcomic right away with almost any WordPress theme.
+- New and refactored [template tags, shortcode](//github.com/mgsisk/webcomic/wiki/Template-Tags-and-Shortcodes), and [widgets](//github.com/mgsisk/webcomic/wiki/Widgets) for greater control and customization of your Webcomic-powered site.
 
 == Installation ==
 
-Once you've confirmed with your web host that you're working with PHP 5 and have the latest version of WordPress up and running you can install Webcomic from the *Install Plugins*  page. Just do a search for "webcomic" and the first result should be the one you're looking for.
+You can install Webcomic from the **Plugins > Add New** page in the administrative dashboard. Just do a search for `webcomic` and the first result should be the one you're looking for.
 
 = Manual Installation =
 
-If you can't use the *Install Plugins* page for whatever reason, follow these steps to manually install Webcomic:
+1. Download and extract Webcomic from the [WordPress plugin directory](//wordpress.org/extend/plugins/webcomic).
+2. Upload the `webcomic` directory to your `wp-content/plugins` directory.
+3. Activate Webcomic through the **Plugins > Installed Plugins** page in the administrative dashboard.
 
-1. Download and extract Webcomic from the [WordPress plugin directory](http://wordpress.org/extend/plugins/webcomic).
-2. Upload the `webcomic` directory to the `/wp-content/plugins` directory. To install Webcomic as a special multisite plugin upload the contents of the `webcomic` directory to the `/wp-content/mu-plugins` directory.
-3. Activate the plugin through the *Manage Plugins* page in WordPress (not required if you've installed Webcomic in the `wp-content/mu-plugins` directory).
+== Frequently Asked Questions ==
 
-= Using Webcomic =
+= How do I use Webcomic? =
 
-Webcomic's *Integrate* feature allows it to be used with any WordPress theme right out of the box, but to get the most out of Webcomic you may want to check out one of the [official Webcomic themes](http://mgsisk.com/webcomicms.net/support/manual/themes) or build your own theme using Webcomic's extensive selection of widgets, template tags, actions, and filters.
+Once installed and activated you can use Webcomic in one of three ways:
+
+1. Turn on the [**Integrate** option](//github.com/mgsisk/webcomic/wiki/Configuring#Integrate) found on the **Settings > Webcomic** page in the administrative dashboard.
+2. Use a [Webcomic-ready theme](http://webcomic.nu) to get the most out of Webcomic's features with minimal hassle.
+3. Leverage Webcomic's new [template tags, shortcodes](//github.com/mgsisk/webcomic/wiki/Template-Tags-and-Shortcodes), and [widgets](//github.com/mgsisk/webcomic/wiki/Widgets) to [modify an existing theme](//wordpress.org/extend/themes) or [build your own](//codex.wordpress.org/Theme_Development).
+
+= Where can I get help with Webcomic? =
+
+- [Beginners Guide](//github.com/mgsisk/webcomic/wiki)
+- [Video Tutorials](//vimeo.com/channels/webcomic)
+- [Support Forum](//groups.google.com/d/forum/webcomicnu)
+- [Issue Tracker](//github.com/mgsisk/webcomic/issues)
+- [Email Support](mailto:support@webcomic.nu)
+
+== Changelog ==
+
+= 4 =
+
+- **[Existing Webcomic users should read this before upgrading](//github.com/mgsisk/webcomic/wiki/Upgrading)**
+- All Webcomic changes can be followed at [the master GitHub repository](https://github.com/mgsisk/webcomic/commits/master).
 
 == Upgrade Notice ==
 
-= 3.0.6 =
-- Query strings for secure directory obfuscation are no longer used. Webcomic now attempts to create index files to hide directory contents instead.
+= 4 =
+
+Existing Webcomic users should read this before upgrading: https://github.com/mgsisk/webcomic/wiki/Upgrading
+
+== Special Thanks ==
+
+To [BigBagel](//twitter.com/DrPotatoMonster), [Miluette](//twitter.com/miluette), [LordRembo](//twitter.com/lordrembo), [Vaslittlecrow](//twitter.com/vaslittlecrow), [Fesworks](//twitter.com/fesworks), [Naomiyaki](//twitter.com/naomiyaki), [MatthewEbel](//twitter.com/matthewebel), [AlexWoolfson](//twitter.com/alexwoolfson), and [Kuipou](//twitter.com/kuipou) for pre-release testing and feedback, and to the thousands of users that share their amazing work with Webcomic.
