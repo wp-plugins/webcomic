@@ -4,7 +4,7 @@ Donate link: http://webcomic.nu
 Tags: webcomic, comic, multiple comics, storylines, custom post type, custom taxonomy, template tags, shortcodes, widgets
 Requires at least: 3.4
 Tested up to: 3.4.2
-Stable tag: 4
+Stable tag: 4.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
