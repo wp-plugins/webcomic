@@ -812,7 +812,7 @@ class webcomic extends mgs_core {
 		}
 		
 		$join  = ( $terms ) ? "INNER JOIN $wpdb->term_relationships AS tr ON p.ID = tr.object_id INNER JOIN $wpdb->term_taxonomy tt ON tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = '$taxonomy' AND tt.term_id IN ( '" . implode( "', '", $terms ) . "' )" : "";
-		$query = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts AS p $join WHERE p.post_type = 'webcomic_post' AND p.post_status = 'future' ORDER BY p.post_date DESC" ) );
+		$query = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts AS p $join WHERE p.post_type = 'webcomic_post' AND p.post_status = 'future' ORDER BY p.post_date DESC", false ) );
 		
 		if ( empty( $query ) )
 			return false;
