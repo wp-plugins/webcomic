@@ -319,7 +319,7 @@ class Widget_RecentWebcomics extends WP_Widget {
 					echo '<li>', $image ? WebcomicTag::the_webcomic( $image, 'self' ) : sprintf( '<a href="%s">%s</a>', get_permalink(), get_the_title( '', '', false ) ), '</li>';
 				}
 				
-				echo $after_widget;
+				echo '</ul>', $after_widget;
 			}
 			
 			wp_reset_postdata();
@@ -381,7 +381,7 @@ class Widget_RecentWebcomics extends WP_Widget {
 			</label>
 		</p>
 		<p>
-			<label><input type="checkbox" name="<?php echo $this->get_field_name( 'image' ); ?>" value="%thumbnail"<?php echo empty( $image ) ? '' : checked( '%thumbnail' === $image, true, false ); ?>> <?php _e( 'Show webcomic previews', 'webcomic' ); ?></label>
+			<label><input type="checkbox" name="<?php echo $this->get_field_name( 'image' ); ?>" value="thumbnail"<?php echo empty( $image ) ? '' : checked( '%thumbnail' === $image, true, false ); ?>> <?php _e( 'Show webcomic previews', 'webcomic' ); ?></label>
 		</p>
 		<?php
 	}

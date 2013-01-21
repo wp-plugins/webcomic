@@ -26,7 +26,11 @@
  * @uses webcomic_character_description()
  */
 ?>
+
+<?php if ( !is_feed() ) { ?>
 <style scoped>.webcomic-img img{height:auto;max-width:100%}</style>
+<?php } ?>
+
 <?php if ( is_front_page() ) { ?>
 	<div data-webcomic-container="integrated">
 		<div class="integrated-webcomic">
@@ -83,5 +87,5 @@
 	<h2 class="webcomic-character-title"><?php webcomic_character_title(); ?></h2><!-- .webcomic-character-title -->
 	<div class="webcomic-img webcomic-character-avatar"><?php webcomic_character_avatar(); ?></div><!-- .webcomic-character-avatar -->
 	<div class="webcomic-character-description"><?php webcomic_character_description(); ?></div><!-- .webcomic-character-description -->
-	<nav class="webcomic-storyline"><?php first_webcomic_character_link(); previous_webcomic_character_link(); random_webcomic_character_link(); next_webcomic_character_link(); last_webcomic_character_link(); ?></nav><!-- .webcomic-character -->
+	<nav class="webcomic-character"><?php first_webcomic_character_link(); previous_webcomic_character_link(); random_webcomic_character_link(); next_webcomic_character_link(); last_webcomic_character_link(); ?></nav><!-- .webcomic-character -->
 <?php }

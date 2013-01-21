@@ -4,12 +4,12 @@ Text Domain: webcomic
 Plugin Name: Webcomic
 Plugin URI: http://webcomic.nu
 Description: Comic publishing power for the web.
-Version: 4.0.1
+Version: 4.0.2
 Author: Michael Sisk
 Author URI: http://mgsisk.com
 License: GPL2
 
-Copyright 2008 - 2012 Michael Sisk (contact@mgsisk.com)
+Copyright 2008 - 2013 Michael Sisk (contact@mgsisk.com)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -30,12 +30,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 /** Comic Publishing Power for the Web
  * 
  * @todo Future Bulk media actions; see core.trac.wordpress.org/ticket/16031
- * @todo Future Screen Options; see core.trac.wordpress.org/ticket/18323
  * 
  * @package Webcomic
- * @copyright 2008 - 2012 Michael Sisk
+ * @copyright 2008 - 2013 Michael Sisk
  * @license //gnu.org/licenses/gpl-2.0.html GPL2
- * @version 4
+ * @version 4.0.2
  * @link http://webcomic.nu
  */
 
@@ -47,7 +46,7 @@ class Webcomic {
 	/** Internal version number.
 	 * @var string
 	 */
-	protected static $version = '4';
+	protected static $version = '4.0.2';
 	
 	/** Absolute path to the Webcomic directory.
 	 * @var string
@@ -131,12 +130,12 @@ class Webcomic {
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 			add_action( 'template_redirect', array( $this, 'template_redirect' ) );
 			
-			add_filter( 'template', array( $this, 'theme' ), 10, 1 );
 			add_filter( 'request', array( $this, 'request' ), 10, 1 );
-			add_filter( 'stylesheet', array( $this, 'theme' ), 10, 1 );
 			add_filter( 'get_term', array( $this, 'get_term' ), 10, 2 );
+			add_filter( 'template', array( $this, 'template' ), 10, 1 );
 			add_filter( 'the_posts', array( $this, 'the_posts' ), 10, 2 );
 			add_filter( 'get_terms', array( $this, 'get_terms' ), 10, 3 );
+			add_filter( 'stylesheet', array( $this, 'stylesheet' ), 10, 1 );
 			add_filter( 'body_class', array( $this, 'body_class' ), 10, 2 );
 			add_filter( 'get_the_terms', array( $this, 'get_the_terms' ), 10, 3 );
 			add_action( 'post_type_link', array( $this, 'post_type_link' ), 10, 4 );
@@ -177,7 +176,7 @@ class Webcomic {
 	public function init() {
 		load_plugin_textdomain( 'webcomic', '', self::$dir . '-/locale/' );
 		
-		define( 'EP_WEBCOMIC', 524288 );
+		define( 'EP_WEBCOMIC', 1099511627776 ); // 2^40
 		
 		add_rewrite_endpoint( 'prints', EP_WEBCOMIC );
 		add_rewrite_endpoint( 'transcripts', EP_WEBCOMIC );
@@ -201,15 +200,15 @@ class Webcomic {
 					'not_found'          => __( 'No webcomics found.', 'webcomic' ),
 					'not_found_in_trash' => __( 'No webcomics found in Trash.', 'webcomic' )
 				),
-				'description'      => esc_html( $v[ 'description' ] ),
-				'public'           => true,
-				'menu_icon'        => self::$url . '-/img/webcomic-small.png',
-				'supports'         => $v[ 'supports' ],
-				'taxonomies'       => $v[ 'taxonomies' ],
-				'has_archive'      => $v[ 'slugs' ][ 'archive' ],
-				'permalink_epmask' => EP_WEBCOMIC,
+				'description' => esc_html( $v[ 'description' ] ),
+				'public'      => true,
+				'menu_icon'   => self::$url . '-/img/webcomic-small.png',
+				'supports'    => $v[ 'supports' ],
+				'taxonomies'  => $v[ 'taxonomies' ],
+				'has_archive' => $v[ 'slugs' ][ 'archive' ],
 				'rewrite' => array(
 					'slug'       => $v[ 'slugs' ][ 'webcomic' ],
+					'ep_mask'    => EP_WEBCOMIC | EP_PERMALINK,
 					'with_front' => false
 				)
 			) );
@@ -573,10 +572,21 @@ class Webcomic {
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::$collection
 	 * @hook template
+	 */
+	public function template( $theme ) {
+		return ( self::$collection and self::$config[ 'collections' ][ self::$collection ][ 'theme' ] ) ? substr( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], 0, strpos( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], '|' ) ) : $theme;
+	}
+	
+	/** Return the appropriate theme ID for custom collection themes.
+	 * 
+	 * @param string $theme Name of the current theme.
+	 * @return string
+	 * @uses Webcomic::$config
+	 * @uses Webcomic::$collection
 	 * @hook stylesheet
 	 */
-	public function theme( $theme ) {
-		return ( self::$collection and self::$config[ 'collections' ][ self::$collection ][ 'theme' ] ) ? self::$config[ 'collections' ][ self::$collection ][ 'theme' ] : $theme;
+	public function stylesheet( $theme ) {
+		return ( self::$collection and self::$config[ 'collections' ][ self::$collection ][ 'theme' ] ) ? substr( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], strpos( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], '|' ) + 1 ) : $theme;
 	}
 	
 	/** Integrate webcomics into the main site feed.
@@ -1133,7 +1143,9 @@ class Webcomic {
 	 */
 	public function twitter_oauth() {
 		if ( isset( $_GET[ 'webcomic_twitter_oauth' ] ) ) {
-			require_once self::$dir . '-/library/twitter.php';
+			if ( !class_exists( 'TwitterOAuth' ) ) {
+				require_once self::$dir . '-/library/twitter.php';
+			}
 			
 			$admin_url = add_query_arg( array( 'post_type' => $_GET[ 'webcomic_collection' ], 'page' => "{$_GET[ 'webcomic_collection' ]}-options" ), admin_url( 'edit.php' ) );
 			

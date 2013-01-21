@@ -154,8 +154,9 @@ class WebcomicTag extends Webcomic {
 	 */
 	public static function webcomic( $version = '' ) {
 		if ( empty( $version ) ) {
-			$theme   = new WP_Theme( get_stylesheet_directory(), '' );
-			$version = $theme->get( 'Webcomic' );
+			$directory = get_stylesheet_directory();
+			$theme     = new WP_Theme( basename( $directory ), dirname( $directory ) );
+			$version   = $theme->get( 'Webcomic' );
 		}
 		
 		return ( $version and version_compare( self::$version, $version, '>=' ) );
@@ -1117,7 +1118,7 @@ class WebcomicTag extends Webcomic {
 		$term = $taxonomy ? get_term( $term, $taxonomy ) : get_queried_object();
 		
 		if ( isset( $term->taxonomy ) ) {
-			return apply_filters( 'webcomic_term_description', term_description( $term->term_id, $taxonomy ), $term );
+			return apply_filters( 'webcomic_term_description', term_description( $term->term_id, $term->taxonomy ), $term );
 		}
 	}
 	
@@ -2176,7 +2177,7 @@ class WebcomicTag extends Webcomic {
 				$collection_title = apply_filters( 'webcomic_collection_dropdown_title', $v[ 'name' ], $v );
 				
 				if ( $webcomics ) {
-					$the_posts = new WP_Query( array( 'post_type' => $v[ 'id' ], 'order' => $webcomic_order, 'orderby' => $webcomic_orderby ) );
+					$the_posts = new WP_Query( array( 'posts_per_page' => -1, 'post_type' => $v[ 'id' ], 'order' => $webcomic_order, 'orderby' => $webcomic_orderby ) );
 					
 					if ( $the_posts->have_posts() ) {
 						if ( $callback ) {
@@ -2411,7 +2412,7 @@ class WebcomicTag extends Webcomic {
 					) : '';
 					
 					if ( $webcomics ) {
-						$the_posts = new WP_Query( array( 'post_type' => $v[ 'id' ], 'order' => $webcomic_order, 'orderby' => $webcomic_orderby ) );
+						$the_posts = new WP_Query( array( 'posts_per_page' => -1, 'post_type' => $v[ 'id' ], 'order' => $webcomic_order, 'orderby' => $webcomic_orderby ) );
 						
 						if ( $the_posts->have_posts() ) {
 							if ( $callback ) {
@@ -5799,10 +5800,11 @@ if ( !class_exists( 'Walker_WebcomicTerm_Dropdown' ) ) {
 			
 			if ( $webcomics ) {
 				$the_posts = new WP_Query( array(
-					'post_type' => str_replace( array( '_storyline', '_character' ), '', $term->taxonomy ),
-					'order'     => $webcomic_order,
-					'orderby'   => $webcomic_orderby,
-					'tax_query' => array(
+					'posts_per_page' => -1,
+					'post_type'      => str_replace( array( '_storyline', '_character' ), '', $term->taxonomy ),
+					'order'          => $webcomic_order,
+					'orderby'        => $webcomic_orderby,
+					'tax_query'      => array(
 						array(
 							'taxonomy' => $term->taxonomy,
 							'field'    => 'id',
@@ -5918,10 +5920,11 @@ if ( !class_exists( 'Walker_WebcomicTerm_List' ) ) {
 			
 			if ( $webcomics ) {
 				$the_posts = new WP_Query( array(
-					'post_type' => str_replace( array( '_storyline', '_character' ), '', $term->taxonomy ),
-					'order'     => $webcomic_order,
-					'orderby'   => $webcomic_orderby,
-					'tax_query' => array(
+					'posts_per_page' => -1,
+					'post_type'      => str_replace( array( '_storyline', '_character' ), '', $term->taxonomy ),
+					'order'          => $webcomic_order,
+					'orderby'        => $webcomic_orderby,
+					'tax_query'      => array(
 						array(
 							'taxonomy' => $term->taxonomy,
 							'field'    => 'id',
