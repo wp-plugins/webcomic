@@ -36,6 +36,10 @@ class WebcomicAdmin extends Webcomic {
 		register_activation_hook( self::$dir . 'webcomic.php', array( $this, 'activate' ) );
 		register_deactivation_hook( self::$dir . 'webcomic.php', array( $this, 'deactivate' ) );
 		
+		if ( !self::$config or version_compare( self::$config[ 'version' ], self::$version, '<' ) ) {
+			add_action( 'admin_init', array( $this, 'activate' ) );
+		}
+		
 		if ( self::$config and version_compare( self::$config[ 'version' ], '4x', '>=' ) ) {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( 'admin_head', array( $this, 'admin_head' ) );
@@ -173,7 +177,7 @@ class WebcomicAdmin extends Webcomic {
 				delete_option( 'webcomic_options' );
 				
 				self::$config[ 'legacy' ] = self::$config[ 'legacy_notice' ] = 3;
-			} else if ( $legacy ) {
+			} elseif ( $legacy ) {
 				self::$config[ 'legacy' ] = self::$config[ 'legacy_notice' ] = version_compare( $legacy, '2', '>=' ) ? 2 : 1;
 				
 				$legacy_config = array(
@@ -254,7 +258,7 @@ class WebcomicAdmin extends Webcomic {
 			add_option( 'webcomic_options', self::$config );
 			
 			wp_schedule_event( ( integer ) current_time( 'timestamp' ), 'daily', 'webcomic_buffer_alert' );
-		} else if ( version_compare( self::$config[ 'version' ], self::$version, '<' ) ) {
+		} elseif ( version_compare( self::$config[ 'version' ], self::$version, '<' ) ) {
 			require_once self::$dir . '-/php/upgrade.php'; new WebcomicUpgrade;
 		}
 		
@@ -420,7 +424,7 @@ class WebcomicAdmin extends Webcomic {
 			
 			if ( preg_match( '/^(edit-)?webcomic_(transcript|language)$/', $screen->id ) ) {
 				echo '<style>#icon-edit{background:url("', self::$url, '-/img/transcript.png")}</style>';;
-			} else if ( preg_match( '/^(edit-)?webcomic\d+(_storyline|_character)?$/', $screen->id ) ) {
+			} elseif ( preg_match( '/^(edit-)?webcomic\d+(_storyline|_character)?$/', $screen->id ) ) {
 				echo '<style>#icon-edit{background:url("', self::$url, '-/img/webcomic.png")}</style>';
 			}
 		}
