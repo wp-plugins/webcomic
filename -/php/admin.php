@@ -174,6 +174,8 @@ class WebcomicAdmin extends Webcomic {
 			);
 			
 			if ( is_array( $legacy ) ) {
+				$legacy_config = $legacy;
+				
 				delete_option( 'webcomic_options' );
 				
 				self::$config[ 'legacy' ] = self::$config[ 'legacy_notice' ] = 3;
@@ -400,8 +402,8 @@ class WebcomicAdmin extends Webcomic {
 	 * @hook admin_init
 	 */
 	public function admin_init() {
-		if ( isset( $_GET[ 'webcomic_admin_ajax' ] ) and isset( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) and 'xmlhttprequest' === strtolower( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) ) {
-			call_user_func_array( explode( '::', $_GET[ 'webcomic_admin_ajax' ] ), $_GET );
+		if ( ( isset( $_GET[ 'webcomic_admin_ajax' ] ) or isset( $_POST[ 'webcomic_admin_ajax' ] ) ) and isset( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) and 'xmlhttprequest' === strtolower( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) ) {
+			call_user_func_array( explode( '::', isset( $_GET[ 'webcomic_admin_ajax' ] ) ? $_GET[ 'webcomic_admin_ajax' ] : $_POST[ 'webcomic_admin_ajax' ] ), isset( $_GET[ 'webcomic_admin_ajax' ] ) ? $_GET : $_POST );
 			
 			die;
 		}
@@ -417,7 +419,7 @@ class WebcomicAdmin extends Webcomic {
 	public function admin_head() {
 		$screen = get_current_screen();
 		
-		if ( preg_match( '/^(page|options-media|tools_page_webcomic-commerce|tools_page_webcomic-upgrader|media_page_webcomic-generator|settings_page_webcomic-options|(edit-)?webcomic_(transcript|language)|(webcomic\d+_page_|edit-)?webcomic\d+(-options|_storyline|_character)?)$/', $screen->id ) ) {
+		if ( preg_match( '/^(page|options-media|tools_page_webcomic-commerce|tools_page_webcomic-upgrader|media_page_webcomic-attacher|media_page_webcomic-generator|settings_page_webcomic-options|(edit-)?webcomic_(transcript|language)|(webcomic\d+_page_|edit-)?webcomic\d+(-options|_storyline|_character)?)$/', $screen->id ) ) {
 			require_once self::$dir . '-/php/help.php';
 			
 			new WebcomicHelp( $screen );

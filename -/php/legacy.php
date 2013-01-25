@@ -230,9 +230,6 @@ class WebcomicLegacy extends Webcomic {
 						</div>
 					</form>
 					
-					<script>
-					</script>
-					
 					<?php } else { ?>
 					
 					<p><?php printf( __( 'This tool will attempt to automatically convert your existing Webcomic %1$s data to Webcomic %2$s. Depending on the size of your site the upgrade may require multiple steps. If you do not want to upgrade click <strong>Not Interested</strong> to uninstall Webcomic %2$s.', 'webcomic' ), self::$config[ 'legacy' ], self::$version ); ?></p>
@@ -241,7 +238,7 @@ class WebcomicLegacy extends Webcomic {
 						<?php wp_nonce_field( 'webcomic_upgrade', 'webcomic_upgrade' ); ?>
 						<div class="form-wrap">
 							<?php submit_button( __( 'Upgrade Now', 'webcomic' ), 'primary', 'upgrade_legacy', false ); ?>
-							<span style="float:right"><?php submit_button( __( "Not Interested", 'webcomic' ), 'secondary', 'disable_legacy', false ); ?></span>
+							<span style="float:right"><?php submit_button( __( 'Not Interested', 'webcomic' ), 'secondary', 'disable_legacy', false ); ?></span>
 						</div>
 					</form>
 					
@@ -1023,12 +1020,12 @@ class WebcomicLegacy extends Webcomic {
 					) ) ) {
 						foreach ( $posts as $post ) {
 							if ( $meta = get_post_meta( $post, 'webcomic', true ) ) {
-								$post_domestic_price         = round( $commerce_domestic_price * ( 1 + .01 * $meta[ 'paypal' ][ 'price_d' ] ), 2 );
-								$post_international_price    = round( $commerce_international_price * ( 1 + .01 * $meta[ 'paypal' ][ 'price_i' ] ), 2 );
-								$post_original_price         = round( $commerce_original_price * ( 1 + .01 * $meta[ 'paypal' ][ 'price_o' ] ), 2 );
-								$post_domestic_shipping      = round( $commerce_domestic_shipping * ( 1 + .01 * $meta[ 'paypal' ][ 'shipping_d' ] ), 2 );
-								$post_international_shipping = round( $commerce_international_shipping * ( 1 + .01 * $meta[ 'paypal' ][ 'shipping_i' ] ), 2 );
-								$post_original_shipping      = round( $commerce_original_shipping * ( 1 + .01 * $meta[ 'paypal' ][ 'shipping_o' ] ), 2 );
+								$post_domestic_price            = round( $commerce_domestic_price * ( 1 + .01 * $meta[ 'paypal' ][ 'price_d' ] ), 2 );
+								$post_international_price       = round( $commerce_international_price * ( 1 + .01 * $meta[ 'paypal' ][ 'price_i' ] ), 2 );
+								$post_original_price            = round( $commerce_original_price * ( 1 + .01 * $meta[ 'paypal' ][ 'price_o' ] ), 2 );
+								$post_domestic_shipping         = round( $commerce_domestic_shipping * ( 1 + .01 * $meta[ 'paypal' ][ 'shipping_d' ] ), 2 );
+								$post_international_shipping    = round( $commerce_international_shipping * ( 1 + .01 * $meta[ 'paypal' ][ 'shipping_i' ] ), 2 );
+								$post_original_shipping         = round( $commerce_original_shipping * ( 1 + .01 * $meta[ 'paypal' ][ 'shipping_o' ] ), 2 );
 								
 								update_post_meta( $post, 'webcomic_prints', !empty( $meta[ 'paypal' ][ 'prints' ] ) );
 								
@@ -1064,9 +1061,9 @@ class WebcomicLegacy extends Webcomic {
 											'original'      => intval( $meta[ 'paypal' ][ 'shipping_o' ] )
 										),
 										'total'  => array(
-											'domestic'      => 0 - intval( round( ( 1 - ( $post_domestic_price + $post_domestic_shipping ) / ( $commerce_domestic_price + $commerce_domestic_shipping ) ) * 100 ) ),
-											'international' => 0 - intval( round( ( 1 - ( $post_international_price + $post_international_shipping ) / ( $commerce_international_price + $commerce_international_shipping ) ) * 100 ) ),
-											'original'      => 0 - intval( round( ( 1 - ( $post_original_price + $post_original_shipping ) / ( $commerce_original_price + $commerce_original_shipping ) ) * 100 ) )
+											'domestic'      => ( $commerce_domestic_price or $commerce_domestic_shipping ) ? 0 - intval( round( ( 1 - ( $post_domestic_price + $post_domestic_shipping ) / ( $commerce_domestic_price + $commerce_domestic_shipping ) ) * 100 ) ) : 0,
+											'international' => ( $commerce_international_price or $commerce_international_shipping ) ? 0 - intval( round( ( 1 - ( $post_international_price + $post_international_shipping ) / ( $commerce_international_price + $commerce_international_shipping ) ) * 100 ) ) : 0,
+											'original'      => ( $commerce_original_price or $commerce_original_shipping ) ? 0 - intval( round( ( 1 - ( $post_original_price + $post_original_shipping ) / ( $commerce_original_price + $commerce_original_shipping ) ) * 100 ) ) : 0
 										)
 									)
 								) );

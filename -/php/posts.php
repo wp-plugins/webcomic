@@ -141,8 +141,7 @@ class WebcomicPosts extends Webcomic {
 			wp_enqueue_script( 'webcomic-admin-meta' );
 			
 			if ( !in_array( 'editor', self::$config[ 'collections' ][ $screen->id ][ 'supports' ] ) ) {
-				add_thickbox();
-				wp_enqueue_script( 'media-upload' );
+				wp_enqueue_media();
 			}
 		}
 	}
@@ -444,7 +443,7 @@ class WebcomicPosts extends Webcomic {
 			if ( $attachments = self::get_attachments( $id ) ) {
 				foreach ( $attachments as $attachment ) {
 					printf( '<a href="%s">%s</a>',
-						esc_url( add_query_arg( array( 'attachment_id' => $attachment->ID, 'action' => 'edit' ), admin_url( 'media.php' ) ) ),
+						esc_url( add_query_arg( array( 'post' => $attachment->ID, 'action' => 'edit' ), admin_url( 'post.php' ) ) ),
 						wp_get_attachment_image( $attachment->ID )
 					);
 				}
@@ -537,7 +536,7 @@ class WebcomicPosts extends Webcomic {
 	 */
 	public function media( $post ) {
 		?>
-		<p id="webcomic_media_preview"><?php self::ajax_media_preview( $post->ID ); ?></p>
+		<div id="webcomic_media_preview"><?php self::ajax_media_preview( $post->ID ); ?></div>
 		<?php
 	}
 	
@@ -718,7 +717,7 @@ class WebcomicPosts extends Webcomic {
 			$old_content_width = $content_width;
 			$content_width = 266;
 			
-			printf( '<a href="%s" class="thickbox">', esc_url( str_replace( array( 'post_id=0', 'TB_iframe=1' ), array( "post_id={$id}", 'tab=gallery&TB_iframe=1' ), get_upload_iframe_src( 'image' ) ) ) );
+			echo '<style scoped>.insert-media img{vertical-align:bottom}</style><a href="#" class="insert-media">';
 			
 			foreach ( $attachments as $attachment ) {
 				echo isset( $_wp_additional_image_sizes[ 'post-thumbnail' ] ) ? wp_get_attachment_image( $attachment->ID, 'post-thumbnail' ) : wp_get_attachment_image( $attachment->ID, array( $content_width, $content_width ) );
@@ -730,7 +729,10 @@ class WebcomicPosts extends Webcomic {
 		} else {
 			$post_ID = $post_ID ? $post_ID : $id;
 			
-			printf( '<a href="%s" class="thickbox">%s</a>', get_upload_iframe_src( 'image' ), __( 'Add Attachments', 'webcomic' ) );
+			printf( '<a href="#" class="button insert-media">%s</a><p>%s</p>',
+				__( 'Add Media', 'webcomic' ),
+				__( 'Webcomic will automatically recognize any images attached to this post. You <strong>do not</strong> have to insert them directly into the post content.', 'webcomic' )
+			);
 		}
 	}
 	
