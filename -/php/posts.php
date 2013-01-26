@@ -36,7 +36,6 @@ class WebcomicPosts extends Webcomic {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'restrict_manage_posts', array( $this, 'restrict_manage_posts' ) );
 		add_action( 'wp_insert_post', array( $this, 'save_webcomic_commerce' ), 10, 2 );
-		add_action( 'transition_post_status', array( $this, 'tweet_webcomic' ), 10, 3 );
 		add_action( 'wp_insert_post_data', array( $this, 'wp_insert_post_data' ), 10, 2 );
 		add_action( 'wp_insert_post', array( $this, 'save_webcomic_transcripts' ), 10, 2 );
 		add_action( 'bulk_edit_custom_box', array( $this, 'bulk_edit_custom_box' ), 10, 2 );
@@ -62,7 +61,7 @@ class WebcomicPosts extends Webcomic {
 		
 		if ( preg_match( '/^edit-webcomic\d+$/', $screen->id ) ) {
 			printf( "<script>webcomic_quick_save( '%s' );webcomic_quick_edit( '%s' );</script>", admin_url(), admin_url() );
-		} else if ( isset( self::$config[ 'collections' ][ $screen->id ] ) ) {
+		} elseif ( isset( self::$config[ 'collections' ][ $screen->id ] ) ) {
 			printf( "<script>webcomic_media_meta('%s');webcomic_prints_meta('%s','%s');</script>", admin_url(), self::$config[ 'collections' ][ $screen->id ][ 'commerce' ][ 'currency' ], __( '- SOLD -', 'webcomic' ) );
 		}
 	}
@@ -135,14 +134,13 @@ class WebcomicPosts extends Webcomic {
 			wp_register_script( 'webcomic-admin-posts', self::$url . '-/js/admin-posts.js', array( 'jquery' ) );
 			
 			wp_enqueue_script( 'webcomic-admin-posts' );
-		} else if ( isset( self::$config[ 'collections' ][ $screen->id ] ) ) {
+		} elseif ( isset( self::$config[ 'collections' ][ $screen->id ] ) ) {
 			wp_register_script( 'webcomic-admin-meta', self::$url . '-/js/admin-meta.js', array( 'jquery' ) );
 			
 			wp_enqueue_script( 'webcomic-admin-meta' );
 			
 			if ( !in_array( 'editor', self::$config[ 'collections' ][ $screen->id ][ 'supports' ] ) ) {
-				add_thickbox();
-				wp_enqueue_script( 'media-upload' );
+				wp_enqueue_media();
 			}
 		}
 	}
@@ -220,75 +218,13 @@ class WebcomicPosts extends Webcomic {
 			$commerce[ 'adjust' ][ 'shipping' ][ 'domestic' ]      = intval( $_POST[ 'webcomic_commerce_adjust_shipping_domestic' ] );
 			$commerce[ 'adjust' ][ 'shipping' ][ 'original' ]      = intval( $_POST[ 'webcomic_commerce_adjust_shipping_original' ] );
 			$commerce[ 'adjust' ][ 'shipping' ][ 'international' ] = intval( $_POST[ 'webcomic_commerce_adjust_shipping_international' ] );
-			$commerce[ 'adjust' ][ 'total' ][ 'domestic' ]         = 0 - intval( round( ( 1 - $commerce[ 'total' ][ 'domestic' ] / self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'domestic' ] ) * 100 ) );
-			$commerce[ 'adjust' ][ 'total' ][ 'original' ]         = 0 - intval( round( ( 1 - $commerce[ 'total' ][ 'original' ] / self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'original' ] ) * 100 ) );
-			$commerce[ 'adjust' ][ 'total' ][ 'international' ]    = 0 - intval( round( ( 1 - $commerce[ 'total' ][ 'international' ] / self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'international' ] ) * 100 ) );
+			$commerce[ 'adjust' ][ 'total' ][ 'domestic' ]         = self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'domestic' ] ? 0 - intval( round( ( 1 - $commerce[ 'total' ][ 'domestic' ] / self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'domestic' ] ) * 100 ) ) : 0;
+			$commerce[ 'adjust' ][ 'total' ][ 'original' ]         = self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'original' ] ? 0 - intval( round( ( 1 - $commerce[ 'total' ][ 'original' ] / self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'original' ] ) * 100 ) ) : 0;
+			$commerce[ 'adjust' ][ 'total' ][ 'international' ]    = self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'international' ] ? 0 - intval( round( ( 1 - $commerce[ 'total' ][ 'international' ] / self::$config[ 'collections' ][ $_POST[ 'post_type' ] ][ 'commerce' ][ 'total' ][ 'international' ] ) * 100 ) ) : 0;
 			
 			update_post_meta( $id, 'webcomic_commerce', $commerce );
 			update_post_meta( $id, 'webcomic_prints', isset( $_POST[ 'webcomic_commerce_prints' ] ) );
 			update_post_meta( $id, 'webcomic_original', isset( $_POST[ 'webcomic_commerce_original_available' ] ) );
-		}
-	}
-	
-	/** Auto tweet on webcomic publish.
-	 * 
-	 * @param string $new New post status.
-	 * @param string $old Old post status.
-	 * @param string $post Post object to update.
-	 * @uses Webcomic::$config
-	 * @hook transition_post_status
-	 * @filter string webcomic_tweet Filters the tweet text pushed to Twitter whenever a webcomic is published. Defaults to the collection-specific tweet format.
-	 */
-	public function tweet_webcomic( $new, $old, $post ) {
-		if ( 'publish' === $new and 'publish' !== $old and !empty( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ] ) and !empty( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'oauth_token' ] ) and !empty( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'oauth_secret' ] ) ) {
-			$status = self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ];
-			
-			if ( false !== strpos( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ], '%' ) ) {
-				$s = $c = array();
-				$link = wp_get_shortlink( $post->ID );
-				
-				if ( false !== strpos( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ], '%storylines' ) and $storylines = wp_get_object_terms( $post->ID, "{$post->post_type}_storyline" ) and !is_wp_error( $storylines ) ) {
-					foreach ( $storylines as $storyline ) {
-						$s[] = str_replace( array( '_', '-' ), '', "#{$storyline->slug}" );
-					}
-				}
-				
-				if ( false !== strpos( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ], '%characters' ) and $characters = wp_get_object_terms( $post->ID, "{$post->post_type}_character" ) and !is_wp_error( $characters ) ) {
-					foreach ( $characters as $character ) {
-						$c[] = str_replace( array( '_', '-' ), '', "#{$character->slug}" );
-					}
-				}
-				
-				$tokens = array(
-					'%url'             => $link ? $link : get_permalink( $post->ID ),
-					'%date'            => get_the_time( get_option( 'date_format' ), $post ),
-					'%time'            => get_the_time( get_option( 'time_format' ), $post ),
-					'%title'           => get_the_title( $post->ID ),
-					'%author'          => get_the_author_meta( 'display_name', $post->post_author ),
-					'%site-url'        => home_url(),
-					'%permalink'       => get_permalink( $post->ID ),
-					'%site-name'       => get_bloginfo( 'name' ),
-					'%storylines'      => join( ' ', $s ),
-					'%characters'      => join( ' ', $c ),
-					'%collection'      => '#' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $post->post_type ][ 'slugs' ][ 'name' ] ),
-					'%collection-name' => strip_tags( self::$config[ 'collections' ][ $post->post_type ][ 'name' ] )
-				);
-				
-				$status = apply_filters( 'webcomic_tweet', str_replace( array_keys( $tokens ), $tokens, $status ), $post );
-			}
-			
-			if ( $status ) {
-				require_once self::$dir . '-/library/twitter.php';
-				
-				$oauth    = new TwitterOAuth( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'consumer_key' ], self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'consumer_secret' ], self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'oauth_token' ], self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'oauth_secret' ] );
-				$response = $oauth->post( 'statuses/update', array( 'status' => substr( strip_tags( $status ), 0, 140 ) ) );
-				
-				if ( isset( $response->error ) ) {
-					$errors = get_transient( 'webcomic_error' );
-					
-					set_transient( 'webcomic_error', array_merge( array( sprintf( __( '<b>Twitter Error: %s</b>', 'webcomic' ), $response->error ) ), $errors ? $errors : array() ), 1 );
-				}
-			}
 		}
 	}
 	
@@ -442,14 +378,14 @@ class WebcomicPosts extends Webcomic {
 			if ( $attachments = self::get_attachments( $id ) ) {
 				foreach ( $attachments as $attachment ) {
 					printf( '<a href="%s">%s</a>',
-						esc_url( add_query_arg( array( 'attachment_id' => $attachment->ID, 'action' => 'edit' ), admin_url( 'media.php' ) ) ),
+						esc_url( add_query_arg( array( 'post' => $attachment->ID, 'action' => 'edit' ), admin_url( 'post.php' ) ) ),
 						wp_get_attachment_image( $attachment->ID )
 					);
 				}
 			} else {
-				_e( 'No Attachments', 'webcomic' );
+				_e( '&mdash;', 'webcomic' );
 			}
-		} else if ( 'webcomic_storylines' === $column ) {
+		} elseif ( 'webcomic_storylines' === $column ) {
 			if ( $storylines = wp_get_object_terms( $id, "{$post->post_type}_storyline" ) ) {
 				$terms = array();
 				
@@ -462,9 +398,9 @@ class WebcomicPosts extends Webcomic {
 				
 				echo join( ', ', $terms );
 			} else {
-				_e( 'No Storylines', 'webcomic' );
+				_e( '&mdash;', 'webcomic' );
 			}
-		} else if ( 'webcomic_characters' === $column ) {
+		} elseif ( 'webcomic_characters' === $column ) {
 			if ( $characters = wp_get_object_terms( $id, "{$post->post_type}_character" ) ) {
 				$terms = array();
 				
@@ -477,7 +413,7 @@ class WebcomicPosts extends Webcomic {
 				
 				echo join( ', ', $terms );
 			} else {
-				_e( 'No Characters', 'webcomic' );
+				_e( '&mdash;', 'webcomic' );
 			}
 		}
 	}
@@ -535,7 +471,7 @@ class WebcomicPosts extends Webcomic {
 	 */
 	public function media( $post ) {
 		?>
-		<p id="webcomic_media_preview"><?php self::ajax_media_preview( $post->ID ); ?></p>
+		<div id="webcomic_media_preview"><?php self::ajax_media_preview( $post->ID ); ?></div>
 		<?php
 	}
 	
@@ -716,7 +652,7 @@ class WebcomicPosts extends Webcomic {
 			$old_content_width = $content_width;
 			$content_width = 266;
 			
-			printf( '<a href="%s" class="thickbox">', esc_url( str_replace( array( 'post_id=0', 'TB_iframe=1' ), array( "post_id={$id}", 'tab=gallery&TB_iframe=1' ), get_upload_iframe_src( 'image' ) ) ) );
+			echo '<style scoped>.insert-media img{vertical-align:bottom}</style><a href="#" class="insert-media">';
 			
 			foreach ( $attachments as $attachment ) {
 				echo isset( $_wp_additional_image_sizes[ 'post-thumbnail' ] ) ? wp_get_attachment_image( $attachment->ID, 'post-thumbnail' ) : wp_get_attachment_image( $attachment->ID, array( $content_width, $content_width ) );
@@ -728,7 +664,10 @@ class WebcomicPosts extends Webcomic {
 		} else {
 			$post_ID = $post_ID ? $post_ID : $id;
 			
-			printf( '<a href="%s" class="thickbox">%s</a>', get_upload_iframe_src( 'image' ), __( 'Add Attachments', 'webcomic' ) );
+			printf( '<a href="#" class="button insert-media">%s</a><p>%s</p>',
+				__( 'Add Media', 'webcomic' ),
+				__( 'Webcomic will automatically recognize any images attached to this post. You <strong>do not</strong> have to insert them directly into the post content.', 'webcomic' )
+			);
 		}
 	}
 	

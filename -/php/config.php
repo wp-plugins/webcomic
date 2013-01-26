@@ -116,7 +116,7 @@ class WebcomicConfig extends Webcomic {
 			add_settings_field( "{$k}_supports_miscellanea", __( 'Miscellanea', 'webcomic' ), array( $this, 'collection_supports_miscellanea' ), "{$k}-options", "{$k}-features", array( 'label_for' => 'webcomic_posts_revisions' ) );
 			add_settings_field( "{$k}_supports_taxonomies", __( 'Taxonomies', 'webcomic' ), array( $this, 'collection_supports_taxonomies' ), "{$k}-options", "{$k}-features", array( 'label_for' => 'webcomic_posts_taxonomy' ) );
 			
-			add_settings_section( "{$k}-permalinks", __( 'Permalink Settings', 'webcomic' ), array( $this, 'section' ), "{$k}-options" );
+			add_settings_section( "{$k}-permalinks", __( 'Permalink Settings', 'webcomic' ), array( $this, 'section_permalinks' ), "{$k}-options" );
 			add_settings_field( "{$k}_slug_archive", __( 'Archive', 'webcomic' ), array( $this, 'collection_slugs_archive' ), "{$k}-options", "{$k}-permalinks", array( 'label_for' => 'webcomic_slugs_archive' ) );
 			add_settings_field( "{$k}_slug_webcomic", __( 'Webcomics', 'webcomic' ), array( $this, 'collection_slugs_webcomic' ), "{$k}-options", "{$k}-permalinks", array( 'label_for' => 'webcomic_slugs_webcomic' ) );
 			add_settings_field( "{$k}_slug_storyline", __( 'Storylines', 'webcomic' ), array( $this, 'collection_slugs_storyline' ), "{$k}-options", "{$k}-permalinks", array( 'label_for' => 'webcomic_slugs_storyline' ) );
@@ -129,7 +129,7 @@ class WebcomicConfig extends Webcomic {
 			add_settings_field( "{$k}_twitter_format", __( 'Tweet Format', 'webcomic' ), array( $this, 'collection_twitter_format' ), "{$k}-options", "{$k}-twitter", array( 'label_for' => 'webcomic_twitter_format' ) );
 		}
 		
-		if ( ( isset( $_GET[ 'page' ], $_GET[ 'settings-updated' ] ) and 'webcomic' === $_GET[ 'page' ] and 'true' === $_GET[ 'settings-updated' ] ) or ( isset( $_GET[ 'page' ], $_GET[ 'post_type' ], $_GET[ 'settings-updated' ] ) and preg_match( '/^webcomic\d+-options$/', $_GET[ 'page' ] ) and isset( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ] ) and 'true' === $_GET[ 'settings-updated' ] ) ) {
+		if ( ( isset( $_GET[ 'page' ], $_GET[ 'settings-updated' ] ) and 'webcomic-options' === $_GET[ 'page' ] and 'true' === $_GET[ 'settings-updated' ] ) or ( isset( $_GET[ 'page' ], $_GET[ 'post_type' ], $_GET[ 'settings-updated' ] ) and preg_match( '/^webcomic\d+-options$/', $_GET[ 'page' ] ) and isset( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ] ) and 'true' === $_GET[ 'settings-updated' ] ) ) {
 			flush_rewrite_rules();
 		}
 		
@@ -421,7 +421,7 @@ class WebcomicConfig extends Webcomic {
 		
 		if ( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ] ) {
 			printf( '<a href="%s">%s</a><br>',
-				esc_url( add_query_arg( array( 'attachment_id' => self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ], 'action' => 'edit' ), admin_url( 'media.php' ) ) ),
+				esc_url( add_query_arg( array( 'post' => self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ], 'action' => 'edit' ), admin_url( 'post.php' ) ) ),
 				wp_get_attachment_image( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ] )
 			);
 		}
@@ -433,7 +433,7 @@ class WebcomicConfig extends Webcomic {
 		}
 		
 		if ( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ] ) {
-			printf( '<label><input type="checkbox" name="webcomic_detach"> %s</label><br>', __( 'Detach', 'webcomic' ) );
+			printf( ' <label><input type="checkbox" name="webcomic_detach"> %s</label><br>', __( 'Detach on save', 'webcomic' ) );
 		}
 		
 		printf( '<p class="description">%s</p>', sprintf( __( 'The poster is a representative image that can be displayed on your site. Posters are uploaded to the Media Library. Maximum upload file size: %1$s%2$s', 'webcomic' ), $upload_size, $sizes[ $u ] ) );
@@ -450,9 +450,10 @@ class WebcomicConfig extends Webcomic {
 			<?php
 				foreach ( wp_get_themes() as $theme ) {
 					printf(
-						'<option value="%s"%s>%s</option>',
+						'<option value="%s|%s"%s>%s</option>',
 						$theme[ 'Template' ],
-						selected( $theme[ 'Template' ], self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'theme' ], false ),
+						$theme[ 'Stylesheet' ],
+						selected( $theme[ 'Template' ] . '|' . $theme[ 'Stylesheet' ], self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'theme' ], false ),
 						esc_html( $theme[ 'Name' ] )
 					);
 				}
@@ -571,7 +572,7 @@ class WebcomicConfig extends Webcomic {
 			</optgroup>
 		</select>
 		<span class="description"><?php echo _e( 'Hold <code>CTRL</code>, <code>Command</code>, or <code>Shift</code> to select multiple languages.', 'webcomic' ); ?></span><br>
-		<small class="description"><a href="<?php echo add_query_arg( array( 'taxonomy' => 'webcomic_language', 'post_type' => 'webcomic_transcript' ), admin_url( 'edit-tags.php' ) ); ?>"><?php echo _e( 'Manage Transcript Languages', 'webcomic' ); ?></a><small>
+		<a href="<?php echo add_query_arg( array( 'taxonomy' => 'webcomic_language', 'post_type' => 'webcomic_transcript' ), admin_url( 'edit-tags.php' ) ); ?>" class="button"><?php echo _e( 'Manage Languages', 'webcomic' ); ?></a>
 		<?php
 	}
 	
@@ -582,7 +583,7 @@ class WebcomicConfig extends Webcomic {
 	public function collection_commerce_business() {
 		?>
 		<input type="email" name="webcomic_commerce_business" id="webcomic_commerce_business" value="<?php echo esc_attr( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'commerce' ][ 'business' ] ); ?>" class="regular-text">
-		<span class="description"><a href="//paypal.com" target="_blank"><?php _e( 'Get a PayPal Account', 'webcomic' ); ?></a></span>
+		<span><a href="//paypal.com" target="_blank" class="button"><?php _e( 'Get a PayPal Account', 'webcomic' ); ?></a></span>
 		<?php
 	}
 	
@@ -971,7 +972,7 @@ class WebcomicConfig extends Webcomic {
 				self::$config[ 'increment' ]++;
 				
 				add_settings_error( 'webcomic_otions', 'new-collection', sprintf( __( 'Added <q>%s</q>', 'webcomic' ), esc_html( $name ) ), 'updated' );
-			} else if ( $_POST[ 'webcomic_bulk_collection' ] and isset( $_POST[ 'webcomic_collection' ] ) ) {
+			} elseif ( $_POST[ 'webcomic_bulk_collection' ] and isset( $_POST[ 'webcomic_collection' ] ) ) {
 				$bulk  = true;
 				$count = 0;
 				
@@ -993,7 +994,7 @@ class WebcomicConfig extends Webcomic {
 						
 						$count++;
 					}
-				} else if ( 'delete_save' === $_POST[ 'webcomic_bulk_collection' ] ) {
+				} elseif ( 'delete_save' === $_POST[ 'webcomic_bulk_collection' ] ) {
 					foreach ( $_POST[ 'webcomic_collection' ] as $id ) {
 						WebcomicAdmin::save_collection( $id );
 						
@@ -1013,7 +1014,7 @@ class WebcomicConfig extends Webcomic {
 				self::$config[ 'uninstall' ] = isset( $_POST[ 'webcomic_uninstall' ] );
 				self::$config[ 'convert' ]   = isset( $_POST[ 'webcomic_uninstall' ], $_POST[ 'webcomic_convert' ] );
 			}
-		} else if ( isset( $_POST[ 'webcomic_collection' ] ) ) {
+		} elseif ( isset( $_POST[ 'webcomic_collection' ] ) ) {
 			$id         = $_POST[ 'webcomic_collection' ];
 			$tokens     = array( '%year%', '%monthnum%', '%day%', '%hour%', '%minute%', '%second%', '%post_id%', '%author%', "%{$id}_storyline%" );
 			$collection = array(
@@ -1122,7 +1123,7 @@ class WebcomicConfig extends Webcomic {
 			
 			if ( $collection[ 'twitter' ][ 'consumer_key' ] !== self::$config[ 'collections' ][ $id ][ 'twitter' ][ 'consumer_key' ] or $collection[ 'twitter' ][ 'consumer_secret' ] !== self::$config[ 'collections' ][ $id ][ 'twitter' ][ 'consumer_secret' ] ) {
 				$collection[ 'twitter' ][ 'oauth_token' ] = $collection[ 'twitter' ][ 'oauth_secret' ] = '';
-			} else if ( $collection[ 'twitter' ][ 'oauth_token' ] and $collection[ 'twitter' ][ 'oauth_secret' ] ) {
+			} elseif ( $collection[ 'twitter' ][ 'oauth_token' ] and $collection[ 'twitter' ][ 'oauth_secret' ] ) {
 				$collection[ 'twitter' ][ 'request_token' ] = $collection[ 'twitter' ][ 'request_secret' ] = '';
 			}
 			
@@ -1152,6 +1153,17 @@ class WebcomicConfig extends Webcomic {
 	
 	/** Empty callback for add_settings_section(). */
 	public function section(){}
+	
+	/** Permalink settings section.
+	 * 
+	 * If permalinks are still set to Default we need to warn users that
+	 * the permalink URL's won't actually work.
+	 */
+	public function section_permalinks() {
+		if ( !get_option( 'permalink_structure' ) ) {
+			echo '<p>', sprintf( __( "These URL's won't work unless you <a href='%s'>change the permalink setting</a> to something other than <em>Default</em>.", 'webcomic' ), admin_url( 'options-permalink.php' ) ), '</p>';
+		}
+	}
 	
 	/** Handle dynamic slug previews.
 	 * 
@@ -1196,7 +1208,9 @@ class WebcomicConfig extends Webcomic {
 	 * @param string $collection Collection the Twitter credentials belong to.
 	 */
 	public static function ajax_twitter_account( $consumer_key, $consumer_secret, $collection ) {
-		require_once self::$dir . '-/library/twitter.php';
+		if ( !class_exists( 'TwitterOAuth' ) ) {
+			require_once self::$dir . '-/library/twitter.php';
+		}
 		
 		if ( $consumer_key and $consumer_secret ) {
 			$oauth       = new TwitterOAuth( $consumer_key, $consumer_secret, self::$config[ 'collections' ][ $collection ][ 'twitter' ][ 'oauth_token' ], self::$config[ 'collections' ][ $collection ][ 'twitter' ][ 'oauth_secret' ] );
@@ -1208,7 +1222,7 @@ class WebcomicConfig extends Webcomic {
 			update_option( 'webcomic_options', self::$config );
 			
 			if ( isset( $credentials->screen_name ) ) {
-				printf( '<a href="http://twitter.com/%s" target="_blank"><b>@%s</b></a> | <a href="https://twitter.com/settings/applications" target="_blank">%s</a>',
+				printf( '<a href="http://twitter.com/%s" target="_blank"><b>@%s</b></a> <a href="https://twitter.com/settings/applications" target="_blank" class="button">%s</a>',
 					$credentials->screen_name,
 					$credentials->screen_name,
 					__( 'Revoke Access', 'webcomic' )
@@ -1247,7 +1261,7 @@ class WebcomicConfig extends Webcomic {
 			if ( $size = sanitize_title( $_POST[ 'webcomic_new_size' ] ) ) {
 				if ( 'thumb' === $size or 'thumbnail' === $size or 'medium' === $size or 'large' === $size or 'post-thumbnail' === $size ) {
 					wp_die( sprintf( __( 'The name <q>%s</q> is reserved by WordPress.', 'webcomic' ), $size ), __( 'Error | Webcomic', 'webcomic' ) );
-				} else if ( in_array( $size, get_intermediate_image_sizes() ) ) {
+				} elseif ( in_array( $size, get_intermediate_image_sizes() ) ) {
 					wp_die( sprintf( __( 'A size with the name <q>%s</q> already exists.', 'webcomic' ), $size ), __( 'Error | Webcomic', 'webcomic' ) );
 				} else {
 					self::$config[ 'sizes' ][ $size ] = array(

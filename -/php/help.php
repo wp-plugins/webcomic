@@ -16,6 +16,7 @@ class WebcomicHelp extends Webcomic {
 	 * @uses WebcomicHelp::media_sizes()
 	 * @uses WebcomicHelp::commerce_overview()
 	 * @uses WebcomicHelp::legacy_overview()
+	 * @uses WebcomicHelp::attacher_overview()
 	 * @uses WebcomicHelp::generator_overview()
 	 * @uses WebcomicHelp::settings_general()
 	 * @uses WebcomicHelp::settings_collections()
@@ -64,31 +65,37 @@ class WebcomicHelp extends Webcomic {
 				'title'   => __( 'Webcomic Collection', 'webcomic' ),
 				'content' => $this->page_collection()
 			) );
-		} else if ( 'options-media' === $screen->id ) {
+		} elseif ( 'options-media' === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'webcomic-sizes',
 				'title'   => __( 'Additional Image Sizes', 'webcomic' ),
 				'content' => $this->media_sizes()
 			) );
-		} else if ( 'tools_page_webcomic-commerce' === $screen->id ) {
+		} elseif ( 'tools_page_webcomic-commerce' === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'overview',
 				'title'   => __( 'Overview', 'webcomic' ),
 				'content' => $this->commerce_overview()
 			) );
-		} else if ( 'tools_page_webcomic-upgrader' === $screen->id ) {
+		} elseif ( 'tools_page_webcomic-upgrader' === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'overview',
 				'title'   => __( 'Overview', 'webcomic' ),
 				'content' => $this->legacy_overview()
 			) );
-		} else if ( 'media_page_webcomic-generator' === $screen->id ) {
+		} elseif ( 'media_page_webcomic-attacher' === $screen->id ) {
+			$screen->add_help_tab( array(
+				'id'      => 'overview',
+				'title'   => __( 'Overview', 'webcomic' ),
+				'content' => $this->attacher_overview()
+			) );
+		} elseif ( 'media_page_webcomic-generator' === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'overview',
 				'title'   => __( 'Overview', 'webcomic' ),
 				'content' => $this->generator_overview()
 			) );
-		} else if ( 'settings_page_webcomic-options' === $screen->id ) {
+		} elseif ( 'settings_page_webcomic-options' === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'general-settings',
 				'title'   => __( 'General Settings', 'webcomic' ),
@@ -100,7 +107,7 @@ class WebcomicHelp extends Webcomic {
 				'title'   => __( 'Collections', 'webcomic' ),
 				'content' => $this->settings_collections()
 			) );
-		} else if ( 'edit-webcomic_transcript' === $screen->id ) {
+		} elseif ( 'edit-webcomic_transcript' === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'overview',
 				'title'   => __( 'Overview', 'webcomic' ),
@@ -154,7 +161,7 @@ class WebcomicHelp extends Webcomic {
 				'title'   => __( 'Transcript Authors', 'webcomic' ),
 				'content' => $this->edit_transcript_authors()
 			) );
-		} else if ( "edit-{$screen->post_type}" === $screen->id ) {
+		} elseif ( "edit-{$screen->post_type}" === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'overview',
 				'title'   => __( 'Overview', 'webcomic' ),
@@ -178,7 +185,7 @@ class WebcomicHelp extends Webcomic {
 				'title'   => __( 'Bulk Actions', 'webcomic' ),
 				'content' => $this->webcomics_bulk()
 			) );
-		} else if ( $screen->post_type === $screen->id ) {
+		} elseif ( $screen->post_type === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'customizing-this-display',
 				'title'   => __( 'Customizing This Display', 'webcomic' ),
@@ -220,7 +227,7 @@ class WebcomicHelp extends Webcomic {
 				'title'   => __( 'Discussion Settings', 'webcomic' ),
 				'content' => $this->edit_webcomic_discussion()
 			) );
-		} else if ( "edit-{$screen->post_type}_storyline" === $screen->id and empty( $_GET[ 'tag_ID' ] ) ) {
+		} elseif ( "edit-{$screen->post_type}_storyline" === $screen->id and empty( $_GET[ 'tag_ID' ] ) ) {
 			$screen->add_help_tab( array(
 				'id'      => 'overview',
 				'title'   => __( 'Overview', 'webcomic' ),
@@ -238,7 +245,7 @@ class WebcomicHelp extends Webcomic {
 				'title'   => __( 'Moving Storylines', 'webcomic' ),
 				'content' => $this->storylines_moving()
 			) );
-		} else if ( "edit-{$screen->post_type}_character" === $screen->id and empty( $_GET[ 'tag_ID' ] ) ) {
+		} elseif ( "edit-{$screen->post_type}_character" === $screen->id and empty( $_GET[ 'tag_ID' ] ) ) {
 			$screen->add_help_tab( array(
 				'id'      => 'overview',
 				'title'   => __( 'Overview', 'webcomic' ),
@@ -250,7 +257,7 @@ class WebcomicHelp extends Webcomic {
 				'title'   => __( 'Adding Characters', 'webcomic' ),
 				'content' => $this->characters_adding()
 			) );
-		} else if ( 'edit-webcomic_language' === $screen->id and empty( $_GET[ 'tag_ID' ] ) ) {
+		} elseif ( 'edit-webcomic_language' === $screen->id and empty( $_GET[ 'tag_ID' ] ) ) {
 			$screen->add_help_tab( array(
 				'id'      => 'overview',
 				'title'   => __( 'Overview', 'webcomic' ),
@@ -262,7 +269,7 @@ class WebcomicHelp extends Webcomic {
 				'title'   => __( 'Adding Languages', 'webcomic' ),
 				'content' => $this->languages_adding()
 			) );
-		} else if ( "{$screen->post_type}_page_{$screen->post_type}-options" === $screen->id ) {
+		} elseif ( "{$screen->post_type}_page_{$screen->post_type}-options" === $screen->id ) {
 			$screen->add_help_tab( array(
 				'id'      => 'general-settings',
 				'title'   => __( 'General Settings', 'webcomic' ),
@@ -329,6 +336,35 @@ class WebcomicHelp extends Webcomic {
 		);
 	}
 	
+	/** Return webcomic attacher overview help.
+	 * 
+	 * @return string
+	 */
+	private function attacher_overview() {
+		return sprintf( '
+			<p>%s</p>
+			<ul>
+				<li>%s</li>
+				<li>%s</li>
+				<li>%s</li>
+				<li>%s</li>
+				<li>%s</li>
+			</ul>
+			<p>%s</p>
+			<p>%s</p>
+			<p>%s</p>',
+			__( 'The Webcomic Attacher can assist you in matching existing media to existing Webcomic posts. First, tell Webcomic how you want to match media with posts by adjusting the settings:', 'webcomic' ),
+			__( '<strong>Collection</strong> specifies the collection that Webcomic posts will be matched from.', 'webcomic' ),
+			__( '<strong>Match post&hellip;</strong> specifies what post attribute should be used to match posts with media.', 'webcomic' ),
+			__( '<strong>With media&hellip;</strong> specifies what media attribute should be use to match media with posts.', 'webcomic' ),
+			sprintf( __( '<strong>Date Format</strong> is <a href="%s" target="_blank">the date format</a> to use when using post or media dates for comparison', 'webcomic' ), '//php.net/manual/en/function.date.php' ),
+			__( '<strong>Custom Field Key</strong> is the name of the custom field to use when using a post custom field for comparison.', 'webcomic' ),
+			__( "After clicking <strong>Find Matches</strong> Webcomic will compare all orphaned posts in the selected collection to all unattached media in your Library and list any matches it finds on the right. You can verify these matches and uncheck the ones you don't want to save.", 'webcomic' ),
+			__( "Webcomic may find more than one match between media and posts, and will uncheck and highlight these additional matches. Media can only be attached to one post, so it's a good idea to check these additional matches to see if they're a better fit than the first match Webcomic found.", 'webcomic' ),
+			__( "When you're ready click <strong>Attach Media</strong> to attach selected media to their matched post.", 'webcomic' )
+		);
+	}
+	
 	/** Return webcomic generator overview help.
 	 * 
 	 * @return string
@@ -346,7 +382,7 @@ class WebcomicHelp extends Webcomic {
 			__( 'The Webcomic Generator can assist you in publishing a large backlog of webcomics. The right column lists all of the images in your Media Library that are not attached to a post. Select the files you would like to publish using the checkboxes, then adjust the publish settings on the left:', 'webcomic' ),
 			__( '<strong>Collection</strong> specifies the collection that all of the generated webcomics will belong to.', 'webcomic' ),
 			__( '<strong>Start on&hellip;</strong> specifies the the date to begin publishing the selected images. The first selected image in the list will be published on this date.', 'webcomic' ),
-			__( '<strong>Publish every&hellip;</strong> allows you to select which days of the week to publish subsequent files. The generator will work through the list from top to bottom, publishing selected files based on the days you select.', 'webcomic' ),
+			__( '<strong>Publish every&hellip;</strong> allows you to select which days of the week to publish subsequent files. The generator will work through the list from top to bottom, publishing selected files based on the days you select. You can reorder the images on the right by dragging and dropping the table rows to ensure they publish in the correct order.', 'webcomic' ),
 			__( '<strong>Save posts as drafts</strong> will cause all of the webcomics created by the generator to be drafted. These posts will not appear on your site until you publish them.', 'webcomic' ),
 			__( 'Webcomics created by the generator will use the image filename for the webcomic title.', 'webcomic' )
 		);
@@ -550,8 +586,10 @@ class WebcomicHelp extends Webcomic {
 	 */
 	private function edit_webcomic_media() {
 		return sprintf( '
+			<p>%s</p>
 			<p>%s</p>',
-			__( "To attach a file to your webcomic, click <em>Add Attachments</em> in the Webcomic Media box or the <em>Upload/Insert</em> icon above the webcomic editor and follow the instructions. Webcomic will automatically recognize any images attached to your webcomic, so as long as you've enabled the <em>Integrate</em> option, are using a Webcomic-ready theme, or have added Webcomic's template tags to your theme you do not need to insert the images into your post. The Webcomic Media box will show previews of all the images attached to your webcomic after the media popup has been dismissed.", 'webcomic' )
+			__( "To attach a file to your webcomic, click <em>Add Media</em> in the Webcomic Media box or above the webcomic editor and follow the instructions. Webcomic will automatically recognize any images uploaded to this webcomic, so as long as you've enabled the <em>Integrate</em> option, are using a Webcomic-ready theme, or have added Webcomic's template tags to your theme you do not need to insert the images into your post. The Webcomic Media box will show previews of all the images attached to your webcomic after the media popup has been dismissed.", 'webcomic' ),
+			__( "Once one or more images have been attached to a webcomic you can view them in the <em>Webcomic Media</em> tab in the media popup. From here you can rearrange the images to change the order Webcomic will display them in, regenerate the alternate image sizes (useful if you've updated the dimensions for your thumbnail, medium, or large images or added new alternate sizes), or detach them from the current webcomic.", 'webcomic' )
 		);
 	}
 	
@@ -876,12 +914,13 @@ class WebcomicHelp extends Webcomic {
 				<li>%s</li>
 				<li>%s</li>
 				<li>%s</li>
+				<li>%s</li>
 			</ul>',
 			sprintf( __( 'These settings allow you to connect a Twitter account with the collection via a Twitter Application. Anytime a new webcomic is published in this collection a status update will be made to the account you authorize in the format you specify using your Twitter Application. Visit <a href="%s" target="_blank">Twitter Developers</a> to create a new Twitter Application. The optional <strong>Callback URL</strong> setting of your Twitter Application must be set to your site URL:', 'webcomic' ), '//dev.twitter.com/apps/new' ),
 			home_url(),
 			__( 'Once created, go to the <strong>Settings</strong> tab for your Twitter Application and ensure that <strong>Read and Write</strong> is selected for <strong>Application Type</strong>. Then return to the <strong>Details</strong> tab and copy the <strong>Consumer Key</strong> and <strong>Consumer Secret</strong> values into their respective fields on this page. If the keys are entered correctly a <strong>Sign in with Twitter</strong> option will appear in the <strong>Authorized Account</strong> area.', 'webcomic' ),
 			__( 'The <strong>Tweet Format</strong> accepts a number of tags:', 'webcomic' ),
-			sprintf( __( '<strong>%%url</strong> - A <a href="%s" target="_blank">shortlink</a> to the webcomic post, or the full permalink of no shortlink is available. Use <strong>%%permalink</strong> to always use the full permalink.', 'webcomic' ), '//codex.wordpress.org/Function_Reference/the_shortlink' ),
+			sprintf( __( '<strong>%%url</strong> - A <a href="%s" target="_blank">shortlink</a> to the webcomic post, or the full permalink if no shortlink is available. The <strong>%%permalink</strong> tag will always use the full permalink.', 'webcomic' ), '//codex.wordpress.org/Function_Reference/the_shortlink' ),
 			__( '<strong>%date</strong> - The publish date of the webcomic.', 'webcomic' ),
 			__( '<strong>%time</strong> - The publish time of the webcomic.', 'webcomic' ),
 			__( '<strong>%title</strong> - The title of the webcomic.', 'webcomic' ),
@@ -890,8 +929,9 @@ class WebcomicHelp extends Webcomic {
 			sprintf( __( '<strong>%%site-name</strong> - The name of your website, %s', 'webcomic' ), get_bloginfo( 'name' ) ),
 			sprintf( __( '<strong>%%storylines</strong> - The names of all storylines the webcomic is a part of, converted to <a href="%s" target="_blank">hash tags</a>.', 'webcomic' ), '//support.twitter.com/entries/49309-what-are-hashtags-symbols' ),
 			sprintf( __( '<strong>%%characters</strong> - The names of all characters appearing in the webcomic, converted to <a href="%s" target="_blank">hash tags</a>.', 'webcomic' ), '//support.twitter.com/entries/49309-what-are-hashtags-symbols' ),
-			sprintf( __( '<strong>%%collection</strong> - The names of the collection, %1$s, converted to a <a href="%2$s" target="_blank">hash tag</a>.', 'webcomic' ), self::$config[ 'collections' ][ $screen->post_type ][ 'name' ], '//support.twitter.com/entries/49309-what-are-hashtags-symbols' ),
-			sprintf( __( '<strong>%%collection-name</strong> - The unhashed collection name, %s.', 'webcomic' ), self::$config[ 'collections' ][ $screen->post_type ][ 'name' ] )
+			sprintf( __( '<strong>%%collection</strong> - The name of the collection, %1$s, converted to a <a href="%2$s" target="_blank">hash tag</a>.', 'webcomic' ), self::$config[ 'collections' ][ $screen->post_type ][ 'name' ], '//support.twitter.com/entries/49309-what-are-hashtags-symbols' ),
+			sprintf( __( '<strong>%%collection-name</strong> - The unhashed collection name, %s.', 'webcomic' ), self::$config[ 'collections' ][ $screen->post_type ][ 'name' ] ),
+			__( '<strong>%field:the-key</strong> - The value of a webcomic post custom field specified by the custom field key. If your custom field key has spaces in it you should use the format <strong>%field:{The Key}</strong>.', 'webcomic' )
 		);
 		/*
 		
@@ -1006,11 +1046,11 @@ class WebcomicHelp extends Webcomic {
 				<li>%s</li>
 				<li>%s</li>
 			</ol>',
-			sprintf( __( "The Upgrade Webcomic tool attempts to automatically convert your existing Webcomic %1$s data to Webcomic %2$s. Depending on the size of your site the upgrade may require multiple steps. If you do not want to upgrade click <strong>Not Interested</strong> to uninstall Webcomic %2$s. If you're upgrading to Webcomic 4 from Webcomic 1, 2, or 3 please read the following carefully:", 'webcomic' ), self::$config[ 'legacy' ], self::$version ),
+			sprintf( __( 'The Upgrade Webcomic tool attempts to automatically convert your existing Webcomic %1$s data to Webcomic %2$s. Depending on the size of your site the upgrade may require multiple steps. If you do not want to upgrade click <strong>Not Interested</strong> to uninstall Webcomic %2$s. If you\'re upgrading to Webcomic 4 from Webcomic 1, 2, or 3 please read the following carefully:', 'webcomic' ), self::$config[ 'legacy' ], self::$version ),
 			sprintf( __( 'Upgrades are not reversible and, once begun, should not be stopped. You should <a href="%1$s">backup your site</a> before starting the <em>irreversible</em>, <em>unstoppable</em> upgrade, or click <strong>Not Interested</strong> to uninstall Webcomic %2$s.', 'webcomic' ), esc_url( admin_url( 'export.php' ) ), self::$version ),
-			sprintf( __( 'Webcomic %s uses <a href="%1$s" target="_blank">the WordPress Media Library</a> for file management. All of your existing webcomic files must be imported into the media library during the upgrade. Existing files will not be moved or deleted; they will be <strong>copied</strong> into the media library.', 'webcomic' ), 'http://codex.wordpress.org/Media_Library_Screen' ),
+			sprintf( __( 'Webcomic %s uses <a href="%1$s" target="_blank">the WordPress Media Library</a> for file management. All of your existing webcomic files must be imported into the media library during the upgrade. Existing files will not be moved or deleted; they will be <strong>copied</strong> into the media library. You may want to <a href="%2$s">adjust your image size settings</a> prior to upgrading.', 'webcomic' ), 'http://codex.wordpress.org/Media_Library_Screen', admin_url( 'options-media.php' ) ),
 			sprintf( __( "The permalink URL's to your webcomics may change after upgrading. Permalinks <a href='%s' target=''>may be customized</a> for each of your collections once the upgrade is complete.", 'webcomic' ), '//github.com/mgsisk/webcomic/wiki/Permalink-Settings' ),
-			sprintf( __( 'Webcomic 1, 2, and 3 themes are <em>not</not> compatible with Webcomic 4, but a selection of <a href="%1$s" target="_blank">new Webcomic-ready themes</a>. are available for Webcomic %2$s.', 'webcomic' ), 'http://webcomic.nu', self::$version ),
+			sprintf( __( 'Webcomic 1, 2, and 3 themes are <em>not</em> compatible with Webcomic 4, but a selection of <a href="%1$s" target="_blank">new Webcomic-ready themes</a>. are available for Webcomic %2$s.', 'webcomic' ), 'http://webcomic.nu', self::$version ),
 			sprintf( __( "Webcomic %s includes an array of new <a href='//github.com/mgsisk/webcomic/wiki/Template-Tags-and-Shortcodes' target='_blank'>template tags, shortcodes</a>, and <a href='//github.com/mgsisk/webcomic/wiki/Widgets' target='_blank'>widgets</a> that function differently from previous versions. If you have customized an existing WordPress theme or built your own using Webcomic's template tags, shortcodes, and/or widgets your theme may need to be updated.", 'webcomic' ), self::$version )
 		);
 	}
