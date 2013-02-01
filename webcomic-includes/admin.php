@@ -4114,31 +4114,33 @@ class webcomic_admin extends webcomic {
 					<tr class="form-field">
 						<th scope="row" class="label"><label for="webcomic_transcript_language"><b><?php _e( 'Transcripts', 'webcomic' ); ?></b></label></th>
 						<td>
-							<select name="webcomic_transcript_language" id="webcomic_transcript_language" style="float:left;vertical-align:middle;">
-								<?php
-									$default   = $this->option( 'transcribe_default' );
-									$languages = $this->option( 'transcribe_language' );
-									
-									foreach ( $languages as $k => $v ) {
-								?>
-								<option value="<?php echo $k; ?>"<?php if ( isset( $default[ $k ] ) ) echo 'selected'; ?>><?php echo $v; ?></option>
-								<?php } ?>
-							</select>
-							<?php
-							foreach ( $languages as $k => $v ) {
-							?>
-							<span id="webcomic_transcript_action[webcomic_lang_<?php echo $k; ?>]" style="float:right">
-								<select name="webcomic_transcript_action[<?php echo $k; ?>]">
-									<option value="publish"<?php if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) && 'publish' == $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) echo 'selected="selected"'; ?>><?php _e( 'Publish', 'webcomic' ); ?></option>
-									<option value="pending"<?php if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) && 'pending' == $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) echo 'selected="selected"'; ?>><?php _e( 'Request Improvement', 'webcomic' ); ?></option>
-									<option value="draft"<?php if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) && 'draft' == $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) echo 'selected="selected"'; ?>><?php _e( 'Save as Draft', 'webcomic' ); ?></option>
-									<?php if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'backup' ] ) ) { ?>
-									<option value="restore"><?php _e( 'Restore Previous', 'webcomic' ); ?></option>
-									<?php } if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'text' ] ) ) { ?>
-									<option value="delete"><?php _e( 'Delete', 'webcomic' ); ?></option>
+							<p>
+								<select name="webcomic_transcript_language" id="webcomic_transcript_language">
+									<?php
+										$default   = $this->option( 'transcribe_default' );
+										$languages = $this->option( 'transcribe_language' );
+										
+										foreach ( $languages as $k => $v ) {
+									?>
+									<option value="<?php echo $k; ?>"<?php if ( isset( $default[ $k ] ) ) echo 'selected'; ?>><?php echo $v; ?></option>
 									<?php } ?>
 								</select>
-							</span>
+								<?php
+								foreach ( $languages as $k => $v ) {
+								?>
+								<span id="webcomic_transcript_action[webcomic_lang_<?php echo $k; ?>]">
+									<select name="webcomic_transcript_action[<?php echo $k; ?>]">
+										<option value="publish"<?php if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) && 'publish' == $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) echo 'selected="selected"'; ?>><?php _e( 'Publish', 'webcomic' ); ?></option>
+										<option value="pending"<?php if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) && 'pending' == $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) echo 'selected="selected"'; ?>><?php _e( 'Request Improvement', 'webcomic' ); ?></option>
+										<option value="draft"<?php if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) && 'draft' == $post_meta[ 'transcripts' ][ $k ][ 'status' ] ) echo 'selected="selected"'; ?>><?php _e( 'Save as Draft', 'webcomic' ); ?></option>
+										<?php if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'backup' ] ) ) { ?>
+										<option value="restore"><?php _e( 'Restore Previous', 'webcomic' ); ?></option>
+										<?php } if ( isset( $post_meta[ 'transcripts' ][ $k ][ 'text' ] ) ) { ?>
+										<option value="delete"><?php _e( 'Delete', 'webcomic' ); ?></option>
+										<?php } ?>
+									</select>
+								</span>
+							</p>
 							<div id="webcomic_transcript[webcomic_lang_<?php echo $k; ?>]" style="celar:both">
 								<style scoped>.form-field input{width:auto}</style>
 								<?php wp_editor( ( isset( $post_meta[ 'transcripts' ][ $k ][ 'text' ] ) ) ? $post_meta[ 'transcripts' ][ $k ][ 'text' ] : '', "webcomic_transcript[{$k}]", array( 'media_buttons' => false, 'teeny' => true ) ); ?>
