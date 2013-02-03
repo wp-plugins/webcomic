@@ -24,6 +24,7 @@ class WebcomicShortcode extends Webcomic {
 	 * @uses WebcomicShortcode::verify_webcomic_age()
 	 * @uses WebcomicShortcode::verify_webcomic_role()
 	 * @uses WebcomicShortcode::the_webcomic()
+	 * @uses WebcomicShortcode::webcomic_count()
 	 * @uses WebcomicShortcode::the_webcomic_link()
 	 * @uses WebcomicShortcode::the_webcomic_terms()
 	 * @uses WebcomicShortcode::the_related_webcomics()
@@ -54,6 +55,7 @@ class WebcomicShortcode extends Webcomic {
 		add_shortcode( 'verify_webcomic_age', array( $this, 'verify_webcomic_age' ) );
 		add_shortcode( 'verify_webcomic_role', array( $this, 'verify_webcomic_role' ) );
 		add_shortcode( 'the_webcomic', array( $this, 'the_webcomic' ) );
+		add_shortcode( 'webcomic_count', array( $this, 'webcomic_count' ) );
 		add_shortcode( 'the_related_webcomics', array( $this, 'the_related_webcomics' ) );
 		add_shortcode( 'previous_webcomic_link', array( $this, 'the_webcomic_link' ) );
 		add_shortcode( 'next_webcomic_link', array( $this, 'the_webcomic_link' ) );
@@ -170,6 +172,47 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::the_webcomic( $size, $relative, $in_same_term, $excluded_terms, $taxonomy, $the_post );
 	}
 	
+	/** Handle webcomic_count shortcode.
+	 * 
+	 * @param array $atts Shortcode attributes.
+	 * @param string $content Shortcode content.
+	 * @return string
+	 * @uses WebcomicTag::webcomic_count()
+	 */
+	public function webcomic_count( $atts, $content ) {
+		extract( shortcode_atts( array(
+			'if'       => '',
+			'the_post' => false
+		), $atts ) );
+		
+		if ( $content ) {
+			$c = WebcomicTag::webcomic_count( $the_post );
+			$m = array();
+			$o = false;
+			
+			if ( preg_match( '/^\s*(=|!=|lt|gt|lte|gte)\s*(\d+)\s*$/', $if, $m ) ) {
+				$m[ 2 ] = ( integer ) $m[ 2 ];
+				
+				if (
+					( '=' === $m[ 1 ] and $c === $m[ 2 ] )
+					or ( '!=' === $m[ 1 ] and $c !== $m[ 2 ] )
+					or ( 'lt' === $m[ 1 ] and $c < $m[ 2 ] )
+					or ( 'gt' === $m[ 1 ] and $c > $m[ 2 ] )
+					or ( 'lte' === $m[ 1 ] and $c <= $m[ 2 ] )
+					or ( 'gte' === $m[ 1 ] and $c >= $m[ 2 ] )
+				) {
+					$o = true;
+				}
+				
+				if ( $o ) {
+					return do_shortcode( $content );
+				}
+			}
+		} else {
+			return WebcomicTag::webcomic_count( $the_post );
+		}
+	}
+	
 	/** Handle the_related_webcomics shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
@@ -214,7 +257,11 @@ class WebcomicShortcode extends Webcomic {
 		
 		$relative = substr( $name, 0, strpos( $name, '_' ) );
 		
-		if ( 'random' === $relative and !$cache ) {
+		if ( 'first' === $relative and !$cache ) {
+			$relative = 'first-nocache';
+		} elseif ( 'last' === $relative and !$cache ) {
+			$relative = 'last-nocache';
+		} elseif ( 'random' === $relative and !$cache ) {
 			$relative = 'random-nocache';
 		}
 		
@@ -225,9 +272,9 @@ class WebcomicShortcode extends Webcomic {
 				$link = '&lsaquo;';
 			} elseif ( 'next' === $relative ) {
 				$link = '&rsaquo;';
-			} elseif ( 'first' === $relative ) {
+			} elseif ( 'first' === $relative or 'first-nocache' === $relative ) {
 				$link = '&laquo;';
-			} elseif ( 'last' === $relative ) {
+			} elseif ( 'last' === $relative or 'last-nocache' === $relative ) {
 				$link = '&raquo;';
 			} elseif ( 'random' === $relative or 'random-nocache' === $relative ) {
 				$link = '&infin;';
@@ -307,7 +354,11 @@ class WebcomicShortcode extends Webcomic {
 		$args     = wp_parse_str( $args, $array );
 		$relative = substr( $name, 0, strpos( $name, '_' ) );
 		
-		if ( 'random' === $relative and !$cache ) {
+		if ( 'first' === $relative and !$cache ) {
+			$relative = 'first-nocache';
+		} elseif ( 'last' === $relative and !$cache ) {
+			$relative = 'last-nocache';
+		} elseif ( 'random' === $relative and !$cache ) {
 			$relative = 'random-nocache';
 		}
 		
@@ -318,9 +369,9 @@ class WebcomicShortcode extends Webcomic {
 				$link = '&lsaquo; %title';
 			} elseif ( 'next' === $relative ) {
 				$link = '%title &rsaquo;';
-			} elseif ( 'first' === $relative ) {
+			} elseif ( 'first' === $relative or 'first-nocache' === $relative ) {
 				$link = '&laquo; %title';
-			} elseif ( 'last' === $relative ) {
+			} elseif ( 'last' === $relative or 'last-nocache' === $relative ) {
 				$link = '%title &raquo;';
 			} elseif ( 'random' === $relative or 'random-nocache' === $relative ) {
 				$link = '%title';

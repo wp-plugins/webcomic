@@ -2,6 +2,7 @@
 /** Contains the WebcomicTag class and template tag functions.
  * 
  * @package Webcomic
+ * @todo nochace first and list webcomic urls
  */
 
 /** Handle custom template tag functionality.
@@ -424,7 +425,7 @@ class WebcomicTag extends Webcomic {
 	/** Return webcomic attachments.
 	 * 
 	 * @param string $size The size attachments should be displayed at. May be any registered size; defaults are 'full', 'large', 'medium', and 'thumbnail'.
-	 * @param string $relative Whether to link the webcomic. May be one of 'self', 'next', 'previous', 'first', 'last', 'random', or 'random-nocache'.
+	 * @param string $relative Whether to link the webcomic. May be one of 'self', 'next', 'previous', 'first', 'first-nocache', 'last', 'last-nocache', 'random', or 'random-nocache'.
 	 * @param mixed $in_same_term Whether the linked webcomic should be in a same term. May also be an array or comma-separated list of inclusive term IDs.
 	 * @param mixed $excluded_terms An array or comma-separated list of excluded term IDs.
 	 * @param string $taxonomy The taxonomy of the terms specified with $in_same_term and $excluded_terms arguments. The shorthand 'storyline' or 'character' may be used.
@@ -452,6 +453,18 @@ class WebcomicTag extends Webcomic {
 			} else {
 				return $output;
 			}
+		}
+	}
+	
+	/** Return the number of Webcomic-recognized attachments.
+	 * 
+	 * @param mixed The post object or ID to retrieve the attachment count for.
+	 * @return integer
+	 * @filter integer webcomic_count Filters the webcomic-recognized attachment count returned by `webcomic_count`.
+	 */
+	public static function webcomic_count( $the_post = false ) {
+		if ( $the_post = get_post( $the_post ) and $attachments = self::get_attachments( $the_post->ID ) ) {
+			return apply_filters( 'webcomic_count', count( $attachments ), $the_post );
 		}
 	}
 	
@@ -625,7 +638,7 @@ class WebcomicTag extends Webcomic {
 	
 	/** Return a relative webcomic url.
 	 * 
-	 * @param string $relative The relative post to retrieve; one of 'next', 'previous', 'first', 'last', or 'random'.
+	 * @param string $relative The relative post to retrieve; one of 'next', 'previous', 'first', 'first-nocache', 'last', 'last-nocache', 'random', or 'random-nocache'.
 	 * @param mixed $in_same_term Whether the linked webcomic should be in a same term. May also be an array or comma-separated list of inclusive term IDs.
 	 * @param mixed $excluded_terms An array or comma-separated list of excluded term IDs.
 	 * @param string $taxonomy The taxonomy of the terms specified with $in_same_term and $excluded_terms arguments. The shorthand 'storyline' or 'character' may be used.
@@ -635,23 +648,11 @@ class WebcomicTag extends Webcomic {
 	 * @filter string get_{$relative}_webcomic_link Filters the relative webcomic URL returned by `get_relative_webcomic_link` and used by `previous_webcomic_link`, `next_webcomic_link`, `first_webcomic_link`, `last_webcomic_link`, and `random_webcomic_link`.
 	 */
 	public static function get_relative_webcomic_link( $relative = 'random', $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline', $collection = '' ) {
-		if ( $the_post = self::get_relative_webcomic( $relative, $in_same_term, $excluded_terms, $taxonomy, $collection ) ) {
-			return apply_filters( "get_{$relative}_webcomic_link", apply_filters( 'the_permalink', get_permalink( $the_post ) ), $the_post, $in_same_term, $excluded_terms, $taxonomy, $collection );
+		if ( 'first-nocache' === $relative or 'last-nocache' === $relative or 'random-nocache' === $relative ) {
+			return apply_filters( "get_{$relative}_webcomic_link", add_query_arg( array( sprintf( '%s_webcomic', str_replace( '-nocache', '', $relative ) ) => $collection, 'in_same_story' => $in_same_term ? urlencode( maybe_serialize( $in_same_term ) ) : false, 'excluded_storylines' => $excluded_terms ? urlencode( maybe_serialize( $excluded_terms ) ) : false, 'taxonomy' => $taxonomy ? $taxonomy : false ), home_url() ), $in_same_term, $excluded_terms, $taxonomy, $collection );
+		} elseif ( $the_post = self::get_relative_webcomic( $relative, $in_same_term, $excluded_terms, $taxonomy, $collection ) ) {
+			return apply_filters( "get_{$relative}_webcomic_link", apply_filters( 'the_permalink', get_permalink( $the_post ) ), $in_same_term, $excluded_terms, $taxonomy, $collection, $the_post );
 		}
-	}
-	
-	/** Return a parameter-based random webcomic url.
-	 * 
-	 * @param string $collection The collection to randomly select from.
-	 * @param mixed $in_same_term An array or comma-separated list of inclusive term IDs.
-	 * @param mixed $excluded_terms An array or comma-separated list of excluded term IDs.
-	 * @param string $taxonomy The taxonomy of the terms specified with $in_same_term and $excluded_terms arguments. The shorthand 'storyline' or 'character' may be used.
-	 * @return string
-	 * @uses Webcomic::$config
-	 * @filter string get_random-nocache_webcomic_link Filters the cache proof URL returned by `get_random_webcomic_link` and used by `relative_webcomic_link`.
-	 */
-	public static function get_random_webcomic_link( $collection, $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline' ) {
-		return empty( self::$config[ 'collections' ][ $collection ] ) ? '' : apply_filters( 'get_random-nocache_webcomic_link', add_query_arg( array( 'random_webcomic' => $collection, 'in_same_story' => $in_same_term ? urlencode( maybe_serialize( $in_same_term ) ) : false, 'excluded_storylines' => $excluded_terms ? urlencode( maybe_serialize( $excluded_terms ) ) : false, 'taxonomy' => $taxonomy ? $taxonomy : false ), home_url() ), $collection, $in_same_term, $excluded_terms, $taxonomy );
 	}
 	
 	/** Return a relative webcomic link.
@@ -666,20 +667,19 @@ class WebcomicTag extends Webcomic {
 	 * @return string
 	 * @uses Webcomic::get_attachments()
 	 * @uses WebcomicTag::get_relative_webcomic()
-	 * @uses WebcomicTag::get_random_webcomic_link()
 	 * @filter string {$relative}_webcomic_link Filters the output of the relative webcomic link template tags: `previous_webcomic_link`, `next_webcomic_link`, `first_webcomic_link`, `last_webcomic_link`, and `random_webcomic_link`.
 	 */
 	public static function relative_webcomic_link( $format, $link = '', $relative = 'random', $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline', $collection = '' ) {
 		global $post;
 		
-		if ( 'random-nocache' === $relative or $the_post = self::get_relative_webcomic( $relative, $in_same_term, $excluded_terms, $taxonomy, $collection ) ) {
+		if ( 'first-nocache' === $relative or 'last-nocache' === $relative or 'random-nocache' === $relative or $the_post = self::get_relative_webcomic( $relative, $in_same_term, $excluded_terms, $taxonomy, $collection ) ) {
 			if ( isset( $the_post ) ) {
 				$collection = $the_post->post_type;
 			} elseif ( !$collection ) {
 				$collection = ( $post and isset( self::$config[ 'collections' ][ $post->post_type ] ) ) ? $post->post_type : self::$collection;
 			}
 			
-			$href     = 'random-nocache' === $relative ? self::get_random_webcomic_link( $collection, $in_same_term, $excluded_terms, $taxonomy ) : apply_filters( 'the_permalink', get_permalink( $the_post ) );
+			$href     = false === strpos( $relative, 'nocache' ) ? apply_filters( 'the_permalink', get_permalink( $the_post ) ) : self::get_relative_webcomic_link( $relative, $in_same_term, $excluded_terms, $taxonomy, $collection, false );
 			$relative = str_replace( '-nocache', '', $relative );
 			$class    = array( 'webcomic-link', "{$collection}-link", "{$relative}-webcomic-link", "{$relative}-{$collection}-link" );
 			
@@ -728,11 +728,10 @@ class WebcomicTag extends Webcomic {
 				$link = str_replace( array_keys( $tokens ), $tokens, $link );
 			}
 			
-			$link = sprintf( '<a href="%s" class="%s"%s data-webcomic-dynamic="%s">%s</a>',
+			$link = sprintf( '<a href="%s" class="%s"%s>%s</a>',
 				$href,
 				join( ' ', $class ),
 				( 'previous' === $relative or 'next' === $relative ) ? sprintf( ' rel="%s"', str_replace( 'ious', '', $relative ) ) : '',
-				"{$the_post->ID}/{$the_post->post_name}",
 				$link
 			);
 			
@@ -975,20 +974,22 @@ class WebcomicTag extends Webcomic {
 	
 	/** Return a relative term url.
 	 * 
-	 * @param string $target The target url, one of 'archive', 'first', 'last', or 'random'.
+	 * @param string $target The target url, one of 'archive', 'first', 'first-nocache', 'last', 'last-nocache', 'random', or 'random-nocache'.
 	 * @param string $relative The relative term to retrieve; one of 'next', 'previous', 'first', 'last', or 'random'.
 	 * @param string $taxonomy The taxonomy the relative term must belong to.
 	 * @param array $args An array of arguments to pass to get_terms().
 	 * @return string
 	 * @uses WebcomicTag::get_relative_webcomic_term()
-	 * @filter string get_{$relative}_webcomic_term_link Filters the URL returned by `get_relative_webcomic_term_link` and used by the 
+	 * @filter string get_{$relative}_webcomic_term_link Filters the URL returned by `get_relative_webcomic_term_link` and used by `previous_webcomic_storyline_link`, `next_webcomic_storyline_link`, `first_webcomic_storyline_link`, `last_webcomic_storyline_link`, `random_webcomic_storyline_link`, `previous_webcomic_character_link`, `next_webcomic_character_link`, `first_webcomic_character_link`, `last_webcomic_character_link`, `random_webcomic_character_link`.
 	 */
 	public static function get_relative_webcomic_term_link( $target = 'archive', $relative = 'random', $taxonomy = '', $args = array() ) {
 		global $wpdb;
 		
 		$args = 'archive' === $target ? $args : array_merge( $args, array( 'hide_empty' => true ) );
 		
-		if ( $term = self::get_relative_webcomic_term( $relative, $taxonomy, $args ) ) {
+		if ( 'first-nocache' === $relative or 'last-nocache' === $relative or 'random-nocache' === $relative ) {
+			return apply_filters( "get_{$relative}_webcomic_term_link", add_query_arg( array( sprintf( '%s_webcomic_term', str_replace( '-nocache', '', $relative ) ) => $taxonomy, 'target' => $target, 'args' => $args ? urlencode( maybe_serialize( $args ) ) : false ), home_url() ), $target, $taxonomy, $args );
+		} elseif ( $term = self::get_relative_webcomic_term( $relative, $taxonomy, $args ) ) {
 			if ( 'archive' !== $target and $objects = get_objects_in_term( $term->term_id, $term->taxonomy ) ) {
 				if ( 'first' === $target or 'last' === $target ) {
 					$post_id = $wpdb->get_var( sprintf( "SELECT ID FROM {$wpdb->posts} WHERE ID IN ( %s ) ORDER BY post_date %s LIMIT 1", join( ', ', $objects ), 'last' === $target ? 'DESC' : 'ASC' ) );
@@ -1002,20 +1003,8 @@ class WebcomicTag extends Webcomic {
 				$link = get_term_link( $term, $term->taxonomy );
 			}
 			
-			return apply_filters( "get_{$relative}_webcomic_term_link", $link, $target, $term, $args );
+			return apply_filters( "get_{$relative}_webcomic_term_link", $link, $target, $taxonomy, $args, $term );
 		}
-	}
-	
-	/** Return a parameter-based random term url.
-	 * 
-	 * @param string $taxonomy The taxonomy the relative term must belong to.
-	 * @param string $target The target url, one of 'archive', 'first', 'last', or 'random'.
-	 * @param array $args An array of arguments to pass to get_terms().
-	 * @return string
-	 * @filter string get_random-nocache_webcomic_term_link Filters the cache-proof URL returned by `get_random_webcomic_term_link` and used by `random_webcomic_link`.
-	 */
-	public static function get_random_webcomic_term_link( $taxonomy, $target = 'archive', $args = array() ) {
-		return apply_filters( 'get_random-nocache_webcomic_term_link', add_query_arg( array( 'random_webcomic_term' => $taxonomy, 'target' => $target, 'args' => $args ? urlencode( maybe_serialize( $args ) ) : false ), home_url() ), $taxonomy, $target, $args );
 	}
 	
 	/** Return a relative term link.
@@ -1035,10 +1024,10 @@ class WebcomicTag extends Webcomic {
 	public static function relative_webcomic_term_link( $format, $link = '', $target = 'archive', $relative = 'random', $taxonomy = '', $args = array() ) {
 		global $wpdb;
 		
-		if ( 'random-nocache' === $relative or $term = self::get_relative_webcomic_term( $relative, $taxonomy, $args ) ) {
+		if ( 'first-nocache' === $relative or 'last-nocache' === $relative or 'random-nocache' === $relative or $term = self::get_relative_webcomic_term( $relative, $taxonomy, $args ) ) {
 			$object   = get_queried_object();
 			$taxonomy = isset( $term ) ? $term->taxonomy : $taxonomy;
-			$href     = 'random-nocache' === $relative ? self::get_random_webcomic_term_link( $taxonomy, $target, $args ) : self::get_relative_webcomic_term_link( $target, $relative, $taxonomy, $args );
+			$href     = false === strpos( $relative, 'nocache' ) ? self::get_relative_webcomic_term_link( $target, $relative, $taxonomy, $args ) : self::get_random_webcomic_term_link( $taxonomy, $target, $args );
 			$relative = str_replace( '-nocache', '', $relative );
 			$class    = array( 'term-link', "{$taxonomy}-link", "{$relative}-term-link", "{$relative}-{$taxonomy}-link" );
 			
@@ -3317,7 +3306,7 @@ if ( !function_exists( 'the_webcomic' ) ) {
 	 * 
 	 * @package Webcomic
 	 * @param string $size The size attachments should be displayed at. May be any registered size; defaults are 'full', 'large', 'medium', and 'thumbnail'.
-	 * @param string $relative Whether to link the webcomic. May be one of 'self', 'next', 'previous', 'first', 'last', 'random', or 'random-nocache'.
+	 * @param string $relative Whether to link the webcomic. May be one of 'self', 'next', 'previous', 'first', 'first-nocache', 'last', 'last-nocache', 'random', or 'random-nocache'.
 	 * @param mixed $in_same_term An array or comma-separated list of inclusive term IDs.
 	 * @param mixed $excluded_terms An array or comma-separated list of excluded term IDs.
 	 * @param string $taxonomy The taxonomy of the terms specified in the $in_same_term and $excluded_terms arguments. The shorthand 'storyline' or 'character' may be used.
@@ -3326,6 +3315,31 @@ if ( !function_exists( 'the_webcomic' ) ) {
 	 */
 	function the_webcomic( $size = 'full', $relative = '', $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline', $the_post = false ) {
 		echo WebcomicTag::the_webcomic( $size, $relative, $in_same_term, $excluded_terms, $taxonomy, $the_post );
+	}
+}
+
+if ( !function_exists( 'webcomic_count' ) ) {
+	/** Return the number of Webcomic-recognized attachments.
+	 * 
+	 * <code class="php">
+	 * // display the number of Webcomic-recognized attachments found on the current post
+	 * echo webcomic_count();
+	 * 
+	 * if ( 1 < webcomic_count() ) {
+	 * 	// the current post has more than one Webcomic-recognized attachment
+	 * }
+	 * 
+	 * if ( 3 === webcomic_count( 42 ) {
+	 * 	// the post with an ID of 42 has exactly three Webcomic-recognized attachments.
+	 * }
+	 * </code>
+	 * 
+	 * @param mixed The post object or ID to retrieve the attachment count for.
+	 * @return integer
+	 * @uses WebcomicTag::webcomic_count()
+	 */
+	function webcomic_count( $the_post = false ) {
+		return WebcomicTag::webcomic_count( $the_post );
 	}
 }
 
@@ -3484,10 +3498,11 @@ if ( !function_exists( 'first_webcomic_link' ) ) {
 	 * @param mixed $excluded_terms An array or comma-separated list of excluded term IDs.
 	 * @param string $taxonomy The taxonomy of the terms specified in the $in_same_term and $excluded_terms arguments. The shorthand 'storyline' or 'character' may be used.
 	 * @param string $collection The collection to retrieve from. Used when linking outside the loop.
+	 * @param boolean $cache Whether to use a parameterized URL.
 	 * @uses WebcomicTag::relative_webcomic_link()
 	 */
-	function first_webcomic_link( $format = '%link', $link = '', $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline', $collection = '' ) {
-		echo WebcomicTag::relative_webcomic_link( $format, $link, 'first', $in_same_term, $excluded_terms, $taxonomy, $collection );
+	function first_webcomic_link( $format = '%link', $link = '', $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline', $collection = '', $cache = true ) {
+		echo WebcomicTag::relative_webcomic_link( $format, $link, $cache ? 'first' : 'first-nocache', $in_same_term, $excluded_terms, $taxonomy, $collection );
 	}
 }
 
@@ -3529,10 +3544,11 @@ if ( !function_exists( 'last_webcomic_link' ) ) {
 	 * @param mixed $excluded_terms An array or comma-separated list of excluded term IDs.
 	 * @param string $taxonomy The taxonomy of the terms specified in the $in_same_term and $excluded_terms arguments. The shorthand 'storyline' or 'character' may be used.
 	 * @param string $collection The collection to retrieve from. Used when linking outside the loop.
+	 * @param boolean $cache Whether to use a parameterized URL.
 	 * @uses WebcomicTag::relative_webcomic_link()
 	 */
-	function last_webcomic_link( $format = '%link', $link = '', $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline', $collection = '' ) {
-		echo WebcomicTag::relative_webcomic_link( $format, $link, 'last', $in_same_term, $excluded_terms, $taxonomy, $collection );
+	function last_webcomic_link( $format = '%link', $link = '', $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline', $collection = '', $cache = true ) {
+		echo WebcomicTag::relative_webcomic_link( $format, $link, $cache ? 'last' : 'last-nocache', $in_same_term, $excluded_terms, $taxonomy, $collection );
 	}
 }
 
@@ -3574,7 +3590,7 @@ if ( !function_exists( 'random_webcomic_link' ) ) {
 	 * @param mixed $excluded_terms An array or comma-separated list of excluded term IDs.
 	 * @param string $taxonomy The taxonomy of the terms specified in the $in_same_term and $excluded_terms arguments. The shorthand 'storyline' or 'character' may be used.
 	 * @param string $collection The collection to retrieve from. Used when linking first, last, or random webcomics outside of the loop.
-	 * @param boolean $cache Whether to use a parameterized random webcomic link.
+	 * @param boolean $cache Whether to use a parameterized URL.
 	 * @uses WebcomicTag::relative_webcomic_link()
 	 */
 	function random_webcomic_link( $format = '%link', $link = '', $in_same_term = false, $excluded_terms = false, $taxonomy = 'storyline', $collection = '', $cache = true ) {
@@ -3854,16 +3870,17 @@ if ( !function_exists( 'first_webcomic_storyline_linke' ) ) {
 	 * @param string $target The target url, one of 'archive', 'first', 'last', or 'random'.
 	 * @param array $args An array of arguments to pass to get_terms().
 	 * @param string $collection Collection ID to retrieve storylines from.
+	 * @param boolean $cache Whether to use a parameterized webcomic storyline link.
 	 * @uses WebcomicTag::get_webcomic_collection()
 	 * @uses WebcomicTag::relative_webcomic_term_link()
 	 */
-	function first_webcomic_storyline_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '' ) {
+	function first_webcomic_storyline_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '', $cache = true ) {
 		global $post;
 		
 		$taxonomy = ( ( $collection and taxonomy_exists( "{$collection}_storyline" ) ) or $collection = WebcomicTag::get_webcomic_collection() ) ? "{$collection}_storyline" : '';
 		
 		if ( preg_match( '/^webcomic\d+_storyline$/', $taxonomy ) ) {
-			echo WebcomicTag::relative_webcomic_term_link( $format, $link, $target, 'first', $taxonomy, $args );
+			echo WebcomicTag::relative_webcomic_term_link( $format, $link, $target, $cache ? 'first' : 'first-nocache', $taxonomy, $args );
 		}
 	}
 }
@@ -3905,16 +3922,17 @@ if ( !function_exists( 'last_webcomic_storyline_link' ) ) {
 	 * @param string $target The target url, one of 'archive', 'first', 'last', or 'random'.
 	 * @param array $args An array of arguments to pass to get_terms().
 	 * @param string $collection Collection ID to retrieve storylines from.
+	 * @param boolean $cache Whether to use a parameterized webcomic storyline link.
 	 * @uses WebcomicTag::get_webcomic_collection()
 	 * @uses WebcomicTag::relative_webcomic_term_link()
 	 */
-	function last_webcomic_storyline_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '' ) {
+	function last_webcomic_storyline_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '', $cache = true ) {
 		global $post;
 		
 		$taxonomy = ( ( $collection and taxonomy_exists( "{$collection}_storyline" ) ) or $collection = WebcomicTag::get_webcomic_collection() ) ? "{$collection}_storyline" : '';
 		
 		if ( preg_match( '/^webcomic\d+_storyline$/', $taxonomy ) ) {
-			echo WebcomicTag::relative_webcomic_term_link( $format, $link, $target, 'last', $taxonomy, $args );
+			echo WebcomicTag::relative_webcomic_term_link( $format, $link, $target, $cache ? 'last' : 'last-nocache', $taxonomy, $args );
 		}
 	}
 }
@@ -3962,7 +3980,7 @@ if ( !function_exists( 'random_webcomic_storyline_link' ) ) {
 	 * @param string $target The target url, one of 'archive', 'first', 'last', or 'random'.
 	 * @param array $args An array of arguments to pass to get_terms().
 	 * @param string $collection Collection ID to retrieve storylines from.
-	 * @param boolean $cache Whether to use a parameterized random webcomic storyline link.
+	 * @param boolean $cache Whether to use a parameterized webcomic storyline link.
 	 * @uses WebcomicTag::relative_webcomic_term_link()
 	 */
 	function random_webcomic_storyline_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '', $cache = true ) {
@@ -4099,16 +4117,17 @@ if ( !function_exists( 'first_webcomic_character_link' ) ) {
 	 * @param string $target The target url, one of 'archive', 'first', 'last', or 'random'.
 	 * @param array $args An array of arguments to pass to get_terms().
 	 * @param string $collection Collection ID to retrieve characters from.
+	 * @param boolean $cache Whether to use a parameterized webcomic character link.
 	 * @uses WebcomicTag::get_webcomic_collection()
 	 * @uses WebcomicTag::relative_webcomic_term_link()
 	 */
-	function first_webcomic_character_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '' ) {
+	function first_webcomic_character_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '', $cache = true ) {
 		global $post;
 		
 		$taxonomy = ( ( $collection and taxonomy_exists( "{$collection}_character" ) ) or $collection = WebcomicTag::get_webcomic_collection() ) ? "{$collection}_character" : '';
 		
 		if ( preg_match( '/^webcomic\d+_character$/', $taxonomy ) ) {
-			echo WebcomicTag::relative_webcomic_term_link( $format, $link, $target, 'first', $taxonomy, $args );
+			echo WebcomicTag::relative_webcomic_term_link( $format, $link, $target, $cache ? 'first' : 'first-nocache', $taxonomy, $args );
 		}
 	}
 }
@@ -4150,16 +4169,17 @@ if ( !function_exists( 'last_webcomic_character_link' ) ) {
 	 * @param string $target The target url, one of 'archive', 'first', 'last', or 'random'.
 	 * @param array $args An array of arguments to pass to get_terms().
 	 * @param string $collection Collection ID to retrieve characters from.
+	 * @param boolean $cache Whether to use a parameterized webcomic character link.
 	 * @uses WebcomicTag::get_webcomic_collection()
 	 * @uses WebcomicTag::relative_webcomic_term_link()
 	 */
-	function last_webcomic_character_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '' ) {
+	function last_webcomic_character_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '', $cache = true ) {
 		global $post;
 		
 		$taxonomy = ( ( $collection and taxonomy_exists( "{$collection}_character" ) ) or $collection = WebcomicTag::get_webcomic_collection() ) ? "{$collection}_character" : '';
 		
 		if ( preg_match( '/^webcomic\d+_character$/', $taxonomy ) ) {
-			echo WebcomicTag::relative_webcomic_term_link( $format, $link, $target, 'last', $taxonomy, $args );
+			echo WebcomicTag::relative_webcomic_term_link( $format, $link, $target, $cache ? 'last' : 'last-nocache', $taxonomy, $args );
 		}
 	}
 }
@@ -4207,7 +4227,8 @@ if ( !function_exists( 'random_webcomic_character_link' ) ) {
 	 * @param string $target The target url, one of 'archive', 'first', 'last', or 'random'.
 	 * @param array $args An array of arguments to pass to get_terms().
 	 * @param string $collection Collection ID to retrieve characters from.
-	 * @param boolean $cache Whether to use a parameterized random webcomic character link.
+	 * @param boolean $cache Whether to use a parameterized webcomic character link.
+	 * @uses WebcomicTag::get_webcomic_collection()
 	 * @uses WebcomicTag::relative_webcomic_term_link()
 	 */
 	function random_webcomic_character_link( $format = '%link', $link = '', $target = 'archive', $args = array(), $collection = '', $cache = true ) {

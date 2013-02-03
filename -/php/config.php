@@ -13,13 +13,11 @@ class WebcomicConfig extends Webcomic {
 	 * 
 	 * @uses WebcomicConfig::admin_init()
 	 * @uses WebcomicConfig::admin_menu()
-	 * @uses WebcomicConfig::admin_footer()
 	 * @uses WebcomicConfig::admin_enqueue_scripts()
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'admin_footer', array( $this, 'admin_footer' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 	
@@ -116,7 +114,7 @@ class WebcomicConfig extends Webcomic {
 			add_settings_field( "{$k}_supports_miscellanea", __( 'Miscellanea', 'webcomic' ), array( $this, 'collection_supports_miscellanea' ), "{$k}-options", "{$k}-features", array( 'label_for' => 'webcomic_posts_revisions' ) );
 			add_settings_field( "{$k}_supports_taxonomies", __( 'Taxonomies', 'webcomic' ), array( $this, 'collection_supports_taxonomies' ), "{$k}-options", "{$k}-features", array( 'label_for' => 'webcomic_posts_taxonomy' ) );
 			
-			add_settings_section( "{$k}-permalinks", __( 'Permalink Settings', 'webcomic' ), array( $this, 'section_permalinks' ), "{$k}-options" );
+			add_settings_section( "{$k}-permalinks", __( 'Permalink Settings', 'webcomic' ), array( $this, 'section' ), "{$k}-options" );
 			add_settings_field( "{$k}_slug_archive", __( 'Archive', 'webcomic' ), array( $this, 'collection_slugs_archive' ), "{$k}-options", "{$k}-permalinks", array( 'label_for' => 'webcomic_slugs_archive' ) );
 			add_settings_field( "{$k}_slug_webcomic", __( 'Webcomics', 'webcomic' ), array( $this, 'collection_slugs_webcomic' ), "{$k}-options", "{$k}-permalinks", array( 'label_for' => 'webcomic_slugs_webcomic' ) );
 			add_settings_field( "{$k}_slug_storyline", __( 'Storylines', 'webcomic' ), array( $this, 'collection_slugs_storyline' ), "{$k}-options", "{$k}-permalinks", array( 'label_for' => 'webcomic_slugs_storyline' ) );
@@ -154,18 +152,6 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Render javascript for settings pages.
-	 * 
-	 * @hook admin_footer
-	 */
-	public function admin_footer() {
-		$screen = get_current_screen();
-		
-		if ( preg_match( '/^webcomic\d+_page_webcomic\d+-options$/', $screen->id ) ) {
-			printf( "<script>webcomic_slug_preview('%s');webcomic_commerce_defaults('%s');webcomic_twitter_account('%s')</script>", admin_url(), admin_url(), admin_url() );
-		}
-	}
-	
 	/** Register and enqueue settings scripts.
 	 * 
 	 * @uses Webcomic::$url
@@ -178,6 +164,8 @@ class WebcomicConfig extends Webcomic {
 			wp_register_script( 'webcomic-config', self::$url . '-/js/admin-config.js', array( 'jquery' ) );
 			
 			wp_enqueue_script( 'webcomic-config' );
+			
+			wp_enqueue_media();
 		}
 	}
 	
@@ -189,8 +177,8 @@ class WebcomicConfig extends Webcomic {
 	public function page() {
 		$page = empty( $_GET[ 'post_type' ] ) ? 'webcomic-options' : "{$_GET[ 'post_type' ]}-options";
 		?>
-		<div class="wrap">
-			<div id="icon-options-general" class="icon32"></div>
+		<div class="wrap" >
+			<div id="icon-options-general" class="icon32" data-webcomic-admin-url="<?php echo admin_url(); ?>"></div>
 			<h2><?php echo 'webcomic-options' === $page ? __( 'Webcomic Settings', 'webcomic' ) : sprintf( __( '%s Settings', 'webcomic' ), esc_html( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'name' ] ) ); ?></h2>
 			<form action="options.php" method="post"<?php echo 'webcomic' !== $page ? ' enctype="multipart/form-data"' : ''; ?>>
 				<?php
@@ -230,6 +218,7 @@ class WebcomicConfig extends Webcomic {
 	public function navigate() {
 		?>
 		<label><input type="checkbox" name="webcomic_dynamic" id="webcomic_dynamic"<?php checked( self::$config[ 'dynamic' ] ); ?>> <?php _e( 'Enable dynamic webcomic navigation', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_gestures"<?php checked( self::$config[ 'gestures' ] ); ?>> <?php _e( 'Enable touch gestures for webcomic navigation', 'webcomic' ); ?></label><br>
 		<label><input type="checkbox" name="webcomic_shortcuts"<?php checked( self::$config[ 'shortcuts' ] ); ?>> <?php _e( 'Enable keyboard shortcuts for webcomic navigation', 'webcomic' ); ?></label>
 		<?php
 	}
@@ -402,41 +391,14 @@ class WebcomicConfig extends Webcomic {
 	
 	/** Render the Cover setting.
 	 * 
-	 * @filter integer webcomic_upload_size_limit Filters the maximum allowed upload size for poster uploads. Defaults to the value returned by `wp_max_upload_size`.
 	 * @uses Webcomic::$config
+	 * @uses WebcomicConfig::ajax_collection_image()
 	 */
 	public function collection_image() {
-		$sizes       = array( 'KB', 'MB', 'GB' );
-		$upload_size = apply_filters( 'webcomic_upload_size_limit', wp_max_upload_size() );
-	
-		for ( $u = -1; $upload_size > 1024 and $u < count( $sizes ) - 1; $u++ ) {
-			$upload_size /= 1024;
-		}
-	
-		if ( $u < 0 ) {
-			$upload_size = $u = 0;
-		} else {
-			$upload_size = ( integer ) $upload_size;
-		}
-		
-		if ( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ] ) {
-			printf( '<a href="%s">%s</a><br>',
-				esc_url( add_query_arg( array( 'post' => self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ], 'action' => 'edit' ), admin_url( 'post.php' ) ) ),
-				wp_get_attachment_image( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ] )
-			);
-		}
-		
-		if ( is_multisite() and !is_upload_space_available() ) {
-			printf( __( 'Sorry, you have filled your storage quota (%s MB)', 'webcomic' ), get_space_allowed() );
-		} else {
-			printf( '<input type="hidden" name="max_file_size" value="%s"><input type="file" name="webcomic_image" id="webcomic_image">', apply_filters( 'webcomic_upload_size_limit', wp_max_upload_size() ) );
-		}
-		
-		if ( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ] ) {
-			printf( ' <label><input type="checkbox" name="webcomic_detach"> %s</label><br>', __( 'Detach on save', 'webcomic' ) );
-		}
-		
-		printf( '<p class="description">%s</p>', sprintf( __( 'The poster is a representative image that can be displayed on your site. Posters are uploaded to the Media Library. Maximum upload file size: %1$s%2$s', 'webcomic' ), $upload_size, $sizes[ $u ] ) );
+		?>
+		<div id="webcomic_collection_image" data-webcomic-admin-url="<?php echo admin_url(); ?>"><?php self::ajax_collection_image( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'image' ], $_GET[ 'post_type' ] ); ?></div>
+		<?php
+		printf( '<p class="description">%s</p>', __( "The poster is a representative image that can be displayed on your site. Don't forget to <strong>Save Changes</strong> after updating the poster.", 'webcomic' ) );
 	}
 	
 	/** Render the Theme setting.
@@ -1009,6 +971,7 @@ class WebcomicConfig extends Webcomic {
 				}
 			} else {
 				self::$config[ 'dynamic' ]   = isset( $_POST[ 'webcomic_dynamic' ] );
+				self::$config[ 'gestures' ]  = isset( $_POST[ 'webcomic_gestures' ] );
 				self::$config[ 'integrate' ] = isset( $_POST[ 'webcomic_integrate' ] );
 				self::$config[ 'shortcuts' ] = isset( $_POST[ 'webcomic_shortcuts' ] );
 				self::$config[ 'uninstall' ] = isset( $_POST[ 'webcomic_uninstall' ] );
@@ -1020,7 +983,7 @@ class WebcomicConfig extends Webcomic {
 			$collection = array(
 				'id'          => $id,
 				'name'        => $_POST[ 'webcomic_name' ] ? $_POST[ 'webcomic_name' ] : self::$config[ 'collections' ][ $id ][ 'name' ],
-				'image'       => self::$config[ 'collections' ][ $id ][ 'image' ],
+				'image'       => $_POST[ 'webcomic_image' ],
 				'theme'       => $_POST[ 'webcomic_theme' ] ? $_POST[ 'webcomic_theme' ] : '',
 				'updated'     => self::$config[ 'collections' ][ $id ][ 'updated' ],
 				'supports'    => isset( $_POST[ 'webcomic_supports' ] ) ? array_merge( $_POST[ 'webcomic_supports' ], array( 'author' ) ) : array( 'author' ),
@@ -1085,20 +1048,6 @@ class WebcomicConfig extends Webcomic {
 				)
 			);
 			
-			if ( isset( $_POST[ 'webcomic_detach' ] ) ) {
-				delete_post_meta( self::$config[ 'collections' ][ $id ][ 'image' ], '_wp_attachment_context', $id );
-				
-				$collection[ 'image' ] = 0;
-			}
-			
-			if ( isset( $_FILES[ 'webcomic_image' ] ) and !is_wp_error( $attachment = media_handle_upload( 'webcomic_image', 0, array( 'context' => $id ) ) ) ) {
-				if ( self::$config[ 'collections' ][ $id ][ 'image' ] ) {
-					delete_post_meta( self::$config[ 'collections' ][ $id ][ 'image' ], '_wp_attachment_context', $id );
-				}
-				
-				$collection[ 'image' ] = $attachment;
-			}
-			
 			foreach ( $_POST[ 'webcomic_slugs' ] as $k  => $v ) {
 				$slug = array();
 				
@@ -1151,17 +1100,80 @@ class WebcomicConfig extends Webcomic {
 		return ( isset( $_POST[ 'webcomic_general' ] ) or isset( $_POST[ 'webcomic_collection' ] ) ) ? self::$config : $options;
 	}
 	
-	/** Empty callback for add_settings_section(). */
-	public function section(){}
-	
-	/** Permalink settings section.
+	/** Update size information when media options are saved.
 	 * 
-	 * If permalinks are still set to Default we need to warn users that
-	 * the permalink URL's won't actually work.
+	 * @uses Webcomic::$config
 	 */
-	public function section_permalinks() {
-		if ( !get_option( 'permalink_structure' ) ) {
+	private function save_sizes() {
+		if ( isset( $_POST[ 'webcomic_media_sizes' ], $_POST[ 'option_page' ], $_POST[ 'action' ] ) and 'media' === $_POST[ 'option_page' ] and 'update' === $_POST[ 'action' ] and wp_verify_nonce( $_POST[ 'webcomic_media_sizes' ], 'webcomic_media_sizes' ) ) {
+			if ( $size = sanitize_title( $_POST[ 'webcomic_new_size' ] ) ) {
+				if ( 'thumb' === $size or 'thumbnail' === $size or 'medium' === $size or 'large' === $size or 'post-thumbnail' === $size ) {
+					wp_die( sprintf( __( 'The name <q>%s</q> is reserved by WordPress.', 'webcomic' ), $size ), __( 'Error | Webcomic', 'webcomic' ) );
+				} elseif ( in_array( $size, get_intermediate_image_sizes() ) ) {
+					wp_die( sprintf( __( 'A size with the name <q>%s</q> already exists.', 'webcomic' ), $size ), __( 'Error | Webcomic', 'webcomic' ) );
+				} else {
+					self::$config[ 'sizes' ][ $size ] = array(
+						'width'  => intval( $_POST[ 'webcomic_new_size_width' ] ),
+						'height' => intval( $_POST[ 'webcomic_new_size_height' ] ),
+						'crop'   => isset( $_POST[ 'webcomic_new_size_crop' ] )
+					);
+				}
+			}
+			
+			if ( !empty( $_POST[ 'webcomic_size' ] ) ) {
+				foreach ( $_POST[ 'webcomic_size' ] as $k => $v ) {
+					self::$config[ 'sizes' ][ $k ] = array(
+						'width'  => intval( $v[ 'width' ] ),
+						'height' => intval( $v[ 'height' ] ),
+						'crop'   => isset( $v[ 'crop' ] )
+					);
+				}
+			}
+			
+			if ( $_POST[ 'webcomic_bulk_size' ] and isset( $_POST[ 'webcomic_sizes' ] ) ) {
+				foreach ( $_POST[ 'webcomic_sizes' ] as $size ) {
+					unset( self::$config[ 'sizes' ][ $size ] );
+				}
+			}
+			
+			update_option( 'webcomic_options', self::$config );
+		}
+	}
+	
+	/** Generic settings section callback.
+	 * 
+	 * Most sections don't include a description, but if permalinks are
+	 * set to Default we need to warn users that the permalink URL's
+	 * won't actually work.
+	 */
+	public function section( $args ) {
+		if ( preg_match( '/^webcomic\d+-permalinks$/', $args[ 'id' ] ) and !get_option( 'permalink_structure' ) ) {
 			echo '<p>', sprintf( __( "These URL's won't work unless you <a href='%s'>change the permalink setting</a> to something other than <em>Default</em>.", 'webcomic' ), admin_url( 'options-permalink.php' ) ), '</p>';
+		}
+	}
+	
+	/** Handle collection poster image updating.
+	 * 
+	 * @param integer $id ID of the selected image.
+	 * @param string $collection Collection the poster is for.
+	 */
+	public static function ajax_collection_image( $id, $collection ) {
+		if ( $id ) {
+			printf( '<a href="%s">%s</a><br>',
+				esc_url( add_query_arg( array( 'post' => $id, 'action' => 'edit' ), admin_url( 'post.php' ) ) ),
+				wp_get_attachment_image( $id )
+			);
+		}
+		
+		printf( '<input type="hidden" name="webcomic_image" value="%s"><a class="button webcomic-collection-image" data-title="%s" data-update="%s">%s</a>',
+			$id,
+			sprintf( __( 'Choose a Poster for %s', 'webcomic' ), esc_attr( self::$config[ 'collections' ][ $collection ][ 'name' ] ) ),
+			__( 'Update', 'webcomic' ),
+			$id ? __( 'Change', 'webcomic' ) : __( 'Select', 'webcomic' )
+		);
+		
+		if ( $id ) {
+			printf( ' <a class="button webcomic-collection-image-x">%s</a>', __( 'Remove', 'webcomic' ) );
 		}
 	}
 	
@@ -1249,46 +1261,6 @@ class WebcomicConfig extends Webcomic {
 			}
 		} else {
 			echo '<span class="description">', __( 'Please enter your <a href="https://dev.twitter.com/apps/new" target="_blank">Twitter Application</a> <b>consumer key</b> and <b>consumer secret</b> below.', 'webcomic' ), '</span>';
-		}
-	}
-	
-	/** Update size information when media options are saved.
-	 * 
-	 * @uses Webcomic::$config
-	 */
-	private function save_sizes() {
-		if ( isset( $_POST[ 'webcomic_media_sizes' ], $_POST[ 'option_page' ], $_POST[ 'action' ] ) and 'media' === $_POST[ 'option_page' ] and 'update' === $_POST[ 'action' ] and wp_verify_nonce( $_POST[ 'webcomic_media_sizes' ], 'webcomic_media_sizes' ) ) {
-			if ( $size = sanitize_title( $_POST[ 'webcomic_new_size' ] ) ) {
-				if ( 'thumb' === $size or 'thumbnail' === $size or 'medium' === $size or 'large' === $size or 'post-thumbnail' === $size ) {
-					wp_die( sprintf( __( 'The name <q>%s</q> is reserved by WordPress.', 'webcomic' ), $size ), __( 'Error | Webcomic', 'webcomic' ) );
-				} elseif ( in_array( $size, get_intermediate_image_sizes() ) ) {
-					wp_die( sprintf( __( 'A size with the name <q>%s</q> already exists.', 'webcomic' ), $size ), __( 'Error | Webcomic', 'webcomic' ) );
-				} else {
-					self::$config[ 'sizes' ][ $size ] = array(
-						'width'  => intval( $_POST[ 'webcomic_new_size_width' ] ),
-						'height' => intval( $_POST[ 'webcomic_new_size_height' ] ),
-						'crop'   => isset( $_POST[ 'webcomic_new_size_crop' ] )
-					);
-				}
-			}
-			
-			if ( !empty( $_POST[ 'webcomic_size' ] ) ) {
-				foreach ( $_POST[ 'webcomic_size' ] as $k => $v ) {
-					self::$config[ 'sizes' ][ $k ] = array(
-						'width'  => intval( $v[ 'width' ] ),
-						'height' => intval( $v[ 'height' ] ),
-						'crop'   => isset( $v[ 'crop' ] )
-					);
-				}
-			}
-			
-			if ( $_POST[ 'webcomic_bulk_size' ] and isset( $_POST[ 'webcomic_sizes' ] ) ) {
-				foreach ( $_POST[ 'webcomic_sizes' ] as $size ) {
-					unset( self::$config[ 'sizes' ][ $size ] );
-				}
-			}
-			
-			update_option( 'webcomic_options', self::$config );
 		}
 	}
 }

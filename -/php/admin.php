@@ -23,9 +23,11 @@ class WebcomicAdmin extends Webcomic {
 	 * @uses WebcomicAdmin::plugin_row_meta()
 	 * @uses WebcomicAdmin::plugin_action_links()
 	 * @uses WebcomicPosts
+	 * @uses WebcomicPages
 	 * @uses WebcomicUsers
 	 * @uses WebcomicMedia
 	 * @uses WebcomicConfig
+	 * @uses WebcomicCommerce
 	 * @uses WebcomicTaxonomy
 	 * @uses WebcomicTranscripts
 	 * @uses WebcomicLegacy
@@ -90,6 +92,7 @@ class WebcomicAdmin extends Webcomic {
 				'thanks'       => true,
 				'convert'      => false,
 				'dynamic'      => false,
+				'gestures'     => false,
 				'integrate'    => false,
 				'shortcuts'    => false,
 				'uninstall'    => false,
@@ -425,7 +428,7 @@ class WebcomicAdmin extends Webcomic {
 			new WebcomicHelp( $screen );
 			
 			if ( preg_match( '/^(edit-)?webcomic_(transcript|language)$/', $screen->id ) ) {
-				echo '<style>#icon-edit{background:url("', self::$url, '-/img/transcript.png")}</style>';;
+				echo '<style>#icon-edit{background:url("', self::$url, '-/img/transcript.png")}</style>';
 			} elseif ( preg_match( '/^(edit-)?webcomic\d+(_storyline|_character)?$/', $screen->id ) ) {
 				echo '<style>#icon-edit{background:url("', self::$url, '-/img/webcomic.png")}</style>';
 			}

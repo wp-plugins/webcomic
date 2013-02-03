@@ -102,8 +102,8 @@ class Widget_WebcomicLink extends WP_Widget {
 			<label>
 				<?php _e( 'Target:', 'webcomic' ); ?><br>
 				<select name="<?php echo $this->get_field_name( 'relative' ); ?>">
-					<option value="first"<?php echo empty( $relative ) ? '' : selected( 'first', $relative, false ); ?>><?php _e( 'First', 'webcomic' ); ?></option>
-					<option value="last"<?php echo empty( $relative ) ? '' : selected( 'last', $relative, false ); ?>><?php _e( 'Last', 'webcomic' ); ?></option>
+					<option value="first-nocache"<?php echo empty( $relative ) ? '' : selected( 'first-nocache', $relative, false ); ?>><?php _e( 'First', 'webcomic' ); ?></option>
+					<option value="last-nocache"<?php echo empty( $relative ) ? '' : selected( 'last-cache', $relative, false ); ?>><?php _e( 'Last', 'webcomic' ); ?></option>
 					<option value="random-nocache"<?php echo empty( $relative ) ? '' : selected( 'random-nocache', $relative, false ); ?>><?php _e( 'Random', 'webcomic' ); ?></option>
 				</select>
 			</label>
@@ -179,6 +179,7 @@ class Widget_DynamicWebcomic extends WP_Widget {
 	 * @param array $args General widget arguments.
 	 * @param array $instance Specific instance arguments.
 	 * @uses Webcomic::dir()
+	 * @uses Webcomic::config()
 	 * @uses WebcomicTag::get_webcomic_collection()
 	 * @uses WebcomicTag::get_webcomic_collections()
 	 */
@@ -199,7 +200,7 @@ class Widget_DynamicWebcomic extends WP_Widget {
 				$webcomic = new WP_Query( array( 'post_type' => $collection, 'posts_per_page' => 1, 'order' => $reverse ? 'ASC' : 'DESC' ) );
 				
 				if ( $webcomic->have_posts() ) {
-					echo $before_widget, empty( $title ) ? '' : $before_title . $title . $after_title, sprintf( '<div data-webcomic-container="%s">', $widget_id );
+					echo $before_widget, empty( $title ) ? '' : $before_title . $title . $after_title, sprintf( '<div data-webcomic-container="%s"%s>', $widget_id, $gesture ? ' data-webcomic-gestures' : '' );
 					
 					while ( $webcomic->have_posts() ) { $webcomic->the_post();
 						if ( !locate_template( array( "webcomic/dynamic-{$widget_id}-{$collection}.php", "webcomic/dynamic-{$widget_id}.php", "webcomic/dynamic-{$collection}.php", 'webcomic/dynamic.php' ), true, false ) ) {
@@ -222,9 +223,10 @@ class Widget_DynamicWebcomic extends WP_Widget {
 	 * @return array
 	 */
 	public function update( $new, $old ) {
-		$old[ 'title' ]       = strip_tags( $new[ 'title' ] );
-		$old[ 'reverse' ]     = $new[ 'reverse' ];
-		$old[ 'collection' ]  = $new[ 'collection' ];
+		$old[ 'title' ]      = strip_tags( $new[ 'title' ] );
+		$old[ 'reverse' ]    = $new[ 'reverse' ];
+		$old[ 'gestures' ]   = $new[ 'gestures' ];
+		$old[ 'collection' ] = $new[ 'collection' ];
 		
 		return $old;
 	}
@@ -241,7 +243,7 @@ class Widget_DynamicWebcomic extends WP_Widget {
 	public function form( $instance ) {
 		extract( $instance );
 		
-		$config     = Webcomic::config();
+		$config = Webcomic::config();
 		
 		if ( $config[ 'dynamic' ] ) { ?>
 		<p>
@@ -268,13 +270,21 @@ class Widget_DynamicWebcomic extends WP_Widget {
 			</label>
 		</p>
 		<p>
-			<label><input type="checkbox" name="<?php echo $this->get_field_name( 'reverse' ); ?>" value="1"<?php echo empty( $reverse ) ? '' : checked( $reverse, true, false ); ?>> <?php _e( 'Start with first webcomic', 'webcomic' ); ?></label><br>
+			<label><input type="checkbox" name="<?php echo $this->get_field_name( 'reverse' ); ?>" value="1"<?php echo empty( $reverse ) ? '' : checked( $reverse, true, false ); ?>> <?php _e( 'Start with first webcomic', 'webcomic' ); ?></label>
 		</p>
+		<?php if ( $config[ 'gestures' ] ) { ?>
+		<p>
+			<label><input type="checkbox" name="<?php echo $this->get_field_name( 'gestures' ); ?>" value="1"<?php echo empty( $gestures ) ? '' : checked( $gestures, true, false ); ?>> <?php _e( 'Enable touch gestures for webcomic navigation', 'webcomic' ); ?></label>
+		</p>
+		<?php } else { ?>
+			<input type="hidden" name="<?php echo $this->get_field_name( 'gestures' ); ?>" value="<?php echo empty( $gestures ) ? '' : $gestures; ?>">
+		<?php } ?>
 		<?php } else { ?>
 		<p style="color:#bc0b0b"><strong><?php _e( 'Please enable the dynamic navigation option on the Settings > Webcomic administrative page to use this widget.', 'webcomic' ); ?></strong></p>
 		<input type="hidden" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo empty( $title ) ? '' : esc_attr( $title ); ?>">
 		<input type="hidden" name="<?php echo $this->get_field_name( 'collection' ); ?>" value="<?php echo empty( $collection ) ? '' : $collection; ?>">
 		<input type="hidden" name="<?php echo $this->get_field_name( 'reverse' ); ?>" value="<?php echo empty( $reverse ) ? '' : $reverse; ?>">
+		<input type="hidden" name="<?php echo $this->get_field_name( 'gestures' ); ?>" value="<?php echo empty( $gestures ) ? '' : $gestures; ?>">
 		<?php	
 		}
 	}
@@ -756,6 +766,7 @@ class Widget_WebcomicCollections extends WP_Widget {
 		$object = get_queried_object();
 		
 		$a[ 'target' ]           = 'first' === $a[ 'target' ] ? $a[ 'target' ] : 'archive';
+		$a[ 'orderby' ]          = 'name';
 		$a[ 'show_option_none' ] = __( 'Select Collection', 'webcomic' );
 		
 		if ( !empty( $object->query_var ) and preg_match( '/^webcomic\d+$/', $object->query_var ) ) {
