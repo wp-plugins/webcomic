@@ -12,37 +12,36 @@ class WebcomicTranscripts extends Webcomic {
 	/** Register hooks.
 	 * 
 	 * @uses WebcomicTranscripts::delete_post()
-	 * @uses WebcomicTranscripts::admin_footer()
 	 * @uses WebcomicTranscripts::add_meta_boxes()
 	 * @uses WebcomicTranscripts::post_updated()
 	 * @uses WebcomicTranscripts::restrict_manage_posts()
 	 * @uses WebcomicTranscripts::admin_enqueue_scripts()
+	 * @uses WebcomicTranscripts::wp_insert_post()
 	 * @uses WebcomicTranscripts::wp_insert_post_data()
-	 * @uses WebcomicTranscripts::manage_custom_column()
+	 * @uses WebcomicTranscripts::manage_webcomic_transcript_posts_custom_column()
 	 * @uses WebcomicTranscripts::request()
 	 * @uses WebcomicTranscripts::posts_where()
-	 * @uses WebcomicTranscripts::view_orphans()
-	 * @uses WebcomicTranscripts::manage_columns()
-	 * @uses WebcomicTranscripts::manage_language_columns()
-	 * @uses WebcomicTranscripts::manage_sortable_columns()
+	 * @uses WebcomicTranscripts::view_wedit_webcomic_transcript()
+	 * @uses WebcomicTranscripts::manage_edit_webcomic_language_columns()
+	 * @uses WebcomicTranscripts::manage_edit_webcomic_transcript_columns()
+	 * @uses WebcomicTranscripts::manage_edit_webcomic_transcript_sortable_columns()
 	 */
 	public function __construct() {
 		add_action( 'delete_post', array( $this, 'delete_post' ) );
-		add_action( 'admin_footer', array( $this, 'admin_footer' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'post_updated', array( $this, 'post_updated' ), 10, 3 );
 		add_action( 'restrict_manage_posts', array( $this, 'restrict_manage_posts' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_action( 'wp_insert_post', array( $this, 'save_webcomic_authors' ), 10, 2 );
+		add_action( 'wp_insert_post', array( $this, 'wp_insert_post' ), 10, 2 );
 		add_action( 'wp_insert_post_data', array( $this, 'wp_insert_post_data' ), 10, 2 );
-		add_action( 'manage_webcomic_transcript_posts_custom_column', array( $this, 'manage_custom_column' ), 10, 2 );
+		add_action( 'manage_webcomic_transcript_posts_custom_column', array( $this, 'manage_webcomic_transcript_posts_custom_column' ), 10, 2 );
 		
 		add_filter( 'request', array( $this, 'request' ), 10, 1 );
 		add_filter( 'posts_where', array( $this, 'posts_where' ), 10, 1 );
-		add_filter( 'views_edit-webcomic_transcript', array( $this, 'view_orphans' ), 10, 1 );
-		add_filter( 'manage_edit-webcomic_transcript_columns', array( $this, 'manage_columns' ), 10, 1 );
-		add_filter( 'manage_edit-webcomic_language_columns', array( $this, 'manage_language_columns' ), 10, 3 );
-		add_filter( 'manage_edit-webcomic_transcript_sortable_columns', array( $this, 'manage_sortable_columns' ), 10, 1 );
+		add_filter( 'views_edit-webcomic_transcript', array( $this, 'view_wedit_webcomic_transcript' ), 10, 1 );
+		add_filter( 'manage_edit-webcomic_language_columns', array( $this, 'manage_edit_webcomic_language_columns' ), 10, 3 );
+		add_filter( 'manage_edit-webcomic_transcript_columns', array( $this, 'manage_edit_webcomic_transcript_columns' ), 10, 1 );
+		add_filter( 'manage_edit-webcomic_transcript_sortable_columns', array( $this, 'manage_edit_webcomic_transcript_sortable_columns' ), 10, 1 );
 	}
 	
 	/** Remove parent from transcripts.
@@ -59,26 +58,15 @@ class WebcomicTranscripts extends Webcomic {
 		}
 	}
 	
-	/** Render javascript for the webcomic meta boxes.
-	 * 
-	 * @hook admin_footer
-	 */
-	public function admin_footer() {
-		$screen = get_current_screen();
-		
-		if ( 'webcomic_transcript' === $screen->id ) {
-			printf( "<script>webcomic_transcript_meta('%s');</script>", admin_url() );
-		}
-	}
-	
 	/** Add transcript meta boxes.
 	 * 
-	 * @uses WebcomicTranscripts::parent()
+	 * @uses WebcomicTranscripts::box_parent()
+	 * @uses WebcomicTranscripts::box_authors()
 	 * @hook add_meta_boxes
 	 */
 	public function add_meta_boxes() {
-		add_meta_box( 'webcomic-parent', __( 'Parent Webcomic', 'webcomic' ), array( $this, 'parent' ), 'webcomic_transcript', 'normal', 'high' );
-		add_meta_box( 'webcomic-authors', __( 'Transcript Authors', 'webcomic' ), array( $this, 'authors' ), 'webcomic_transcript', 'normal', 'high' );
+		add_meta_box( 'webcomic-parent', __( 'Parent Webcomic', 'webcomic' ), array( $this, 'box_parent' ), 'webcomic_transcript', 'normal', 'high' );
+		add_meta_box( 'webcomic-authors', __( 'Transcript Authors', 'webcomic' ), array( $this, 'box_authors' ), 'webcomic_transcript', 'normal', 'high' );
 	}
 	
 	/** Update transcripts when their parent webcomics are updated.
@@ -117,7 +105,7 @@ class WebcomicTranscripts extends Webcomic {
 					wp_set_object_terms( $transcript, $tags, 'post_tag'  );
 					wp_set_object_terms( $transcript, null, 'webcomic_language' );
 				}
-			} else if ( $before->post_title !== $after->post_title ) {
+			} elseif ( $before->post_title !== $after->post_title ) {
 				$title = sprintf( __( '%s Transcript', 'webcomic' ), $after->post_title );
 				
 				foreach ( $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'webcomic_transcript' AND post_parent = %d", $id ) ) as $transcript ) {
@@ -177,7 +165,7 @@ class WebcomicTranscripts extends Webcomic {
 	 * @param object $post Post object to update.
 	 * @hook wp_insert_post
 	 */
-	public function save_webcomic_authors( $id, $post ) {
+	public function wp_insert_post( $id, $post ) {
 		if (
 			'webcomic_transcript' === $post->post_type
 			and ( !defined( 'DOING_AUTOSAVE' ) or !DOING_AUTOSAVE )
@@ -251,7 +239,7 @@ class WebcomicTranscripts extends Webcomic {
 	 * @param integer $id Current post ID.
 	 * @hook manage_webcomic_transcript_posts_custom_column
 	 */
-	public function manage_custom_column( $column, $id ) {
+	public function manage_webcomic_transcript_posts_custom_column( $column, $id ) {
 		global $post;
 		
 		if ( 'webcomic_author' === $column ) {
@@ -265,7 +253,7 @@ class WebcomicTranscripts extends Webcomic {
 			}
 			
 			echo join( ', ', $authors );
-		} else if ( 'webcomic_languages' === $column ) {
+		} elseif ( 'webcomic_languages' === $column ) {
 			if ( $languages = wp_get_object_terms( $id, 'webcomic_language' ) ) {
 				$terms = array();
 				
@@ -280,7 +268,7 @@ class WebcomicTranscripts extends Webcomic {
 			} else {
 				_e( 'No Languages', 'webcomic' );
 			}
-		} else if ( 'webcomic_parent' === $column ) {
+		} elseif ( 'webcomic_parent' === $column ) {
 			echo $post->post_parent ? sprintf( '<strong><a href="%s">%s</a> - %s</strong>, %s',
 				esc_url( add_query_arg( array( 'post_type' => get_post_type( $post->post_parent ) ), admin_url( 'edit.php' ) ) ),
 				esc_html( get_post_type_object( get_post_type( $post->post_parent ) )->labels->name ),
@@ -331,53 +319,13 @@ class WebcomicTranscripts extends Webcomic {
 		return $where;
 	}
 	
-	/** Add transcript languages, parent, and custom author columns.
-	 * 
-	 * @param array $columns An array of post columns.
-	 * @return array
-	 * @hook manage_edit-webcomic_transcript_columns
-	 */
-	public function manage_columns( $columns ) {
-		unset( $columns[ 'author' ] );
-		
-		$pre = array_slice( $columns, 0, 2 );
-		
-		$pre[ 'webcomic_author' ]    = __( 'Author', 'webcomic' );
-		$pre[ 'webcomic_languages' ] = __( 'Languages', 'webcomic' );
-		$pre[ 'webcomic_parent' ]    = __( 'Webcomic', 'webcomic' );
-		
-		return array_merge( $pre, $columns );
-	}
-	
-	/** Add sortable parent and author columns.
-	 * 
-	 * @param array $columns An array of sortable columns.
-	 * @return array
-	 * @hook manage_edit-webcomic_transcript_sortable_columns
-	 */
-	public function manage_sortable_columns( $columns ) {
-		return array_merge( array( 'webcomic_author' => 'webcomic_author', 'webcomic_parent' => 'webcomic_parent' ), $columns );
-	}
-	
-	/** Rename the language 'Posts' column.
-	 * 
-	 * @param array $columns An array of term columns.
-	 * @return array
-	 * @hook manage_edit-webcomic_language_columns
-	 */
-	public function manage_language_columns( $columns ) {
-		$columns[ 'posts' ] = __( 'Transcripts', 'webcomic' );
-		
-		return $columns;
-	}
-	
 	/** Add Orphaned view for webcomic posts.
 	 * 
 	 * @param array $views Array of view links.
 	 * @return array
 	 * @hook views_edit-(webcomic\d+)
 	 */
-	public function view_orphans( $views ) {
+	public function view_wedit_webcomic_transcript( $views ) {
 		global $wpdb;
 		
 		if ( $orphans = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'webcomic_transcript' AND post_parent = 0" ) ) {
@@ -400,6 +348,46 @@ class WebcomicTranscripts extends Webcomic {
 		return $views;
 	}
 	
+	/** Rename the language 'Posts' column.
+	 * 
+	 * @param array $columns An array of term columns.
+	 * @return array
+	 * @hook manage_edit-webcomic_language_columns
+	 */
+	public function manage_edit_webcomic_language_columns( $columns ) {
+		$columns[ 'posts' ] = __( 'Transcripts', 'webcomic' );
+		
+		return $columns;
+	}
+	
+	/** Add transcript languages, parent, and custom author columns.
+	 * 
+	 * @param array $columns An array of post columns.
+	 * @return array
+	 * @hook manage_edit-webcomic_transcript_columns
+	 */
+	public function manage_edit_webcomic_transcript_columns( $columns ) {
+		unset( $columns[ 'author' ] );
+		
+		$pre = array_slice( $columns, 0, 2 );
+		
+		$pre[ 'webcomic_author' ]    = __( 'Author', 'webcomic' );
+		$pre[ 'webcomic_languages' ] = __( 'Languages', 'webcomic' );
+		$pre[ 'webcomic_parent' ]    = __( 'Webcomic', 'webcomic' );
+		
+		return array_merge( $pre, $columns );
+	}
+	
+	/** Add sortable parent and author columns.
+	 * 
+	 * @param array $columns An array of sortable columns.
+	 * @return array
+	 * @hook manage_edit-webcomic_transcript_sortable_columns
+	 */
+	public function manage_edit_webcomic_transcript_sortable_columns( $columns ) {
+		return array_merge( array( 'webcomic_author' => 'webcomic_author', 'webcomic_parent' => 'webcomic_parent' ), $columns );
+	}
+	
 	/** Render the transcript parent meta box.
 	 * 
 	 * @param object $post Current post object.
@@ -408,7 +396,7 @@ class WebcomicTranscripts extends Webcomic {
 	 * @uses WebcomicTranscripts::ajax_post_transcripts()
 	 * @uses WebcomicTranscripts::ajax_preview()
 	 */
-	public function parent( $post ) {
+	public function box_parent( $post ) {
 		$parent_type = get_post_type( $post->post_parent );
 		
 		if ( 'webcomic_transcript' === $parent_type ) {
@@ -418,7 +406,7 @@ class WebcomicTranscripts extends Webcomic {
 		wp_nonce_field( 'webcomic_meta_parent', 'webcomic_meta_parent' );
 		?>
 		<style>#webcomic_post_preview{overflow:auto}</style>
-		<p>
+		<p data-webcomic-admin-url="<?php echo admin_url(); ?>">
 			<select name="webcomic_collection" id="webcomic_collection" disabled>
 				<optgroup label="<?php esc_attr_e( 'Collection', 'webcomic' ); ?>">
 				<?php
@@ -445,7 +433,7 @@ class WebcomicTranscripts extends Webcomic {
 	 * @param object $post Current post object.
 	 * @uses Webcomic::$config
 	 */
-	public function authors( $post ) {
+	public function box_authors( $post ) {
 		$count   = 0;
 		$authors = get_post_meta( $post->ID, 'webcomic_author' );
 		
@@ -543,7 +531,7 @@ class WebcomicTranscripts extends Webcomic {
 			foreach ( $attachments as $attachment ) {
 				echo wp_get_attachment_image( $attachment->ID, 'full' ), '<br>';
 			}
-		} else if ( $post ) {
+		} elseif ( $post ) {
 			printf( '<p>%s</p>', __( 'No Attachments', 'webcomic' ) );
 		}
 	}
