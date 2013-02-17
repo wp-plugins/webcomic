@@ -225,8 +225,8 @@ class WebcomicPosts extends Webcomic {
 			and current_user_can( 'edit_post', $raw[ 'ID' ] )
 		) {
 			if ( !in_array( 'title', self::$config[ 'collections' ][ $data[ 'post_type' ] ][ 'supports' ] ) ) {
-				$data[ 'post_title' ] = 'Auto Draft' === $raw[ 'post_title' ] ? $raw[ 'ID' ] : $raw[ 'post_title' ];
-				$data[ 'post_name' ]  = wp_unique_post_slug( sanitize_title( $raw[ 'post_name' ] ? $raw[ 'post_name' ] : $data[ 'post_title' ] ), $raw[ 'ID' ], $raw[ 'post_status' ], $raw[ 'post_type' ], $raw[ 'post_parent' ] );
+				$data[ 'post_title' ] = '';
+				$data[ 'post_name' ]  = $raw[ 'ID' ];
 			}
 			
 			if ( !in_array( 'editor', self::$config[ 'collections' ][ $data[ 'post_type' ] ][ 'supports' ] ) ) {
@@ -368,36 +368,6 @@ class WebcomicPosts extends Webcomic {
 			} else {
 				_e( '&mdash;', 'webcomic' );
 			}
-		} elseif ( 'webcomic_storylines' === $column ) {
-			if ( $storylines = wp_get_object_terms( $id, "{$post->post_type}_storyline" ) ) {
-				$terms = array();
-				
-				foreach ( $storylines as $storyline ) {
-					$terms[] = sprintf( '<a href="%s">%s</a>',
-						esc_url( add_query_arg( array( 'post_type' => $post->post_type, "{$post->post_type}_storyline" => $storyline->slug ), admin_url( 'edit.php' ) ) ),
-						esc_html( sanitize_term_field( 'name', $storyline->name, $storyline->term_id, "{$post->post_type}_storyline", 'display' ) )
-					);
-				}
-				
-				echo join( ', ', $terms );
-			} else {
-				_e( '&mdash;', 'webcomic' );
-			}
-		} elseif ( 'webcomic_characters' === $column ) {
-			if ( $characters = wp_get_object_terms( $id, "{$post->post_type}_character" ) ) {
-				$terms = array();
-				
-				foreach ( $characters as $character ) {
-					$terms[] = sprintf( '<a href="%s">%s</a>',
-						esc_url( add_query_arg( array( 'post_type' => $post->post_type, "{$post->post_type}_character" => $character->slug ), admin_url( 'edit.php' ) ) ),
-						esc_html( sanitize_term_field( 'name', $character->name, $character->term_id, "{$post->post_type}_character", 'display' ) )
-					);
-				}
-				
-				echo join( ', ', $terms );
-			} else {
-				_e( '&mdash;', 'webcomic' );
-			}
 		}
 	}
 	
@@ -438,13 +408,14 @@ class WebcomicPosts extends Webcomic {
 	 */
 	public function manage_edit_webcomic_columns( $columns ) {
 		$pre = array_slice( $columns, 0, 1 );
-		$mid = array_slice( $columns, 1, 2 );
-		
 		$pre[ 'webcomic_attachments' ] = '';
-		$mid[ 'webcomic_storylines' ]  = __( 'Storylines', 'webcomic' );
-		$mid[ 'webcomic_characters' ]  = __( 'Characters', 'webcomic' );
 		
-		return array_merge( $pre, $mid, $columns );
+		if ( isset( $_GET[ 'post_type' ] ) ) {
+			$columns[ "taxonomy-{$_GET[ 'post_type' ]}_character" ] = __( 'Characters', 'webcomic' );
+			$columns[ "taxonomy-{$_GET[ 'post_type' ]}_storyline" ] = __( 'Storylines', 'webcomic' );
+		}
+		
+		return array_merge( $pre, $columns );
 	}
 	
 	/** Render the webcomic media meta box.
@@ -638,7 +609,7 @@ class WebcomicPosts extends Webcomic {
 			echo '<style scoped>.insert-media img{vertical-align:bottom}</style><a href="#" class="insert-media">';
 			
 			foreach ( $attachments as $attachment ) {
-				echo isset( $_wp_additional_image_sizes[ 'post-thumbnail' ] ) ? wp_get_attachment_image( $attachment->ID, 'post-thumbnail' ) : wp_get_attachment_image( $attachment->ID, array( $content_width, $content_width ) );
+				echo wp_get_attachment_image( $attachment->ID, array( $content_width, $content_width ) );
 			}
 			
 			echo '</a>';
