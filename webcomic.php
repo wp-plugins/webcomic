@@ -4,7 +4,7 @@ Text Domain: webcomic
 Plugin Name: Webcomic
 Plugin URI: http://webcomic.nu
 Description: Comic publishing power for the web.
-Version: 4.0.7
+Version: 4.0.8
 Author: Michael Sisk
 Author URI: http://mgsisk.com
 License: GPL2
@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * @package Webcomic
  * @copyright 2008 - 2013 Michael Sisk
  * @license //gnu.org/licenses/gpl-2.0.html GPL2
- * @version 4.0.7
+ * @version 4.0.8
  * @link http://webcomic.nu
  */
 
@@ -46,7 +46,7 @@ class Webcomic {
 	/** Internal version number.
 	 * @var string
 	 */
-	protected static $version = '4.0.7';
+	protected static $version = '4.0.8';
 	
 	/** Absolute path to the Webcomic directory.
 	 * @var string
@@ -186,7 +186,7 @@ class Webcomic {
 	 * @hook init
 	 */
 	public function init() {
-		load_plugin_textdomain( 'webcomic', '', self::$dir . '-/locale/' );
+		load_plugin_textdomain( 'webcomic', '', self::$dir . '-/i18n/' );
 		
 		define( 'EP_WEBCOMIC', 1099511627776 ); // 2^40
 		define( 'EP_WEBCOMIC_TERM', 2199023255552 ); // 2^41
@@ -558,6 +558,8 @@ class Webcomic {
 				$output[ 'og:image:width' ]  = $attributes[ 1 ];
 				$output[ 'og:image:height' ] = $attributes[ 2 ];
 			}
+			
+			$output[ 'generator' ] = sprintf( 'Webcomic %s', self::$version );
 		}
 		
 		$output = apply_filters( 'webcomic_opengraph', $output, $object, self::$collection );
@@ -574,7 +576,7 @@ class Webcomic {
 					}
 				}
 			} else {
-				echo sprintf( '<meta %s="%s" content="%s">', 0 === strpos( $k, 'twitter' ) ? 'name' : 'property', $k, $v ), "\n";
+				echo sprintf( '<meta %s="%s" content="%s">', ( 0 === strpos( $k, 'twitter' ) or 'generator' === $k ) ? 'name' : 'property', $k, $v ), "\n";
 			}
 		}
 	}
@@ -587,7 +589,7 @@ class Webcomic {
 	public function twitter_oauth() {
 		if ( isset( $_GET[ 'webcomic_twitter_oauth' ] ) ) {
 			if ( !class_exists( 'TwitterOAuth' ) ) {
-				require_once self::$dir . '-/library/twitter.php';
+				require_once self::$dir . '-/lib/twitter.php';
 			}
 			
 			$admin_url = add_query_arg( array( 'post_type' => $_GET[ 'webcomic_collection' ], 'page' => "{$_GET[ 'webcomic_collection' ]}-options" ), admin_url( 'edit.php' ) );
@@ -809,9 +811,21 @@ class Webcomic {
 		$match = $permalinks = array();
 		
 		if ( $wp_rewrite->using_permalinks() ) {
+			$tokens = array(
+				'%year%'     => '(?P<year>\d{4})',
+				'%monthnum%' => '(?P<monthnum>0[1-9]|1[012])',
+				'%day%'      => '(?P<day>0[1-9]|[12][0-9]|3[01])',
+				'%hour%'     => '(?P<hour>0[0-9]|1[0-9]|2[0-3])',
+				'%minute%'   => '(?P<minute>0[1-9]|[1-5][0-9])',
+				'%second%'   => '(?P<second>0[1-9]|[1-5][0-9])',
+				'%post_id%'  => '(?P<post_id>\d+)',
+				'%author%'   => '(?P<author>[\w-]+)'
+			);
+			
 			foreach ( self::$config[ 'collections' ] as $k => $v ) {
+				$tokens[ "%{$k}_storyline%" ]   = "(?P<{$k}_storyline>([\w-]+/?)+)";
 				$permalinks[ "{$k}_archive" ]   = $v[ 'slugs' ][ 'archive' ];
-				$permalinks[ "{$k}_webcomic" ]  = $v[ 'slugs' ][ 'webcomic' ];
+				$permalinks[ "{$k}_webcomic" ]  = str_replace( array_keys( $tokens ), $tokens, $v[ 'slugs' ][ 'webcomic' ] );
 				$permalinks[ "{$k}_storyline" ] = $v[ 'slugs' ][ 'storyline' ];
 				$permalinks[ "{$k}_character" ] = $v[ 'slugs' ][ 'character' ];
 			}
@@ -826,8 +840,17 @@ class Webcomic {
 				)
 			and $match
 		) {
-			$match[ 0 ]       = preg_replace( '/_(storyline|character)$/', '', $match[ 0 ] );
-			self::$collection = empty( self::$config[ 'collections' ][ $match[ 0 ] ] ) ? preg_replace( '/_(archive|webcomic|storyline|character)$/', '', array_search( $match[ 1 ], $permalinks ) ) : $match[ 0 ];
+			if ( 2 < count( $match ) ) {
+				foreach ( $permalinks as $k => $v ) {
+					if ( false !== strpos( $k, '_webcomic' ) and preg_match( sprintf( '{%s}', $v ), $match[ 1 ] ) ) {
+						self::$collection = str_replace( '_webcomic', '', $k );
+						break;
+					}
+				}
+			} else {
+				$match[ 0 ]       = preg_replace( '/_(storyline|character)$/', '', $match[ 0 ] );
+				self::$collection = empty( self::$config[ 'collections' ][ $match[ 0 ] ] ) ? preg_replace( '/_(archive|webcomic|storyline|character)$/', '', array_search( $match[ 1 ], $permalinks ) ) : $match[ 0 ];
+			}
 		}
 		
 		$active_theme    = new WP_Theme( get_stylesheet_directory(), '' );
@@ -991,18 +1014,50 @@ class Webcomic {
 			$status = self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ];
 			
 			if ( false !== strpos( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ], '%' ) ) {
-				$s = $c = $m = array();
-				$link = wp_get_shortlink( $post->ID );
+				$link   = wp_get_shortlink( $post->ID );
+				$tokens = array_merge( array(
+					'%url'               => $link ? $link : get_permalink( $post->ID ),
+					'%date'              => get_the_time( get_option( 'date_format' ), $post ),
+					'%time'              => get_the_time( get_option( 'time_format' ), $post ),
+					'%title'             => get_the_title( $post->ID ),
+					'%author'            => get_the_author_meta( 'display_name', $post->post_author ),
+					'%site-url'          => home_url(),
+					'%permalink'         => get_permalink( $post->ID ),
+					'%site-name'         => get_bloginfo( 'name' ),
+					'%collection-names'  => self::$config[ 'collections' ][ $post->post_type ][ 'name' ],
+					'%collection-name'   => self::$config[ 'collections' ][ $post->post_type ][ 'name' ],
+					'%collections'       => '#' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $post->post_type ][ 'slugs' ][ 'name' ] ),
+					'%collection'        => '#' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $post->post_type ][ 'slugs' ][ 'name' ] )
+				) );
 				
-				if ( false !== strpos( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ], '%storylines' ) and $storylines = wp_get_object_terms( $post->ID, "{$post->post_type}_storyline" ) and !is_wp_error( $storylines ) ) {
-					foreach ( $storylines as $storyline ) {
-						$s[] = str_replace( array( '_', '-' ), '', "#{$storyline->slug}" );
-					}
-				}
-				
-				if ( false !== strpos( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ], '%characters' ) and $characters = wp_get_object_terms( $post->ID, "{$post->post_type}_character" ) and !is_wp_error( $characters ) ) {
-					foreach ( $characters as $character ) {
-						$c[] = str_replace( array( '_', '-' ), '', "#{$character->slug}" );
+				if ( preg_match( sprintf( '/%%%s/', join( '|%', array_merge( array( 'storyline', 'character' ), self::$config[ 'collections' ][ $post->post_type ][ 'taxonomies' ] ) ) ), self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ] ) and $terms = wp_get_object_terms( $post->ID, array_merge( array( "{$post->post_type}_storyline", "{$post->post_type}_character" ), self::$config[ 'collections' ][ $post->post_type ][ 'taxonomies' ] ) ) and !is_wp_error( $terms ) ) {
+					foreach ( $terms as $term ) {
+						$hash = str_replace( array( '_', '-' ), '', "#{$term->slug}" );
+					
+						if ( preg_match( '/^webcomic\d+_(storyline|character)$/', $term->taxonomy ) ) {
+							$parts = explode( '_', $term->taxonomy );
+						
+							if ( false === strpos( $tokens[ 'collection-names' ], self::$config[ 'collections' ][ $parts[ 0 ] ][ 'name' ] ) ) {
+								$tokens[ '%collections' ]       .= ' #' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $parts[ 0 ] ][ 'slugs' ][ 'name' ] );
+								$tokens[ '%collection-names' ]  .= ' ' . self::$config[ 'collections' ][ $parts[ 0 ] ][ 'name' ];
+								$tokens[ '%xcollections' ]      .= empty( $tokens[ '%xcollection-names' ] ) ? '#' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $parts[ 0 ] ][ 'slugs' ][ 'name' ] ) : ' #' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $parts[ 0 ] ][ 'slugs' ][ 'name' ] );
+								$tokens[ '%xcollection-names' ] .= empty( $tokens[ '%xcollection-names' ] ) ? self::$config[ 'collections' ][ $parts[ 0 ] ][ 'name' ] : ' ' . self::$config[ 'collections' ][ $parts[ 0 ] ][ 'name' ];
+							}
+						
+							$tokens[ "%{$parts[ 1 ]}s" ]      .= empty( $tokens[ '%{$parts[ 1 ]}s' ] ) ? "{$hash}" : " {$hash}";
+							$tokens[ "%{$parts[ 1 ]}-names" ] .= empty( $tokens[ '%{$parts[ 1 ]}-names' ] ) ? "{$term->name}" : " {$term->name}";
+						
+							if ( 0 === strpos( $term->taxonomy, $post->post_type ) ) {
+								$tokens[ '%!{$parts[ 1 ]}s' ]      .= empty( $tokens[ '%!{$parts[ 1 ]}s' ] ) ? "{$hash}" : " {$hash}";
+								$tokens[ '%!{$parts[ 1 ]}-names' ] .= empty( $tokens[ '%!{$parts[ 1 ]}-names' ] ) ? "{$term->name}" : " {$term->name}";
+							} else {
+								$tokens[ '%x{$parts[ 1 ]}s' ]      .= empty( $tokens[ '%x{$parts[ 1 ]}s' ] ) ? "{$hash}" : " {$hash}";
+								$tokens[ '%x{$parts[ 1 ]}-names' ] .= empty( $tokens[ '%x{$parts[ 1 ]}-names' ] ) ? "{$term->name}" : " {$term->name}";
+							}
+						} else {
+							$tokens[ "%{$term->taxonomy}-names" ] = isset( $tokens[ "%{$term->taxonomy}-names" ] ) ? $tokens[ "%{$term->taxonomy}-names" ] . " {$term->name}" : "{$term->name}";
+							$tokens[ "%{$term->taxonomy}" ]       = isset( $tokens[ "%{$term->taxonomy}" ] ) ? $tokens[ "%{$term->taxonomy}" ]  . " {$hash}" : "{$hash}";
+						}
 					}
 				}
 				
@@ -1014,27 +1069,12 @@ class Webcomic {
 					}
 				}
 				
-				$tokens = array_merge( array(
-					'%url'             => $link ? $link : get_permalink( $post->ID ),
-					'%date'            => get_the_time( get_option( 'date_format' ), $post ),
-					'%time'            => get_the_time( get_option( 'time_format' ), $post ),
-					'%title'           => get_the_title( $post->ID ),
-					'%author'          => get_the_author_meta( 'display_name', $post->post_author ),
-					'%site-url'        => home_url(),
-					'%permalink'       => get_permalink( $post->ID ),
-					'%site-name'       => get_bloginfo( 'name' ),
-					'%storylines'      => join( ' ', $s ),
-					'%characters'      => join( ' ', $c ),
-					'%collection'      => '#' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $post->post_type ][ 'slugs' ][ 'name' ] ),
-					'%collection-name' => strip_tags( self::$config[ 'collections' ][ $post->post_type ][ 'name' ] )
-				), $m );
-				
 				$status = apply_filters( 'webcomic_tweet', str_replace( array_keys( $tokens ), $tokens, $status ), $post );
 			}
 			
 			if ( $status ) {
 				if ( !class_exists( 'TwitterOAuth' ) ) {
-					require_once self::$dir . '-/library/twitter.php';
+					require_once self::$dir . '-/lib/twitter.php';
 				}
 				
 				$oauth    = new TwitterOAuth( self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'consumer_key' ], self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'consumer_secret' ], self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'oauth_token' ], self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'oauth_secret' ] );
@@ -1253,20 +1293,17 @@ class Webcomic {
 		
 		if ( false !== strpos( $link, "%{$post->post_type}_storyline%" ) and $storylines = get_the_terms( $post->ID, "{$post->post_type}_storyline" ) and !is_wp_error( $storylines ) ) {
 			$storylines = array_reverse( $storylines );
-			$storyline  = $storylines[ 0 ]->slug;
+			$storyline  = array( $storylines[ 0 ]->slug );
 			
 			if ( $parent = $storylines[ 0 ]->parent and $parents = get_ancestors( $storylines[ 0 ]->term_id, $storylines[ 0 ]->taxonomy ) ) {
-				$storyline = array();
-				
 				foreach ( $parents as $parent ) {
-					$the_parent   = get_term( $parent, $storylines[ 0 ]->taxonomy );
-					$storylines[] = $the_parent->slug;
+					$the_parent  = get_term( $parent, $storylines[ 0 ]->taxonomy );
+					$storyline[] = $the_parent->slug;
 				}
-				
-				$storyline   = array_reverse( $storylines );
-				$storyline[] = $storylines[ 0 ]->slug;
-				$storyline   = join( '/', $storyline );
 			}
+			
+			$storyline = array_reverse( $storyline );
+			$storyline = join( '/', $storyline );
 		} else {
 			$storyline = '';
 		}

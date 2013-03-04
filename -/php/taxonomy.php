@@ -229,7 +229,7 @@ class WebcomicTaxonomy extends Webcomic {
 		$screen = get_current_screen();
 		
 		if ( preg_match( '/^admin_page_webcomic-term-sort|edit-webcomic\d+_(storyline|character)$/', $screen->id ) ) {
-			wp_register_script( 'jquery-nestedsortable', self::$url . '-/library/jquery.nestedsortable.js', array( 'jquery', 'jquery-ui-sortable' ) );
+			wp_register_script( 'jquery-nestedsortable', self::$url . '-/lib/jquery.nestedsortable.js', array( 'jquery', 'jquery-ui-sortable' ) );
 			wp_register_script( 'webcomic-admin-taxonomy', self::$url . '-/js/admin-taxonomy.js', array( 'jquery-nestedsortable' ) );
 			
 			wp_enqueue_script( 'webcomic-admin-taxonomy' );
@@ -291,7 +291,7 @@ class WebcomicTaxonomy extends Webcomic {
 				<?php $storyline ? _e( 'Cover', 'webcomic' ) : _e( 'Avatar', 'webcomic' ); ?>
 			</label>
 			<div id="webcomic_term_image" data-webcomic-admin-url="<?php echo admin_url(); ?>" data-webcomic-taxonomy="<?php echo $storyline ? 'storyline' : 'character'; ?>"><?php self::ajax_term_image( 0, $storyline ? 'storyline' : 'character', '' ); ?></div>
-			<p><?php $storyline ? _e( "The cover is a representative image that can be displayed on your site." ) : _e( "The avatar is a representative image that can be displayed on your site.", 'webcomic' ); ?></p>
+			<p><?php $storyline ? _e( "The cover is a representative image that can be displayed on your site.", 'webcomic' ) : _e( "The avatar is a representative image that can be displayed on your site.", 'webcomic' ); ?></p>
 		</div>
 		<?php
 	}
