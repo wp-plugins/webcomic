@@ -24,18 +24,25 @@ class WebcomicShortcode extends Webcomic {
 	 * @uses WebcomicShortcode::verify_webcomic_age()
 	 * @uses WebcomicShortcode::verify_webcomic_role()
 	 * @uses WebcomicShortcode::the_webcomic()
+	 * @uses WebcomicShortcode::webcomic_count()
 	 * @uses WebcomicShortcode::the_webcomic_link()
 	 * @uses WebcomicShortcode::the_webcomic_terms()
 	 * @uses WebcomicShortcode::the_related_webcomics()
 	 * @uses WebcomicShortcode::the_webcomic_term_link()
 	 * @uses WebcomicShortcode::the_webcomic_collection()
+	 * @uses WebcomicShortcode::the_webcomic_collections()
 	 * @uses WebcomicShortcode::webcomic_term_title()
 	 * @uses WebcomicShortcode::webcomic_term_description()
 	 * @uses WebcomicShortcode::webcomic_term_image()
+	 * @uses WebcomicShortcode::webcomic_term_crossovers()
+	 * @uses WebcomicShortcode::webcomic_crossover_title()
+	 * @uses WebcomicShortcode::webcomic_crossover_description()
+	 * @uses WebcomicShortcode::webcomic_crossover_image()
 	 * @uses WebcomicShortcode::webcomic_collection_title()
 	 * @uses WebcomicShortcode::webcomic_collection_description()
 	 * @uses WebcomicShortcode::webcomic_collection_image()
 	 * @uses WebcomicShortcode::webcomic_collection_print_amount()
+	 * @uses WebcomicShortcode::webcomic_collection_crossovers()
 	 * @uses WebcomicShortcode::webcomic_donation_amount()
 	 * @uses WebcomicShortcode::webcomic_donation_form()
 	 * @uses WebcomicShortcode::webcomic_print_amount()
@@ -54,6 +61,7 @@ class WebcomicShortcode extends Webcomic {
 		add_shortcode( 'verify_webcomic_age', array( $this, 'verify_webcomic_age' ) );
 		add_shortcode( 'verify_webcomic_role', array( $this, 'verify_webcomic_role' ) );
 		add_shortcode( 'the_webcomic', array( $this, 'the_webcomic' ) );
+		add_shortcode( 'webcomic_count', array( $this, 'webcomic_count' ) );
 		add_shortcode( 'the_related_webcomics', array( $this, 'the_related_webcomics' ) );
 		add_shortcode( 'previous_webcomic_link', array( $this, 'the_webcomic_link' ) );
 		add_shortcode( 'next_webcomic_link', array( $this, 'the_webcomic_link' ) );
@@ -62,6 +70,7 @@ class WebcomicShortcode extends Webcomic {
 		add_shortcode( 'random_webcomic_link', array( $this, 'the_webcomic_link' ) );
 		add_shortcode( 'purchase_webcomic_link', array( $this, 'the_webcomic_link' ) );
 		add_shortcode( 'the_webcomic_collection', array( $this, 'the_webcomic_collection' ) );
+		add_shortcode( 'the_webcomic_collections', array( $this, 'the_webcomic_collections' ) );
 		add_shortcode( 'the_webcomic_storylines', array( $this, 'the_webcomic_terms' ) );
 		add_shortcode( 'the_webcomic_characters', array( $this, 'the_webcomic_terms' ) );
 		add_shortcode( 'previous_webcomic_storyline_link', array( $this, 'the_webcomic_term_link' ) );
@@ -80,10 +89,16 @@ class WebcomicShortcode extends Webcomic {
 		add_shortcode( 'webcomic_character_description', array( $this, 'webcomic_term_description' ) );
 		add_shortcode( 'webcomic_storyline_cover', array( $this, 'webcomic_term_image' ) );
 		add_shortcode( 'webcomic_character_avatar', array( $this, 'webcomic_term_image' ) );
+		add_shortcode( 'webcomic_storyline_crossovers', array( $this, 'webcomic_term_crossovers' ) );
+		add_shortcode( 'webcomic_character_crossovers', array( $this, 'webcomic_term_crossovers' ) );
+		add_shortcode( 'webcomic_crossover_title', array( $this, 'webcomic_crossover_title' ) );
+		add_shortcode( 'webcomic_crossover_description', array( $this, 'webcomic_crossover_description' ) );
+		add_shortcode( 'webcomic_crossover_poster', array( $this, 'webcomic_crossover_image' ) );
 		add_shortcode( 'webcomic_collection_title', array( $this, 'webcomic_collection_title' ) );
 		add_shortcode( 'webcomic_collection_description', array( $this, 'webcomic_collection_description' ) );
 		add_shortcode( 'webcomic_collection_poster', array( $this, 'webcomic_collection_image' ) );
 		add_shortcode( 'webcomic_collection_print_amount', array( $this, 'webcomic_collection_print_amount' ) );
+		add_shortcode( 'webcomic_collection_crossovers', array( $this, 'webcomic_collection_crossovers' ) );
 		add_shortcode( 'webcomic_donation_amount', array( $this, 'webcomic_donation_amount' ) );
 		add_shortcode( 'webcomic_donation_form', array( $this, 'webcomic_donation_form' ) );
 		add_shortcode( 'webcomic_print_amount', array( $this, 'webcomic_print_amount' ) );
@@ -122,7 +137,7 @@ class WebcomicShortcode extends Webcomic {
 		if ( $clear = WebcomicTag::verify_webcomic_age( $collection, false, $age ) ) {
 			return do_shortcode( $content );
 		} else {
-			return apply_filters( 'webcomic_verify_age_inline', is_null( $clear ) ? sprintf( __( 'Please verify your age to view this content:%s', 'webcomic' ), sprintf( '<form method="post"><label>%s <input type="date" name="webcomic_birthday"></label><input type="submit"></form>', __( 'Birthday', 'webcomic' ) ) ) : __( "You don't have permission to view this content.", 'webcomic' ), $clear, $collection, $age, $content );
+			return apply_filters( 'webcomic_verify_age_inline', is_null( $clear ) ? __( 'Please verify your age to view this content:', 'webcomic' ) . '<form method="post"><label>' . __( 'Birthday', 'webcomic' ) . ' <input type="date" name="webcomic_birthday"></label><input type="submit"></form>' : __( "You don't have permission to view this content.", 'webcomic' ), $clear, $collection, $age, $content );
 		}
 	}
 	
@@ -170,6 +185,47 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::the_webcomic( $size, $relative, $in_same_term, $excluded_terms, $taxonomy, $the_post );
 	}
 	
+	/** Handle webcomic_count shortcode.
+	 * 
+	 * @param array $atts Shortcode attributes.
+	 * @param string $content Shortcode content.
+	 * @return string
+	 * @uses WebcomicTag::webcomic_count()
+	 */
+	public function webcomic_count( $atts, $content ) {
+		extract( shortcode_atts( array(
+			'if'       => '',
+			'the_post' => false
+		), $atts ) );
+		
+		if ( $content ) {
+			$c = WebcomicTag::webcomic_count( $the_post );
+			$m = array();
+			$o = false;
+			
+			if ( preg_match( '/^\s*(=|!=|lt|gt|lte|gte)\s*(\d+)\s*$/', $if, $m ) ) {
+				$m[ 2 ] = ( integer ) $m[ 2 ];
+				
+				if (
+					( '=' === $m[ 1 ] and $c === $m[ 2 ] )
+					or ( '!=' === $m[ 1 ] and $c !== $m[ 2 ] )
+					or ( 'lt' === $m[ 1 ] and $c < $m[ 2 ] )
+					or ( 'gt' === $m[ 1 ] and $c > $m[ 2 ] )
+					or ( 'lte' === $m[ 1 ] and $c <= $m[ 2 ] )
+					or ( 'gte' === $m[ 1 ] and $c >= $m[ 2 ] )
+				) {
+					$o = true;
+				}
+				
+				if ( $o ) {
+					return do_shortcode( $content );
+				}
+			}
+		} else {
+			return WebcomicTag::webcomic_count( $the_post );
+		}
+	}
+	
 	/** Handle the_related_webcomics shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
@@ -214,24 +270,28 @@ class WebcomicShortcode extends Webcomic {
 		
 		$relative = substr( $name, 0, strpos( $name, '_' ) );
 		
-		if ( 'random' === $relative and !$cache ) {
+		if ( 'first' === $relative and !$cache ) {
+			$relative = 'first-nocache';
+		} elseif ( 'last' === $relative and !$cache ) {
+			$relative = 'last-nocache';
+		} elseif ( 'random' === $relative and !$cache ) {
 			$relative = 'random-nocache';
 		}
 		
 		if ( !$link ) {
 			if ( $content ) {
 				$link = do_shortcode( $content );
-			} else if ( 'previous' === $relative ) {
+			} elseif ( 'previous' === $relative ) {
 				$link = '&lsaquo;';
-			} else if ( 'next' === $relative ) {
+			} elseif ( 'next' === $relative ) {
 				$link = '&rsaquo;';
-			} else if ( 'first' === $relative ) {
+			} elseif ( 'first' === $relative or 'first-nocache' === $relative ) {
 				$link = '&laquo;';
-			} else if ( 'last' === $relative ) {
+			} elseif ( 'last' === $relative or 'last-nocache' === $relative ) {
 				$link = '&raquo;';
-			} else if ( 'random' === $relative or 'random-nocache' === $relative ) {
+			} elseif ( 'random' === $relative or 'random-nocache' === $relative ) {
 				$link = '&infin;';
-			} else if ( 'purchase' === $relative ) {
+			} elseif ( 'purchase' === $relative ) {
 				$link = '&curren;';
 			}
 		}
@@ -241,9 +301,7 @@ class WebcomicShortcode extends Webcomic {
 	
 	/** Handle the_webcomic_collection shortcode.
 	 * 
-	 * @param array $atts Shortcode attributes.
-	 * @return string
-	 * @uses WebcomicTag::webcomic_collection_link()
+	 * @deprecated 4.0.7 4.1 Use the_webcomic_collections instead.
 	 */
 	public function the_webcomic_collection( $atts ) {
 		extract( shortcode_atts( array(
@@ -254,6 +312,26 @@ class WebcomicShortcode extends Webcomic {
 		), $atts ) );
 		
 		return WebcomicTag::webcomic_collection_link( $format, $link, $target, $collection );
+	}
+	
+	/** Handle the_webcomic_collections shortcode.
+	 * 
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 * @uses WebcomicTag::get_the_webcomic_collection_list()
+	 */
+	public function the_webcomic_collections( $atts ) {
+		extract( shortcode_atts( array(
+			'id'        => 0,
+			'before'    => '',
+			'sep'       => ', ',
+			'after'     => '',
+			'target'    => 'archive',
+			'image'     => '',
+			'crossover' => true
+		), $atts ) );
+		
+		return WebcomicTag::get_the_webcomic_collection_list(  $id, $before, $sep, $after, $target, $image, $crossover  );
 	}
 	
 	/** Handle the_webcomic_(terms) shortcodes.
@@ -277,7 +355,7 @@ class WebcomicShortcode extends Webcomic {
 		
 		if ( 'the_webcomic_storylines' === $name ) {
 			$taxonomy = 'storyline';
-		} else if ( 'the_webcomic_characters' === $name ) {
+		} elseif ( 'the_webcomic_characters' === $name ) {
 			$taxonomy = 'character';
 		}
 		
@@ -307,29 +385,33 @@ class WebcomicShortcode extends Webcomic {
 		$args     = wp_parse_str( $args, $array );
 		$relative = substr( $name, 0, strpos( $name, '_' ) );
 		
-		if ( 'random' === $relative and !$cache ) {
+		if ( 'first' === $relative and !$cache ) {
+			$relative = 'first-nocache';
+		} elseif ( 'last' === $relative and !$cache ) {
+			$relative = 'last-nocache';
+		} elseif ( 'random' === $relative and !$cache ) {
 			$relative = 'random-nocache';
 		}
 		
 		if ( !$link ) {
 			if ( $content ) {
 				$link = do_shortcode( $content );
-			} else if ( 'previous' === $relative ) {
+			} elseif ( 'previous' === $relative ) {
 				$link = '&lsaquo; %title';
-			} else if ( 'next' === $relative ) {
+			} elseif ( 'next' === $relative ) {
 				$link = '%title &rsaquo;';
-			} else if ( 'first' === $relative ) {
+			} elseif ( 'first' === $relative or 'first-nocache' === $relative ) {
 				$link = '&laquo; %title';
-			} else if ( 'last' === $relative ) {
+			} elseif ( 'last' === $relative or 'last-nocache' === $relative ) {
 				$link = '%title &raquo;';
-			} else if ( 'random' === $relative or 'random-nocache' === $relative ) {
+			} elseif ( 'random' === $relative or 'random-nocache' === $relative ) {
 				$link = '%title';
 			}
 		}
 		
 		if ( false !== strpos( $name, 'storyline' ) ) {
 			$tax = 'storyline';
-		} else if ( false !== strpos( $name, 'character' ) ) {
+		} elseif ( false !== strpos( $name, 'character' ) ) {
 			$tax = 'character';
 		} else {
 			$tax = '';
@@ -362,7 +444,7 @@ class WebcomicShortcode extends Webcomic {
 		
 		if ( false !== strpos( $name, 'storyline' ) ) {
 			$tax = 'storyline';
-		} else if ( false !== strpos( $name, 'character' ) ) {
+		} elseif ( false !== strpos( $name, 'character' ) ) {
 			$tax = 'character';
 		} else {
 			$tax = '';
@@ -390,7 +472,7 @@ class WebcomicShortcode extends Webcomic {
 		
 		if ( false !== strpos( $name, 'storyline' ) ) {
 			$tax = 'storyline';
-		} else if ( false !== strpos( $name, 'character' ) ) {
+		} elseif ( false !== strpos( $name, 'character' ) ) {
 			$tax = 'character';
 		} else {
 			$tax = '';
@@ -417,7 +499,7 @@ class WebcomicShortcode extends Webcomic {
 		
 		if ( false !== strpos( $name, 'storyline' ) ) {
 			$tax = 'storyline';
-		} else if ( false !== strpos( $name, 'character' ) ) {
+		} elseif ( false !== strpos( $name, 'character' ) ) {
 			$tax = 'character';
 		} else {
 			$tax = '';
@@ -426,15 +508,84 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_term_image( $size, $term, $collection ? "{$collection}_{$tax}" : '' );
 	}
 	
-	/** Handle webcomic_collection_title shortcode.
+	/** Handle webcomic_crossover_title shortcode.
+	 * 
+	 * @param array $atts Shortcode attributes.
+	 * @param string $content Shortcode content.
+	 * @return string
+	 * @uses WebcomicTag::webcomic_crossover_title()
+	 */
+	public function webcomic_crossover_title( $atts, $content ) {
+		extract( shortcode_atts( array(
+			'prefix' => ''
+		), $atts ) );
+		
+		$prefix = $content ? do_shortcode( $content ) : $prefix;
+		
+		return WebcomicTag::webcomic_crossover_title( $prefix );
+	}
+	
+	/** Handle webcomic_collection_description shortcode.
+	 * 
+	 * @return string
+	 * @uses WebcomicTag::webcomic_crossover_description()
+	 */
+	public function webcomic_crossover_description( $atts, $content, $name ) {
+		return WebcomicTag::webcomic_crossover_description();
+	}
+	
+	/** Handle webcomic_crossover_poster shortcode.
+	 * 
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 * @uses WebcomicTag::webcomic_crossover_image()
+	 */
+	public function webcomic_crossover_image( $atts ) {
+		extract( shortcode_atts( array(
+			'size' => 'full'
+		), $atts ) );
+		
+		return WebcomicTag::webcomic_crossover_image( $size );
+	}
+	
+	/** Handle webcomic_(storyline|character)_crossovers shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
 	 * @param string $name Shortcode name.
 	 * @return string
+	 * @uses WebcomicTag::webcomic_term_crossovers()
+	 */
+	public function webcomic_term_crossovers( $atts, $content, $name ) {
+		extract( shortcode_atts( array(
+			'before'     => '',
+			'sep'        => ', ',
+			'after'      => '',
+			'target'     => 'archive',
+			'image'      => '',
+			'term'       => 0,
+			'collection' => ''
+		), $atts ) );
+		
+		if ( false !== strpos( $name, 'storyline' ) ) {
+			$tax = 'storyline';
+		} elseif ( false !== strpos( $name, 'character' ) ) {
+			$tax = 'character';
+		} else {
+			$tax = '';
+		}
+		
+		return WebcomicTag::webcomic_term_crossovers( $term, $collection ? "{$collection}_{$tax}" : '', $before, $sep, $after, $target, $image );
+	}
+	
+	/** Handle webcomic_collection_title shortcode.
+	 * 
+	 * @param array $atts Shortcode attributes.
+	 * @param string $content Shortcode content.
+	 * @return string
 	 * @uses WebcomicTag::webcomic_collection_title()
 	 */
-	public function webcomic_collection_title( $atts, $content, $name ) {
+	public function webcomic_collection_title( $atts, $content ) {
 		extract( shortcode_atts( array(
 			'prefix'     => '',
 			'collection' => ''
@@ -448,12 +599,10 @@ class WebcomicShortcode extends Webcomic {
 	/** Handle webcomic_collection_description shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
-	 * @param string $content Shortcode content.
-	 * @param string $name Shortcode name.
 	 * @return string
 	 * @uses WebcomicTag::webcomic_collection_description()
 	 */
-	public function webcomic_collection_description( $atts, $content, $name ) {
+	public function webcomic_collection_description( $atts ) {
 		extract( shortcode_atts( array(
 			'collection' => ''
 		), $atts ) );
@@ -491,6 +640,25 @@ class WebcomicShortcode extends Webcomic {
 		), $atts ) );
 		
 		return WebcomicTag::webcomic_collection_print_amount( $type, $dec, $sep, $collection );
+	}
+	
+	/** Handle webcomic_collection_crossovers shortcode.
+	 * 
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 * @uses WebcomicTag::webcomic_term_crossovers()
+	 */
+	public function webcomic_collection_crossovers( $atts ) {
+		extract( shortcode_atts( array(
+			'before'     => '',
+			'sep'        => ', ',
+			'after'      => '',
+			'target'     => 'archive',
+			'image'      => '',
+			'collection' => ''
+		), $atts ) );
+		
+		return WebcomicTag::webcomic_collection_crossovers( $before, $sep, $after, $target, $image, $collection );
 	}
 	
 	/** Handle webcomic_donation_amount shortcode.
@@ -629,7 +797,7 @@ class WebcomicShortcode extends Webcomic {
 		
 		if ( false !== strpos( $name, 'storyline' ) ) {
 			$tax = 'storyline';
-		} else if ( false !== strpos( $name, 'character' ) ) {
+		} elseif ( false !== strpos( $name, 'character' ) ) {
 			$tax = 'character';
 		} else {
 			$tax = '';
@@ -706,7 +874,7 @@ class WebcomicShortcode extends Webcomic {
 		
 		if ( false !== strpos( $name, 'storyline' ) ) {
 			$tax = 'storyline';
-		} else if ( false !== strpos( $name, 'character' ) ) {
+		} elseif ( false !== strpos( $name, 'character' ) ) {
 			$tax = 'character';
 		} else {
 			$tax = '';
@@ -750,7 +918,7 @@ class WebcomicShortcode extends Webcomic {
 			'selected'         => 0
 		), $atts );
 		
-		echo WebcomicTag::webcomic_list_collections( $r );
+		return WebcomicTag::webcomic_list_collections( $r );
 	}
 	
 	/** Handle webcomic_term_cloud shortcodes.
@@ -785,7 +953,7 @@ class WebcomicShortcode extends Webcomic {
 		
 		if ( false !== strpos( $name, 'storyline' ) ) {
 			$tax = 'storyline';
-		} else if ( false !== strpos( $name, 'character' ) ) {
+		} elseif ( false !== strpos( $name, 'character' ) ) {
 			$tax = 'character';
 		} else {
 			$tax = '';
