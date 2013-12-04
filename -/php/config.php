@@ -1,22 +1,26 @@
 <?php
-/** Contains the WebcomicConfig class.
+/**
+ * Contains the WebcomicConfig class.
  * 
  * @package Webcomic
  */
 
-/** Handle configuration tasks.
+/**
+ * Handle configuration tasks.
  * 
  * @package Webcomic
  */
 class WebcomicConfig extends Webcomic {
-	/** Stores Webcomic Network data.
+	/**
+	 * Stores Webcomic Network data.
 	 * @var array
 	 */
 	private static $network = array(
 		'showcase' => array()
 	);
 	
-	/** Register hooks.
+	/**
+	 * Register hooks.
 	 * 
 	 * @uses WebcomicConfig::admin_init()
 	 * @uses WebcomicConfig::save_sizes()
@@ -31,7 +35,8 @@ class WebcomicConfig extends Webcomic {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
 	
-	/** Regester settings via the Settings API.
+	/**
+	 * Regester settings via the Settings API.
 	 * 
 	 * Registers the 'webcomic' setting (an array that stores all of the
 	 * plugin's configuration data), adds setting sections and fields for
@@ -170,7 +175,8 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Update size information when media options are saved.
+	/**
+	 * Update size information when media options are saved.
 	 * 
 	 * @uses Webcomic::$config
 	 * @hook admin_init
@@ -211,7 +217,8 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Register submenu settings pages.
+	/**
+	 * Register submenu settings pages.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses WebcomicConfig::page()
@@ -226,7 +233,8 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Validate the API key and load Network data.
+	/**
+	 * Validate the API key and load Network data.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::api_request()
@@ -264,7 +272,8 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Register and enqueue settings scripts.
+	/**
+	 * Register and enqueue settings scripts.
 	 * 
 	 * @uses Webcomic::$url
 	 * @hook admin_enqueue_scripts
@@ -273,15 +282,14 @@ class WebcomicConfig extends Webcomic {
 		$screen = get_current_screen();
 		
 		if ( preg_match( '/^admin_page_webcomic-network|webcomic\d+_page_webcomic\d+-options$/', $screen->id ) ) {
-			wp_register_script( 'webcomic-config', self::$url . '-/js/admin-config.js', array( 'jquery' ) );
-			
-			wp_enqueue_script( 'webcomic-config' );
+			wp_enqueue_script( 'webcomic-config', self::$url . '-/js/admin-config.js', array( 'jquery' ) );
 			
 			wp_enqueue_media();
 		}
 	}
 	
-	/** Render the Network setting
+	/**
+	 * Render the Network setting
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -291,7 +299,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Integrate setting.
+	/**
+	 * Render the Integrate setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -301,19 +310,21 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Navigate settings.
+	/**
+	 * Render the Navigate settings.
 	 * 
 	 * @uses Webcomic::$config
 	 */
 	public function navigate() {
 		?>
-		<label><input type="checkbox" name="webcomic_dynamic" id="webcomic_dynamic"<?php checked( self::$config[ 'dynamic' ] ); ?>> <?php _e( 'Enable dynamic webcomic navigation', 'webcomic' ); ?></label><br>
-		<label><input type="checkbox" name="webcomic_gestures"<?php checked( self::$config[ 'gestures' ] ); ?>> <?php _e( 'Enable touch gestures for webcomic navigation', 'webcomic' ); ?></label><br>
-		<label><input type="checkbox" name="webcomic_shortcuts"<?php checked( self::$config[ 'shortcuts' ] ); ?>> <?php _e( 'Enable keyboard shortcuts for webcomic navigation', 'webcomic' ); ?></label>
+		<label><input type="checkbox" name="webcomic_dynamic" id="webcomic_dynamic"<?php checked( self::$config[ 'dynamic' ] ); ?>> <?php _e( 'Dynamic webcomic navigation', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_gestures"<?php checked( self::$config[ 'gestures' ] ); ?>> <?php _e( 'Touch gestures for webcomic navigation', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_shortcuts"<?php checked( self::$config[ 'shortcuts' ] ); ?>> <?php _e( 'Keyboard shortcuts for webcomic navigation', 'webcomic' ); ?></label>
 		<?php
 	}
 	
-	/** Render the Uninstall setting.
+	/**
+	 * Render the Uninstall setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -325,7 +336,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Collections setting section.
+	/**
+	 * Render the Collections setting section.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -384,7 +396,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Additional Sizes settings section.
+	/**
+	 * Render the Additional Sizes settings section.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -448,7 +461,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Network > Key setting.
+	/**
+	 * Render the Network > Key setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -468,7 +482,8 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Render the Network > Showcase > Activate setting.
+	/**
+	 * Render the Network > Showcase > Activate setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -478,7 +493,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Network > Showcase > Name setting.
+	/**
+	 * Render the Network > Showcase > Name setting.
 	 * 
 	 * @uses WebcomicConfig::$network
 	 */
@@ -489,7 +505,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Network > Showcase > URL setting.
+	/**
+	 * Render the Network > Showcase > URL setting.
 	 * 
 	 * @uses WebcomicConfig::$network
 	 */
@@ -500,19 +517,21 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Network > Showcase > Creators setting.
+	/**
+	 * Render the Network > Showcase > Creators setting.
 	 * 
 	 * @uses WebcomicConfig::$network
 	 */
 	public function network_showcase_creators() {
 		$user = wp_get_current_user();
 		?>
-		<input type="text" name="webcomic_creators" id="webcomic_creators" value="<?php echo esc_attr( self::$network[ 'showcase' ] ? join( ', ', self::$network[ 'showcase' ][ 'creators' ] ) : $user->display_name ); ?>" class="regular-text">
+		<input type="text" name="webcomic_creators" id="webcomic_creators" value="<?php echo esc_attr( self::$network[ 'showcase' ] ? implode( ', ', self::$network[ 'showcase' ][ 'creators' ] ) : $user->display_name ); ?>" class="regular-text">
 		<p class="description"><?php _e( 'Enter the names or Twitter @usernames of the creators of this site, separated by commas.', 'webcomic' ); ?></p>
 		<?php
 	}
 	
-	/** Render the Network > Showcase > Description setting.
+	/**
+	 * Render the Network > Showcase > Description setting.
 	 * 
 	 * @uses WebcomicConfig::$network
 	 */
@@ -523,7 +542,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Network > Showcase > Rating setting.
+	/**
+	 * Render the Network > Showcase > Rating setting.
 	 * 
 	 * @uses WebcomicConfig::$network
 	 */
@@ -545,7 +565,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Network > Showcase > Rating setting.
+	/**
+	 * Render the Network > Showcase > Rating setting.
 	 * 
 	 * @uses WebcomicConfig::$network
 	 */
@@ -587,7 +608,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Network > Showcase > Image setting.
+	/**
+	 * Render the Network > Showcase > Image setting.
 	 * 
 	 * @uses WebcomicConfig::$network
 	 * @uses WebcomicConfig::ajax_showcase_image()
@@ -595,11 +617,12 @@ class WebcomicConfig extends Webcomic {
 	public function network_showcase_image() {
 		?>
 		<div id="webcomic_showcase_image"><?php self::ajax_showcase_image( isset( self::$network[ 'showcase' ][ 'image' ] ) ? self::$network[ 'showcase' ][ 'image' ] : '' ); ?></div>
-		<p class="description"><?php _e( 'The billboard is a representative image for your site. It should be 640&times;360 pixels in size and will be hotlinked directly from your site.', 'webcomic' ); ?></p>
+		<p class="description"><?php _e( 'The billboard is a representative image for your site. It must be 640&times;360 pixels in size and will be hotlinked directly from your site.', 'webcomic' ); ?></p>
 		<?php
 	}
 	
-	/** Render the Network > Showcase > Testimonial setting.
+	/**
+	 * Render the Network > Showcase > Testimonial setting.
 	 * 
 	 * @uses WebcomicConfig::$network
 	 */
@@ -610,7 +633,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Name setting.
+	/**
+	 * Render the Name setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -621,7 +645,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Slug setting.
+	/**
+	 * Render the Slug setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -632,7 +657,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Description setting.
+	/**
+	 * Render the Description setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -643,7 +669,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Cover setting.
+	/**
+	 * Render the Cover setting.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses WebcomicConfig::ajax_collection_image()
@@ -655,7 +682,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Theme setting.
+	/**
+	 * Render the Theme setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -673,7 +701,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Feeds setting.
+	/**
+	 * Render the Feeds setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -692,7 +721,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Buffer setting.
+	/**
+	 * Render the Buffer setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -706,7 +736,8 @@ class WebcomicConfig extends Webcomic {
 		);
 	}
 	
-	/** Render the Transcripts setting.
+	/**
+	 * Render the Transcripts setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -716,7 +747,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Transcripts setting.
+	/**
+	 * Render the Transcripts setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -729,7 +761,8 @@ class WebcomicConfig extends Webcomic {
 			</select>' ), '</label>';
 	}
 	
-	/** Render the Transcripts setting.
+	/**
+	 * Render the Transcripts setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -742,7 +775,8 @@ class WebcomicConfig extends Webcomic {
 		);
 	}
 	
-	/** Render the Transcripts > Languages setting.
+	/**
+	 * Render the Transcripts > Languages setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -765,7 +799,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Commerce > Business Email setting.
+	/**
+	 * Render the Commerce > Business Email setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -777,7 +812,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Commerce > Default webcomic settings setting.
+	/**
+	 * Render the Commerce > Default webcomic settings setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -788,7 +824,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Commerce > Sales setting.
+	/**
+	 * Render the Commerce > Sales setting.
 	 * @uses Webcomic::$config
 	 */
 	public function collection_commerce_sales() {
@@ -806,7 +843,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Commerce > Prices setting.
+	/**
+	 * Render the Commerce > Prices setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -829,7 +867,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Commerce > Shipping setting.
+	/**
+	 * Render the Commerce > Shipping setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -852,7 +891,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Commerce > Donation setting.
+	/**
+	 * Render the Commerce > Donation setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -863,7 +903,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Commerce > Currencey setting.
+	/**
+	 * Render the Commerce > Currencey setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -908,7 +949,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Access > Age setting.
+	/**
+	 * Render the Access > Age setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -925,7 +967,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Access > Role setting.
+	/**
+	 * Render the Access > Role setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -950,43 +993,47 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Posts > Content settings.
+	/**
+	 * Render the Posts > Content settings.
 	 * 
 	 * @uses Webcomic::$config
 	 */
 	public function collection_supports_content() {
 		?>
-		<label><input type="checkbox" name="webcomic_supports[]" value="title" id="webcomic_posts_title"<?php checked( in_array( 'title', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable post titles', 'webcomic' ); ?></label><br>
-		<label><input type="checkbox" name="webcomic_supports[]" value="excerpt"<?php checked( in_array( 'excerpt', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable post excerpts', 'webcomic' ); ?></label><br>
-		<label><input type="checkbox" name="webcomic_supports[]" value="editor"<?php checked( in_array( 'editor', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable the post editor', 'webcomic' ); ?></label><br>
-		<label><input type="checkbox" name="webcomic_supports[]" value="thumbnail"<?php checked( in_array( 'thumbnail', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable featured images', 'webcomic' ); ?></label>
+		<label><input type="checkbox" name="webcomic_supports[]" value="title" id="webcomic_posts_title"<?php checked( in_array( 'title', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Post titles', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_supports[]" value="excerpt"<?php checked( in_array( 'excerpt', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Post excerpts', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_supports[]" value="editor"<?php checked( in_array( 'editor', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Post editor', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_supports[]" value="thumbnail"<?php checked( in_array( 'thumbnail', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Featured images', 'webcomic' ); ?></label>
 		<?php
 	}
 	
-	/** Render the Posts > Discussion settings.
+	/**
+	 * Render the Posts > Discussion settings.
 	 * 
 	 * @uses Webcomic::$config
 	 */
 	public function collection_supports_discussion() {
 		?>
-		<label><input type="checkbox" name="webcomic_supports[]" value="comments" id="webcomic_posts_comments"<?php checked( in_array( 'comments', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable comments', 'webcomic' ); ?></label><br>
-		<label><input type="checkbox" name="webcomic_supports[]" value="trackbacks"<?php checked( in_array( 'trackbacks', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable trackbacks', 'webcomic' ); ?></label>
+		<label><input type="checkbox" name="webcomic_supports[]" value="comments" id="webcomic_posts_comments"<?php checked( in_array( 'comments', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Comments', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_supports[]" value="trackbacks"<?php checked( in_array( 'trackbacks', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Trackbacks', 'webcomic' ); ?></label>
 		<?php
 	}
 	
-	/** Render the Posts > Miscellanea settings.
+	/**
+	 * Render the Posts > Miscellanea settings.
 	 * 
 	 * @uses Webcomic::$config
 	 */
 	public function collection_supports_miscellanea() {
 		?>
-		<label><input type="checkbox" name="webcomic_supports[]" value="revisions" id="webcomic_posts_revisions"<?php checked( in_array( 'revisions', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable revisions', 'webcomic' ); ?></label><br>
-		<label><input type="checkbox" name="webcomic_supports[]" value="custom-fields"<?php checked( in_array( 'custom-fields', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable custom fields', 'webcomic' ); ?></label><br>
-		<label><input type="checkbox" name="webcomic_supports[]" value="post-formats"<?php checked( in_array( 'post-formats', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Enable post formats', 'webcomic' ); ?></label>
+		<label><input type="checkbox" name="webcomic_supports[]" value="revisions" id="webcomic_posts_revisions"<?php checked( in_array( 'revisions', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Revisions', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_supports[]" value="custom-fields"<?php checked( in_array( 'custom-fields', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Custom fields', 'webcomic' ); ?></label><br>
+		<label><input type="checkbox" name="webcomic_supports[]" value="post-formats"<?php checked( in_array( 'post-formats', self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'supports' ] ) ); ?>> <?php _e( 'Post formats', 'webcomic' ); ?></label>
 		<?php
 	}
 	
-	/** Render the Posts > Taxonomies settings.
+	/**
+	 * Render the Posts > Taxonomies settings.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1004,7 +1051,8 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Render the Slug > Archive setting.
+	/**
+	 * Render the Slug > Archive setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1017,7 +1065,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Slug > Webcomics setting.
+	/**
+	 * Render the Slug > Webcomics setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1030,7 +1079,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Slugs > Storylines setting.
+	/**
+	 * Render the Slugs > Storylines setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1043,7 +1093,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the Slugs > Characters setting.
+	/**
+	 * Render the Slugs > Characters setting.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1056,7 +1107,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render Twitter > Authorized Account
+	/**
+	 * Render Twitter > Authorized Account
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses WebcomicConfig::ajax_twitter_account()
@@ -1065,7 +1117,8 @@ class WebcomicConfig extends Webcomic {
 		echo '<div id="webcomic_twitter_account">', self::ajax_twitter_account( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'twitter' ][ 'consumer_key' ], self::$config[ 'collections' ][ $_GET[ 'post_type' ] ][ 'twitter' ][ 'consumer_secret' ], $_GET[ 'post_type' ] ), '</div>';
 	}
 	
-	/** Render Twitter > Consumer Key
+	/**
+	 * Render Twitter > Consumer Key
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1075,7 +1128,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render Twitter > Consumer Secret
+	/**
+	 * Render Twitter > Consumer Secret
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1085,7 +1139,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render Twitter > Format
+	/**
+	 * Render Twitter > Format
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1095,7 +1150,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render Twitter > Media
+	/**
+	 * Render Twitter > Media
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -1105,7 +1161,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Save callback for the webcomic option.
+	/**
+	 * Save callback for the webcomic option.
 	 * 
 	 * If 'webcomic_general' is set we're working on the general
 	 * settings page.
@@ -1113,7 +1170,7 @@ class WebcomicConfig extends Webcomic {
 	 * if 'webcomic_network' is set we're working on the network
 	 * settings page.
 	 * 
-	 * If 'webcomic_collection is set we're working on a collection
+	 * If 'webcomic_collection' is set we're working on a collection
 	 * settings page.
 	 * 
 	 * @param array $options Configuration array.
@@ -1125,6 +1182,8 @@ class WebcomicConfig extends Webcomic {
 	 */
 	public function save( $options ) {
 		$new = $bulk = false;
+		
+		$_POST = stripslashes_deep( $_POST );
 		
 		if ( isset( $_POST[ 'webcomic_general' ] ) ) {
 			if ( isset( $_POST[ 'webcomic_add_collection' ] ) ) {
@@ -1166,6 +1225,8 @@ class WebcomicConfig extends Webcomic {
 						foreach ( get_terms( "{$id}_character", array( 'get' => 'all', 'fields' => 'ids' ) ) as $character ) {
 							wp_delete_term( $character, "{$id}_character" );
 						}
+						
+						delete_post_meta( self::$config[ 'collections' ][ $id ][ 'image' ], '_wp_attachment_context', $id );
 						
 						unset( self::$config[ 'collections' ][ $id ] );
 						
@@ -1215,14 +1276,14 @@ class WebcomicConfig extends Webcomic {
 						$theme    = new WP_Theme( get_stylesheet_directory(), '' );
 						$template = $theme->get( 'Template' ) ? new WP_Theme( get_template_directory(), '' ) : false;
 						$data     = array(
-							'name'        => $_POST[ 'webcomic_name' ] ? strip_tags( stripslashes( $_POST[ 'webcomic_name' ] ) ) : get_bloginfo( 'name' ),
+							'name'        => $_POST[ 'webcomic_name' ] ? strip_tags( $_POST[ 'webcomic_name' ] ) : get_bloginfo( 'name' ),
 							'url'         => filter_var( $_POST[ 'webcomic_url' ], FILTER_VALIDATE_URL ) ? $_POST[ 'webcomic_url' ] : home_url(),
-							'creators'    => $_POST[ 'webcomic_creators' ] ? preg_split( '/\s,\s/', strip_tags( stripslashes( $_POST[ 'webcomic_creators' ] ) ) ) : array( $user->display_name ),
-							'description' => substr( strip_tags( stripslashes( $_POST[ 'webcomic_description' ] ) ), 0, 160 ),
+							'creators'    => $_POST[ 'webcomic_creators' ] ? preg_split( '/\s*,\s*/', strip_tags( $_POST[ 'webcomic_creators' ] ) ) : array( $user->display_name ),
+							'description' => substr( strip_tags( $_POST[ 'webcomic_description' ] ), 0, 160 ),
 							'rating'      => $_POST[ 'webcomic_rating' ],
 							'genre'       => empty( $_POST[ 'webcomic_genre' ] ) ? array( 'meta' ) : array_slice( $_POST[ 'webcomic_genre' ], 0, 5 ),
 							'image'       => $_POST[ 'webcomic_image' ] ? $_POST[ 'webcomic_image' ] : 'http://webcomic.nu/-/img/showcase.png',
-							'testimonial' => strip_tags( stripslashes( $_POST[ 'webcomic_testimonial' ] ) ),
+							'testimonial' => strip_tags( $_POST[ 'webcomic_testimonial' ] ),
 							'version'     => self::$version,
 							'theme'       => array( 'name' => $theme->get( 'Name' ), 'url' => $theme->get( 'ThemeURI' ), 'author' => $theme->get( 'Author' ), 'author_url' => $theme->get( 'AuthorURI' ) ),
 							'template'    => $template ? array( 'name' => $template->get( 'Name' ), 'url' => $template->get( 'ThemeURI' ), 'author' => $template->get( 'Author' ), 'author_url' => $template->get( 'AuthorURI' ) ) : array()
@@ -1346,6 +1407,16 @@ class WebcomicConfig extends Webcomic {
 				)
 			);
 			
+			if ( $_POST[ 'webcomic_image' ] ) {
+				if ( isset( self::$config[ 'collections' ][ $id ][ 'image' ] ) and self::$config[ 'collections' ][ $id ][ 'image' ] !== $_POST[ 'webcomic_image' ] ) {
+					delete_post_meta( self::$config[ 'collections' ][ $id ][ 'image' ], '_wp_attachment_context', $id );
+				}
+				
+				update_post_meta( $_POST[ 'webcomic_image' ], '_wp_attachment_context', $id );
+			} else {
+				delete_post_meta( self::$config[ 'collections' ][ $id ][ 'image' ], '_wp_attachment_context', $id );
+			}
+			
 			foreach ( $_POST[ 'webcomic_slugs' ] as $k  => $v ) {
 				$slug = array();
 				
@@ -1355,7 +1426,7 @@ class WebcomicConfig extends Webcomic {
 					}
 				}
 				
-				if ( $slug = join( '/', $slug ) ) {
+				if ( $slug = implode( '/', $slug ) ) {
 					$collection[ 'slugs' ][ $k ] = $slug;
 				}
 			}
@@ -1396,7 +1467,8 @@ class WebcomicConfig extends Webcomic {
 		return ( isset( $_POST[ 'webcomic_general' ] ) or isset( $_POST[ 'webcomic_network' ] ) or isset( $_POST[ 'webcomic_collection' ] ) ) ? self::$config : $options;
 	}
 	
-	/** Render a settings page.
+	/**
+	 * Render a settings page.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::$version
@@ -1428,7 +1500,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Render the showcase page.
+	/**
+	 * Render the showcase page.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::$version
@@ -1453,7 +1526,8 @@ class WebcomicConfig extends Webcomic {
 		<?php
 	}
 	
-	/** Generic settings section callback.
+	/**
+	 * Generic settings section callback.
 	 * 
 	 * Most sections don't include a description, but if permalinks are
 	 * set to Default we need to warn users that the permalink URL's
@@ -1465,7 +1539,8 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Handle showcase image updating.
+	/**
+	 * Handle showcase image updating.
 	 * 
 	 * @param integer $id ID of the selected image.
 	 */
@@ -1482,7 +1557,19 @@ class WebcomicConfig extends Webcomic {
 				$url = array_shift( wp_get_attachment_image_src( $id, 'full' ) );
 			}
 			
-			echo $id ? '<a href="' . esc_url( add_query_arg( array( 'post' => $id, 'action' => 'edit' ), admin_url( 'post.php' ) ) ) . '"><img src="' . $url . '" alt="" height="360" width="640"></a><br>' : '<img src="' . $url . '" alt="" height="360" width="640"><br>';
+			if ( $id ) {
+				$attributes = wp_get_attachment_image_src( $id, 'full' );
+				
+				if ( 640 === $attributes[ 1 ] and 360 === $attributes[ 2 ] ) {
+					echo '<a href="', esc_url( add_query_arg( array( 'post' => $id, 'action' => 'edit' ), admin_url( 'post.php' ) ) ), '"><img src="', $url, '" alt="" height="360" width="640"></a><br>';
+				} else {
+					$id = 0;
+					
+					echo '<b style="color:#bc0b0b;font-weight:bold">', __( 'Images must be 640&times;360 pixels in size.', 'webcomic' ), '</b><br>';
+				}
+			} else {
+				echo '<img src="' . $url . '"><br>';
+			}
 		}
 		
 		echo '<input type="hidden" name="webcomic_image" value="', $url, '"><a class="button webcomic-image" data-title="', __( 'Select a Billboard', 'webcomic' ), '" data-update="', __( 'Update', 'webcomic' ), '" data-callback="WebcomicConfig::ajax_showcase_image" data-target="#webcomic_showcase_image">', $id ? __( 'Change', 'webcomic' ) : __( 'Select', 'webcomic' ), '</a>';
@@ -1492,10 +1579,10 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Handle collection poster image updating.
+	/**
+	 * Handle collection poster image updating.
 	 * 
 	 * @param integer $id ID of the selected image.
-	 * @param string $collection Collection the poster is for.
 	 */
 	public static function ajax_collection_image( $id ) {
 		if ( $id ) {
@@ -1509,7 +1596,8 @@ class WebcomicConfig extends Webcomic {
 		}
 	}
 	
-	/** Handle dynamic slug previews.
+	/**
+	 * Handle dynamic slug previews.
 	 * 
 	 * @param string $slug New slug.
 	 * @param string $preview ID of the element theupdated slug will be loaded into for preview.
@@ -1528,7 +1616,7 @@ class WebcomicConfig extends Webcomic {
 			}
 		}
 		
-		$slug = join( '/', $slug );
+		$slug = implode( '/', $slug );
 		$slug = $slug ? $slug : self::$config[ 'collections' ][ $collection ][ 'slugs' ][ $fallback ];
 		
 		echo json_encode( array(
@@ -1537,7 +1625,8 @@ class WebcomicConfig extends Webcomic {
 		) );
 	}
 	
-	/** Handle dynamic commerce defaults.
+	/**
+	 * Handle dynamic commerce defaults.
 	 * 
 	 * @param string $email Email to validate.
 	 */
@@ -1545,7 +1634,8 @@ class WebcomicConfig extends Webcomic {
 		echo json_encode( array( 'clear' => filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 	}
 	
-	/** Handle dynamic Twitter authorization updates.
+	/**
+	 * Handle dynamic Twitter authorization updates.
 	 * 
 	 * @param string $consumer_key Twitter application consumer key.
 	 * @param string $consumer_secret Twitter application consumer secret.
@@ -1571,12 +1661,12 @@ class WebcomicConfig extends Webcomic {
 			
 			update_option( 'webcomic_options', self::$config );
 			
-			$code = $oauth->request( 'GET', $oauth->url( '1/account/verify_credentials' ) );
+			$code = $oauth->request( 'GET', $oauth->url( '1.1/account/verify_credentials' ) );
 			
 			if ( 200 === intval( $code ) ) {
 				$response = json_decode( $oauth->response[ 'response' ] );
 				
-				echo '<a href="http://twitter.com/', $response->screen_name, '" target="_blank"><b>@', $response->screen_name, '</b></a> <a href="https://twitter.com/settings/applications" target="_blank" class="button">', __( 'Revoke Access', 'webcomic' ), '</a>';
+				echo '<a href="http://twitter.com/', $response->screen_name, '" target="_blank"><b>@', $response->screen_name, '</b></a> <a href="http://twitter.com/settings/applications" target="_blank" class="button">', __( 'Revoke Access', 'webcomic' ), '</a>';
 			} else {
 				$code = $oauth->request( 'POST', $oauth->url( 'oauth/request_token', '' ), array(
 					'oauth_callback' => add_query_arg( array( 'webcomic_twitter_oauth' => true, 'webcomic_collection' => $collection ), get_site_url() )
@@ -1592,11 +1682,11 @@ class WebcomicConfig extends Webcomic {
 					
 					echo ( self::$config[ 'collections' ][ $collection ][ 'twitter' ][ 'oauth_token' ] and self::$config[ 'collections' ][ $collection ][ 'twitter' ][ 'oauth_secret' ]  ) ? __( '<p class="description">Your credentials could not be verified.</p>', 'webcomic' ) : '', '<a href="', add_query_arg( array( 'oauth_token' => $response[ 'oauth_token' ] ), $oauth->url( 'oauth/authorize', '' ) ), '"><img src="', self::$url, '-/img/twitter.png" alt="', __( 'Sign in with Twitter', 'webcomic' ), '"></a>';
 				} else {
-					_e( 'Validation error. Please ensure your <a href="https://dev.twitter.com/apps/new" target="_blank">Twitter Application</a> <b>consumer key</b> and <b>consumer secret</b> are entered correctly.', 'webcomic' );
+					_e( 'Validation error. Please ensure your <a href="http://dev.twitter.com/apps/new" target="_blank">Twitter Application</a> <b>consumer key</b> and <b>consumer secret</b> are entered correctly.', 'webcomic' );
 				}
 			}
 		} else {
-			echo '<span class="description">', __( 'Please enter your <a href="https://dev.twitter.com/apps/new" target="_blank">Twitter Application</a> <b>consumer key</b> and <b>consumer secret</b> below.', 'webcomic' ), '</span>';
+			echo '<span class="description">', __( 'Please enter your <a href="http://dev.twitter.com/apps/new" target="_blank">Twitter Application</a> <b>consumer key</b> and <b>consumer secret</b> below.', 'webcomic' ), '</span>';
 		}
 	}
 }

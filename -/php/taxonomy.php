@@ -1,15 +1,18 @@
 <?php
-/** Contains WebcomicTaxonomy and related classes.
+/**
+ * Contains WebcomicTaxonomy and related classes.
  * 
  * @package Webcomic
  */
 
-/** Handle taxonomy-related tasks.
+/**
+ * Handle taxonomy-related tasks.
  * 
  * @package Webcomic
  */
 class WebcomicTaxonomy extends Webcomic {
-	/** Register hooks.
+	/**
+	 * Register hooks.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses WebcomicTaxonomy::admin_init()
@@ -50,7 +53,8 @@ class WebcomicTaxonomy extends Webcomic {
 		}
 	}
 	
-	/** Handle storyline sorting.
+	/**
+	 * Handle storyline sorting.
 	 * 
 	 * @hook admin_init
 	 * @uses WebcomicAdmin::notify()
@@ -82,7 +86,8 @@ class WebcomicTaxonomy extends Webcomic {
 		}
 	}
 	
-	/** Register taxonomy submenu pages.
+	/**
+	 * Register taxonomy submenu pages.
 	 * 
 	 * @uses WebcomicTaxonomy::page_term_sort()
 	 * @hook admin_menu
@@ -91,7 +96,8 @@ class WebcomicTaxonomy extends Webcomic {
 		add_submenu_page( 'options.php', __( 'Sort Webcomic Terms', 'webcomic' ), __( 'Sort Webcomic Terms', 'webcomic' ), 'manage_categories', 'webcomic-term-sort', array( $this, 'page_term_sort' ) );
 	}
 	
-	/** Detach media, upload new media, and update term group.
+	/**
+	 * Detach media, upload new media, and update term group.
 	 * 
 	 * @param integer $id The edited term ID.
 	 * @param integer $tax_id The edited term taxonomy ID.
@@ -134,7 +140,8 @@ class WebcomicTaxonomy extends Webcomic {
 		}
 	}
 	
-	/** Upload media and set storyline group when creating a new term.
+	/**
+	 * Upload media and set storyline group when creating a new term.
 	 * 
 	 * @param integer $id The created term ID.
 	 * @param integer $tax_id The created term taxonomy ID.
@@ -178,7 +185,8 @@ class WebcomicTaxonomy extends Webcomic {
 		}
 	}
 	
-	/** Remove term meta and normalize storyline groups.
+	/**
+	 * Remove term meta and normalize storyline groups.
 	 * 
 	 * @param integer $id The deleted term ID.
 	 * @param integer $tax_id The deleted term taxonomy ID.
@@ -219,7 +227,8 @@ class WebcomicTaxonomy extends Webcomic {
 		}
 	}
 	
-	/** Register and enqueue scripts.
+	/**
+	 * Register and enqueue scripts.
 	 * 
 	 * @uses Webcomic::$url
 	 * @hook admin_enqueue_scripts
@@ -229,21 +238,19 @@ class WebcomicTaxonomy extends Webcomic {
 		
 		if ( preg_match( '/^admin_page_webcomic-term-sort|edit-webcomic\d+_(storyline|character)$/', $screen->id ) ) {
 			wp_register_script( 'jquery-nestedsortable', self::$url . '-/lib/jquery.nestedsortable.js', array( 'jquery', 'jquery-ui-sortable' ) );
-			wp_register_script( 'webcomic-admin-taxonomy', self::$url . '-/js/admin-taxonomy.js', array( 'jquery-nestedsortable' ) );
 			
-			wp_enqueue_script( 'webcomic-admin-taxonomy' );
+			wp_enqueue_script( 'webcomic-admin-taxonomy', self::$url . '-/js/admin-taxonomy.js', array( 'jquery-nestedsortable' ) );
 			
 			wp_enqueue_media();
 		}
 		
 		if ( 'admin_page_webcomic-term-sort' === $screen->id ) {
-			wp_register_style( 'webcomic-admin-taxonomy', self::$url . '-/css/admin-taxonomy.css' );
-			
-			wp_enqueue_style( 'webcomic-admin-taxonomy' );
+			wp_enqueue_style( 'webcomic-admin-taxonomy', self::$url . '-/css/admin-taxonomy.css' );
 		}
 	}
 	
-	/** Force sorting storylines by term_group in the admin dashboard.
+	/**
+	 * Force sorting storylines by term_group in the admin dashboard.
 	 * 
 	 * @param array $args The get_terms arguments array.
 	 * @param array $taxonomies The get_terms taxonomies array.
@@ -258,7 +265,8 @@ class WebcomicTaxonomy extends Webcomic {
 		return $args;
 	}
 	
-	/** Render link to sort webcomic terms.
+	/**
+	 * Render link to sort webcomic terms.
 	 * 
 	 * @hook (webcomid+)_storyline_pre_add_form
 	 */
@@ -271,7 +279,8 @@ class WebcomicTaxonomy extends Webcomic {
 		<?php
 	}
 	
-	/** Render file field for term imagery on the add term form.
+	/**
+	 * Render file field for term imagery on the add term form.
 	 * 
 	 * We have to use a small amount of Javascript to disable the AJAX
 	 * submission and ensure any files are actually uploaded.
@@ -295,7 +304,8 @@ class WebcomicTaxonomy extends Webcomic {
 		<?php
 	}
 	
-	/** Render file field for term imagery on the edit form.
+	/**
+	 * Render file field for term imagery on the edit form.
 	 * 
 	 * We have to use a small amount of Javascript to disable the AJAX
 	 * submission and ensure any files are actually uploaded.
@@ -319,7 +329,8 @@ class WebcomicTaxonomy extends Webcomic {
 		<?php
 	}
 	
-	/** Render custom taxonomy columns.
+	/**
+	 * Render custom taxonomy columns.
 	 * 
 	 * @param string $value
 	 * @param string $column Name of the current column.
@@ -333,7 +344,8 @@ class WebcomicTaxonomy extends Webcomic {
 		}
 	}
 	
-	/** Rename the 'Posts' column and add the image column for terms.
+	/**
+	 * Rename the 'Posts' column and add the image column for terms.
 	 * 
 	 * @param array $columns Array of of term columns.
 	 * @return array
@@ -353,7 +365,8 @@ class WebcomicTaxonomy extends Webcomic {
 		return array_merge( $pre, $columns );
 	}
 	
-	/** Render the term sorter.
+	/**
+	 * Render the term sorter.
 	 * 
 	 * @uses Walker_WebcomicTerm_SortList
 	 */
@@ -392,7 +405,8 @@ class WebcomicTaxonomy extends Webcomic {
 		<?php
 	}
 	
-	/** Handle term image updating.
+	/**
+	 * Handle term image updating.
 	 * 
 	 * @param integer $id ID of the selected image.
 	 * @param string $taxonomy Collection the poster is for.
@@ -410,12 +424,14 @@ class WebcomicTaxonomy extends Webcomic {
 	}
 }
 
-/** Handle sorting list output.
+/**
+ * Handle sorting list output.
  * 
  * @package Webcomic
  */
 class Walker_WebcomicTerm_SortList extends Walker {
-	/** What the class handles.
+	/**
+	 * What the class handles.
 	 * 
 	 * Walker_WebcomicTerm_List handles both webcomic storylines and
 	 * characters of various taxonomies, so we specify the singular tree
@@ -426,7 +442,8 @@ class Walker_WebcomicTerm_SortList extends Walker {
 	 */
 	public $tree_type = 'webcomic_term';
 	
-	/** Database fields to use while walking the tree.
+	/**
+	 * Database fields to use while walking the tree.
 	 * @var array
 	 */
 	public $db_fields = array (
@@ -434,47 +451,51 @@ class Walker_WebcomicTerm_SortList extends Walker {
 		'parent' => 'parent'
 	);
 	
-	/** Start level output.
+	/**
+	 * Start level output.
 	 * 
 	 * @param string $output Walker output string.
 	 * @param integer $depth Depth the walker is currently at.
 	 * @param array $args Arguments passed to the walker.
 	 */
-	public function start_lvl( &$output, $depth, $args ) {
+	public function start_lvl( &$output, $depth = 0, $args = array() ) {
 		$output .= '<ol>';
 	}
 	
-	/** End level output.
+	/**
+	 * End level output.
 	 * 
 	 * @param string $output Walker output string.
 	 * @param integer $depth Depth the walker is currently at.
 	 * @param array $args Arguments passed to the walker.
 	 */
-	public function end_lvl( &$output, $depth, $args ) {
+	public function end_lvl( &$output, $depth = 0, $args = array() ) {
 		$output .= '</ol>';
 	}
 	
-	/** Start element output.
+	/**
+	 * Start element output.
 	 * 
 	 * @param string $output Walker output string.
 	 * @param object $term Current term being handled by the walker.
 	 * @param integer $depth Depth the walker is currently at.
 	 * @param array $args Arguments passed to the walker.
 	 */
-	public function start_el( &$output, $term, $depth, $args ) {
+	public function start_el( &$output, $term, $depth = 0, $args = array(), $current = 0 ) {
 		extract( $args, EXTR_SKIP );
 		
 		$output .= '<li id="term_' . $term->term_id . '"><b><i>' . ( $term->webcomic_image ? wp_get_attachment_image( $term->webcomic_image, array( 36, 0 ) ) : '' ) . '</i>' . $term->name . '</b>';
 	}
 	
-	/** End element output.
+	/**
+	 * End element output.
 	 * 
 	 * @param string $output Walker output string.
 	 * @param object $term Current term being handled by the walker.
 	 * @param integer $depth Depth the walker is currently at.
 	 * @param array $args Arguments passed to the walker.
 	 */
-	public function end_el( &$output, $term, $depth, $args ) {
+	public function end_el( &$output, $term, $depth = 0, $args = array() ) {
 		$output .= '</li>';
 	}
 }
