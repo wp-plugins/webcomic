@@ -1,20 +1,24 @@
 <?php
-/** Contains the WebcomicLegacy class.
+/**
+ * Contains the WebcomicLegacy class.
  * 
  * @package Webcomic
  */
 
-/** Upgrade legacy Webcomic installations.
+/**
+ * Upgrade legacy Webcomic installations.
  * 
  * @package Webcomic
  */
 class WebcomicLegacy extends Webcomic {
-	/** Stores the maximum safe script execution time.
+	/**
+	 * Stores the maximum safe script execution time.
 	 * @var integer
 	 */
 	private $limit;
 	
-	/** Register action and filter hooks.
+	/**
+	 * Register action and filter hooks.
 	 * 
 	 * Also sets the maximum "safe" script execution time, defined here
 	 * as the `max_execution_time` minus a 10% buffer.
@@ -37,7 +41,8 @@ class WebcomicLegacy extends Webcomic {
 		add_action( 'list_term_exclusions', array( $this, 'list_term_exclusions' ), 10, 2 );
 	}
 	
-	/** Register legacy post types and taxonomies.
+	/**
+	 * Register legacy post types and taxonomies.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -70,7 +75,8 @@ class WebcomicLegacy extends Webcomic {
 		}
 	}
 	
-	/** Disable or upgrade the plugin.
+	/**
+	 * Disable or upgrade the plugin.
 	 * 
 	 * @uses Webcomic::$dir
 	 * @uses Webcomic::$config
@@ -120,7 +126,8 @@ class WebcomicLegacy extends Webcomic {
 		}
 	}
 	
-	/** Register submenu page for legacy upgrades.
+	/**
+	 * Register submenu page for legacy upgrades.
 	 * 
 	 * @uses WebcomicLegacy::page()
 	 * @hook admin_menu
@@ -129,7 +136,8 @@ class WebcomicLegacy extends Webcomic {
 		add_submenu_page( 'tools.php', sprintf( __( 'Upgrade to %s', 'webcomic' ), 'Webcomic ' . self::$version ), __( 'Upgrade Webcomic', 'webcomic' ), 'manage_options', 'webcomic-upgrader', array( $this, 'page' ) );
 	}
 	
-	/** Render upgrade tool notification.
+	/**
+	 * Render upgrade tool notification.
 	 * 
 	 * @return null
 	 * @uses Webcomic::$config
@@ -151,26 +159,25 @@ class WebcomicLegacy extends Webcomic {
 		}
 	}
 	
-	/** Enqueue custom styles for upgrade notice.
+	/**
+	 * Enqueue custom styles for upgrade notice.
 	 * 
 	 * @uses Webcomic::$url
 	 * @uses Webcomic::$config
 	 * @hook admin_enqueue_scripts
 	 */
 	public function admin_enqueue_scripts() {
-		wp_register_script( 'webcomic-legacy', self::$url . '-/js/admin-legacy.js', array( 'jquery' ) );
-		
-		wp_enqueue_script( 'webcomic-legacy' );
+		wp_enqueue_script( 'webcomic-legacy', self::$url . '-/js/admin-legacy.js', array( 'jquery' ) );
 		
 		if ( isset( self::$config[ 'legacy_notice' ] ) ) {
 			wp_register_style( 'webcomic-google-font', 'http://fonts.googleapis.com/css?family=Maven+Pro' );
-			wp_register_style( 'webcomic-special', self::$url . '-/css/admin-special.css', array( 'webcomic-google-font' ) );
 			
-			wp_enqueue_style( 'webcomic-special' );
+			wp_enqueue_style( 'webcomic-special', self::$url . '-/css/admin-special.css', array( 'webcomic-google-font' ) );
 		}
 	}
 	
-	/** Allow retrieving terms by term_group.
+	/**
+	 * Allow retrieving terms by term_group.
 	 * 
 	 * @param string $exclusions The WHERE clause used by get_terms.
 	 * @param array $args The array of arguments passed to get_terms.
@@ -184,7 +191,8 @@ class WebcomicLegacy extends Webcomic {
 		return $exclusions;
 	}
 	
-	/** Render the upgrade tool page.
+	/**
+	 * Render the upgrade tool page.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::$version
@@ -223,7 +231,7 @@ class WebcomicLegacy extends Webcomic {
 					
 					<?php } else { ?>
 					
-					<p><?php printf( __( 'This tool will attempt to automatically convert your existing %1$s data to Webcomic %2$s. Depending on the size of your site the upgrade may require multiple steps. If you do not want to upgrade click <b>Not Interested</b> to uninstall Webcomic %2$s.', 'webcomic' ), is_numeric( self::$config[ 'legacy' ] ) ? 'Webcomic %s' . self::$config[ 'legacy' ] : self::$config[ 'legacy' ], self::$version ); ?></p>
+					<p><?php printf( __( 'This tool will attempt to automatically convert your existing %1$s data to Webcomic %2$s. Depending on the size of your site the upgrade may require multiple steps. If you do not want to upgrade click <b>Not Interested</b> to uninstall Webcomic %2$s.', 'webcomic' ), is_numeric( self::$config[ 'legacy' ] ) ? 'Webcomic ' . self::$config[ 'legacy' ] : self::$config[ 'legacy' ], self::$version ); ?></p>
 					<div class="error"><p><b><?php printf( __( 'Upgrades are not reversible and, once begun, should not be stopped. Please <a href="%1$s" target="_blank">read this</a> and <a href="%2$s">backup your site</a> before upgrading.', 'webcomic' ), '//github.com/mgsisk/webcomic/wiki/Upgrading', esc_url( admin_url( 'export.php' ) ) ); ?></b></p></div>
 					<form method="post">
 						<?php wp_nonce_field( 'webcomic_upgrade', 'webcomic_upgrade' ); ?>
@@ -240,7 +248,8 @@ class WebcomicLegacy extends Webcomic {
 		<?php
 	}
 	
-	/** Upgrade Webcomic 1 installations.
+	/**
+	 * Upgrade Webcomic 1 installations.
 	 * 
 	 * @return integer
 	 * @uses Webcomic::$config
@@ -516,7 +525,8 @@ class WebcomicLegacy extends Webcomic {
 		return 0;
 	}
 	
-	/** Upgrade Webcomic 2 installations.
+	/**
+	 * Upgrade Webcomic 2 installations.
 	 * 
 	 * @return integer
 	 * @uses Webcomic::$config
@@ -801,7 +811,8 @@ class WebcomicLegacy extends Webcomic {
 		return 0;
 	}
 	
-	/** Upgrade Webcomic 3 installations.
+	/**
+	 * Upgrade Webcomic 3 installations.
 	 * 
 	 * @return integer
 	 * @uses Webcomic::$config
@@ -1143,7 +1154,8 @@ class WebcomicLegacy extends Webcomic {
 		return 0;
 	}
 	
-	/** Upgrade ComicPress installations.
+	/**
+	 * Upgrade ComicPress installations.
 	 * 
 	 * @return integer
 	 * @uses Webcomic::$config
@@ -1152,139 +1164,139 @@ class WebcomicLegacy extends Webcomic {
 	private function upgrade_comicpress( $stage = 0 ) {
 		global $wpdb;
 		
-		$start         = microtime( true );
-		$upload_dir    = wp_upload_dir();
-		$admin_email   = get_bloginfo( 'admin_email' );
-		$legacy_config = get_option( 'webcomic_legacy' );
+		$start = microtime( true );
+		$upload_dir = wp_upload_dir();
+		$admin_email = get_bloginfo( "admin_email" );
+		$legacy_config = get_option( "webcomic_legacy" );
 		
-		$term = get_term( ( integer ) $legacy_config[ 'comiccat' ], 'category' );
+		$term = get_term( ( integer ) $legacy_config[ "comiccat" ], "category" );
 		
 		if ( !$stage ) {
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'name' ]                                      = $term->name;
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'slugs' ][ 'name' ]                           = $term->slug;
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'slugs' ][ 'archive' ]                        = $term->slug;
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'slugs' ][ 'webcomic' ]                       = $term->slug;
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'slugs' ][ 'storyline' ]                      = "{$term->slug}-storyline";
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'slugs' ][ 'character' ]                      = "{$term->slug}-character";
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'taxonomies' ]                                = array( 'category', 'post_tag' );
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'description' ]                               = $term->description;
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'business' ]                    = $legacy_config[ 'buy_print_email' ];
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'price' ][ 'domestic' ]         = $legacy_config[ 'buy_print_amount' ];
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'price' ][ 'international' ]    = $legacy_config[ 'buy_print_amount' ];
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'price' ][ 'original' ]         = $legacy_config[ 'buy_print_orig_amount' ];
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'shipping' ][ 'domestic' ]      = 0;
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'shipping' ][ 'international' ] = 0;
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'shipping' ][ 'original' ]      = 0;
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'total' ][ 'domestic' ]         = $legacy_config[ 'buy_print_amount' ];
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'total' ][ 'international' ]    = $legacy_config[ 'buy_print_amount' ];
-			self::$config[ 'collections' ][ 'webcomic1' ][ 'commerce' ][ 'total' ][ 'original'      ]    = $legacy_config[ 'buy_print_orig_amount' ];
+			self::$config[ "collections" ][ "webcomic1" ][ "name" ] = $term->name;
+			self::$config[ "collections" ][ "webcomic1" ][ "slugs" ][ "name" ] = $term->slug;
+			self::$config[ "collections" ][ "webcomic1" ][ "slugs" ][ "archive" ] = $term->slug;
+			self::$config[ "collections" ][ "webcomic1" ][ "slugs" ][ "webcomic" ] = $term->slug;
+			self::$config[ "collections" ][ "webcomic1" ][ "slugs" ][ "storyline" ] = "{$term->slug}-storyline";
+			self::$config[ "collections" ][ "webcomic1" ][ "slugs" ][ "character" ] = "{$term->slug}-character";
+			self::$config[ "collections" ][ "webcomic1" ][ "taxonomies" ] = array( "category", "post_tag" );
+			self::$config[ "collections" ][ "webcomic1" ][ "description" ] = $term->description;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "business" ] = isset( $legacy_config[ "buy_print_email" ] ) ? $legacy_config[ "buy_print_email" ] ) : "";
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "price" ][ "domestic" ] = isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 6;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "price" ][ "international" ] = isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 9;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "price" ][ "original" ] = isset( $legacy_config[ "buy_print_orig_amount" ] ) ? $legacy_config[ "buy_print_orig_amount" ] : 12;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "shipping" ][ "domestic" ] = isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 4;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "shipping" ][ "international" ] = isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 6;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "shipping" ][ "original" ] = isset( $legacy_config[ "buy_print_orig_amount" ] ) ? $legacy_config[ "buy_print_orig_amount" ] : 8;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "total" ][ "domestic" ] = isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 10;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "total" ][ "international" ] = isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 15;
+			self::$config[ "collections" ][ "webcomic1" ][ "commerce" ][ "total" ][ "original" ] = isset( $legacy_config[ "buy_print_orig_amount" ] ) ? $legacy_config[ "buy_print_orig_amount" ] : 20;
 			
-			update_option( 'webcomic_options', self::$config );
+			update_option( "webcomic_options", self::$config );
 			
-			if ( $terms = get_terms( 'category', array( 'child_of' => ( integer ) $legacy_config[ 'comiccat' ], 'fields' => 'ids' ) ) and !is_wp_error( $terms ) ) {
-				$wpdb->query( sprintf( "UPDATE {$wpdb->term_taxonomy} SET taxonomy = 'webcomic1_storyline' WHERE term_id IN (%s)", join( ",", $terms ) ) );
+			if ( $terms = get_terms( "category", array( "child_of" => ( integer ) $legacy_config[ "comiccat" ], "fields" => "ids" ) ) and !is_wp_error( $terms ) ) {
+				$wpdb->query( sprintf( "UPDATE {$wpdb->term_taxonomy} set taxonomy = 'webcomic1_storyline' where term_id in (%s)", implode( ",", $terms ) ) );
 			}
 			
 			$stage++;
 		}
 		
 		if ( 1 === $stage ) {
-			$meta_files = ( array ) glob( self::legacy_path( $legacy_config[ 'comic_folder' ] ) . '*.*' );
+			$meta_files = ( array ) glob( self::legacy_path( $legacy_config[ "comic_folder" ] ) . "*.*" );
 			
 			if ( $posts = get_posts( array(
-				'fields'      => 'ids',
-				'numberposts' => -1,
-				'post_type'   => 'post',
-				'post_status' => get_post_stati(),
-				'tax_query'   => array(
-					'relation' => 'OR',
+				"fields" => "ids",
+				"numberposts" => -1,
+				"post_type" => "post",
+				"post_status" => get_post_stati(),
+				"tax_query" => array(
+					"relation" => "OR",
 					array(
-						'taxonomy' => 'webcomic1_storyline',
-						'field'    => 'id',
-						'terms'    => get_terms( 'webcomic1_storyline', array( 'fields' => 'ids' ) )
+						"taxonomy" => "webcomic1_storyline",
+						"field" => "id",
+						"terms" => get_terms( "webcomic1_storyline", array( "fields" => "ids" ) )
 					), array(
-						'taxonomy' => 'category',
-						'field'    => 'id',
-						'terms'    => ( integer ) $legacy_config[ 'comiccat' ]
+						"taxonomy" => "category",
+						"field" => "id",
+						"terms" => ( integer ) $legacy_config[ "comiccat" ]
 					)
 				)
 			) ) ) {
 				foreach ( $posts as $post ) {
-					$format    = get_the_time( $legacy_config[ 'date_format' ], $post );
+					$format = get_the_time( $legacy_config[ "date_format" ], $post );
 					$meta_file = preg_grep( "/{$format}/", $meta_files );
 					
 					if ( !empty( $meta_file ) ) {
 						self::update_media_library( $meta_file[ 0 ], ( integer ) $post, array(
-							'post_excerpt' => ( $meta_description = get_post_meta( $post, 'hovertext', true ) ) ? $meta_description : ''
+							"post_excerpt" => ( $meta_description = get_post_meta( $post, "hovertext", true ) ) ? $meta_description : ""
 						) );
 					}
 					
-					if ( $meta_transcript = get_post_meta( $post, 'transcript', true ) ) {
-						$date  = get_the_time( 'Y-m-d H:i:s', $post );
-						$title = sprintf( __( '%s Transcript', 'webcomic' ), get_the_title( $post ) );
+					if ( $meta_transcript = get_post_meta( $post, "transcript", true ) ) {
+						$date  = get_the_time( "Y-m-d H:i:s", $post );
+						$title = sprintf( __( "%s Transcript", "webcomic" ), get_the_title( $post ) );
 						
 						wp_insert_post( array(
-							'post_name'     => sanitize_title( $title ),
-							'post_type'     => 'webcomic_transcript',
-							'post_date'     => $date,
-							'post_title'    => $title,
-							'post_author'   => 1,
-							'post_parent'   => $post,
-							'post_status'   => 'publish',
-							'post_content'  => $meta_transcript,
-							'post_date_gmt' => get_gmt_from_date( $date )
+							"post_name" => sanitize_title( $title ),
+							"post_type" => "webcomic_transcript",
+							"post_date" => $date,
+							"post_title" => $title,
+							"post_author" => 1,
+							"post_parent" => $post,
+							"post_status" => "publish",
+							"post_content" => $meta_transcript,
+							"post_date_gmt" => get_gmt_from_date( $date )
 						) );
 					}
 					
-					update_post_meta( $post, 'webcomic_prints', false );
+					update_post_meta( $post, "webcomic_prints", false );
 					
-					update_post_meta( $post, 'webcomic_original', false );
+					update_post_meta( $post, "webcomic_original", false );
 					
-					update_post_meta( $post, 'webcomic_transcripts', true );
+					update_post_meta( $post, "webcomic_transcripts", true );
 					
-					update_post_meta( $post, 'webcomic_commerce', array(
-						'price' => array(
-							'domestic'      => $legacy_config[ 'buy_print_amount' ],
-							'international' => $legacy_config[ 'buy_print_amount' ],
-							'original'      => $legacy_config[ 'buy_print_orig_amount' ]
+					update_post_meta( $post, "webcomic_commerce", array(
+						"price" => array(
+							"domestic" => isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 6,
+							"international" => isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : $legacy_config[ "buy_print_amount" ] : 9,
+							"original" => isset( $legacy_config[ "buy_print_orig_amount" ] ) ? $legacy_config[ "buy_print_orig_amount" ] : 12
 						),
-						'shipping' => array(
-							'domestic'      => 0,
-							'international' => 6,
-							'original'      => 0
+						"shipping" => array(
+							"domestic" => isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 4,
+							"international" => isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : $legacy_config[ "buy_print_amount" ] : 6,
+							"original" => isset( $legacy_config[ "buy_print_orig_amount" ] ) ? $legacy_config[ "buy_print_orig_amount" ] : 8
 						),
-						'total'  => array(
-							'domestic'      => $legacy_config[ 'buy_print_amount' ],
-							'international' => $legacy_config[ 'buy_print_amount' ],
-							'original'      => $legacy_config[ 'buy_print_orig_amount' ]
+						"total"  => array(
+							"domestic" => isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : 10,
+							"international" => isset( $legacy_config[ "buy_print_amount" ] ) ? $legacy_config[ "buy_print_amount" ] : $legacy_config[ "buy_print_amount" ] : 15,
+							"original" => isset( $legacy_config[ "buy_print_orig_amount" ] ) ? $legacy_config[ "buy_print_orig_amount" ] : 20
 						),
-						'adjust' => array(
-							'price' => array(
-								'domestic'      => 0,
-								'international' => 0,
-								'original'      => 0
+						"adjust" => array(
+							"price" => array(
+								"domestic" => 0,
+								"international" => 0,
+								"original" => 0
 							),
-							'shipping' => array(
-								'domestic'      => 0,
-								'international' => 0,
-								'original'      => 0
+							"shipping" => array(
+								"domestic" => 0,
+								"international" => 0,
+								"original" => 0
 							),
-							'total'  => array(
-								'domestic'      => 0,
-								'international' => 0,
-								'original'      => 0
+							"total"  => array(
+								"domestic" => 0,
+								"international" => 0,
+								"original" => 0
 							)
 						)
 					) );
 					
-					delete_post_meta( $post, 'hovertext' );
-					delete_post_meta( $post, 'transcript' );
+					delete_post_meta( $post, "hovertext" );
+					delete_post_meta( $post, "transcript" );
 					
-					$wpdb->update( $wpdb->posts, array( 'post_type' => 'webcomic1' ), array( 'ID' => ( integer ) $post ) );
+					$wpdb->update( $wpdb->posts, array( "post_type" => "webcomic1" ), array( "ID" => ( integer ) $post ) );
 					
-					self::$config[ 'collections' ][ 'webcomic1' ][ 'updated' ] = get_the_time( 'U', $post );
+					self::$config[ "collections" ][ "webcomic1" ][ "updated" ] = get_the_time( "U", $post );
 					
-					update_option( 'webcomic_options', self::$config );
+					update_option( "webcomic_options", self::$config );
 					
 					if ( microtime( true ) - $start >= $this->limit ) {
 						return $stage;
@@ -1296,7 +1308,8 @@ class WebcomicLegacy extends Webcomic {
 		return 0;
 	}
 	
-	/** Insert legacy Webcomic files into the Media Library.
+	/**
+	 * Insert legacy Webcomic files into the Media Library.
 	 * 
 	 * @param string $file Absolute path and filename of the file to insert into the Media Library.
 	 * @param mixed $context Context to add to the new file, or the integer ID of the attachment parent.
@@ -1334,7 +1347,8 @@ class WebcomicLegacy extends Webcomic {
 		return ( integer ) $attachment_id;
 	}
 	
-	/** Gets the comic file path for legacy installations.
+	/**
+	 * Gets the comic file path for legacy installations.
 	 * 
 	 * @param string $directory The `comic_directory` option from the legacy configuration.
 	 * @param string $category The category slug for subdirectories, if any.

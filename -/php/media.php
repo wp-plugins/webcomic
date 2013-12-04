@@ -1,15 +1,20 @@
 <?php
-/** Contains the WebcomicMedia class.
+/**
+ * Contains the WebcomicMedia class.
+ * 
+ * @todo core.trac.wordpress.org/ticket/16031
  * 
  * @package Webcomic
  */
 
-/** Handle media-related tasks.
+/**
+ * Handle media-related tasks.
  * 
  * @package Webcomic
  */
 class WebcomicMedia extends Webcomic {
-	/** Register hooks.
+	/**
+	 * Register hooks.
 	 * 
 	 * @uses WebcomicMedia::admin_init()
 	 * @uses WebcomicMedia::admin_menu()
@@ -38,7 +43,8 @@ class WebcomicMedia extends Webcomic {
 		add_filter( 'image_size_names_choose', array( $this, 'image_size_names_choose' ), 10, 1 );
 	}
 	
-	/** Handle media functions.
+	/**
+	 * Handle media functions.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses WebcomicAdmin::notify()
@@ -229,7 +235,8 @@ class WebcomicMedia extends Webcomic {
 		}
 	}
 	
-	/** Register Media submenu pages.
+	/**
+	 * Register Media submenu pages.
 	 * 
 	 * @uses WebcomicMedia::generator()
 	 * @hook admin_menu
@@ -239,7 +246,8 @@ class WebcomicMedia extends Webcomic {
 		add_submenu_page( 'upload.php', __( 'Webcomic Generator', 'webcomic' ), __( 'Webcomic Generator', 'webcomic' ), 'upload_files', 'webcomic-generator', array( $this, 'page_generator' ) );
 	}
 	
-	/** Render HTML data for bulk media actions.
+	/**
+	 * Render HTML data for bulk media actions.
 	 * 
 	 * @hook admin_footer
 	 */
@@ -251,14 +259,15 @@ class WebcomicMedia extends Webcomic {
 		}
 	}
 	
-	/** Manage webcomic media from the modal media manager.
+	/**
+	 * Manage webcomic media from the modal media manager.
 	 * 
 	 * @hook media_upload_webcomic_media
 	 */
 	public function media_upload_webcomic_media( $output = false ) {
 		if ( $output ) {
 			if ( $attachments = self::get_attachments( $_GET[ 'post_id' ] ) ) {
-				echo '<div data-webcomic-modal-media="', admin_url(), '"><p>', __( 'Drag and drop the media attachments to change the order Webcomic will display them.', 'webcomic' ), '</p><hr></div><ul class="webcomic-media-sort">';
+				echo '<div data-webcomic-modal-media="', admin_url(), '"><p>', __( 'Drag and drop the media attachments to change the order Webcomic will display them.', 'webcomic' ), '</p></div><ul class="webcomic-media-sort">';
 				
 				foreach ( $attachments as $attachment ) {
 					echo '<li><b>', wp_get_attachment_image( $attachment->ID ), '</b><a href="', esc_html( wp_nonce_url( add_query_arg( array_merge( $_GET, array( 'post' => $attachment->ID, 'action' => 'edit', 'webcomic_action' => 'regenerate', 'webcomic_hide_notice' => true ) ), admin_url( 'media-upload.php' ) ), 'webcomic_regenerate' ) ), '" title="', __( 'Regenerate', 'webcomic' ), '">', __( 'Regenerate', 'webcomic' ), '</a><a href="', esc_html( wp_nonce_url( add_query_arg( array_merge( $_GET, array( 'post' => $attachment->ID, 'action' => 'edit', 'webcomic_action' => 'detach', 'webcomic_hide_notice' => true ) ), admin_url( 'media-upload.php' ) ), 'webcomic_detach' ) ), '" title="', __( 'Detach', 'webcomic' ), '">', __( 'Detach', 'webcomic' ), '</a><input type="hidden" name="ids[]" value="', $attachment->ID, '"></li>';
@@ -271,7 +280,8 @@ class WebcomicMedia extends Webcomic {
 		}
 	}
 	
-	/** Unset term attachment info when a media object is deleted.
+	/**
+	 * Unset term attachment info when a media object is deleted.
 	 * 
 	 * @param integer $id The deleted attachment ID.
 	 * @uses Webcomic::$config
@@ -299,7 +309,8 @@ class WebcomicMedia extends Webcomic {
 		}
 	}
 	
-	/** Register and enqueue media scripts.
+	/**
+	 * Register and enqueue media scripts.
 	 * 
 	 * @hook admin_enqueue_scripts
 	 */
@@ -307,19 +318,16 @@ class WebcomicMedia extends Webcomic {
 		$screen = get_current_screen();
 		
 		if ( 'upload' === $screen->id or 'media_page_webcomic-generator' === $screen->id or ( isset( $_GET[ 'tab' ] ) and 'webcomic_media' === $_GET[ 'tab' ] ) ) {
-			wp_register_script( 'webcomic-admin-media', self::$url . '-/js/admin-media.js', array( 'jquery-ui-sortable' ) );
-			
-			wp_enqueue_script( 'webcomic-admin-media' );
+			wp_enqueue_script( 'webcomic-admin-media', self::$url . '-/js/admin-media.js', array( 'jquery-ui-sortable' ) );
 		}
 		
 		if ( isset( $_GET[ 'tab' ] ) and 'webcomic_media' === $_GET[ 'tab' ] ) {
-			wp_register_style( 'webcomic-admin-media', self::$url . '-/css/admin-media.css' );
-			
-			wp_enqueue_style( 'webcomic-admin-media' );
+			wp_enqueue_style( 'webcomic-admin-media', self::$url . '-/css/admin-media.css' );
 		}
 	}
 	
-	/** Display attachment and alternate size details on Edit Media page.
+	/**
+	 * Display attachment and alternate size details on Edit Media page.
 	 * 
 	 * @hook attachment_submitbox_misc_actions
 	 */
@@ -341,11 +349,12 @@ class WebcomicMedia extends Webcomic {
 			
 			krsort( $sizes );
 			
-			echo '<div class="misc-pub-section">', __( 'Alternate Sizes:', 'webcomic' ), '<br><b>', $sizes ? join( '<br>', $sizes ) : __( 'None available', 'webcomic' ), '</b><br><a href="', esc_html( wp_nonce_url( add_query_arg( array( 'post' => $post->ID, 'action' => 'edit', 'webcomic_action' => 'regenerate' ), admin_url( 'post.php' ) ), 'webcomic_regenerate' ) ), '" class="button">', __( 'Regenerate', 'webcomic' ), '</a></div>';
+			echo '<div class="misc-pub-section">', __( 'Alternate Sizes:', 'webcomic' ), '<br><b>', $sizes ? implode( '<br>', $sizes ) : __( 'None available', 'webcomic' ), '</b><br><a href="', esc_html( wp_nonce_url( add_query_arg( array( 'post' => $post->ID, 'action' => 'edit', 'webcomic_action' => 'regenerate' ), admin_url( 'post.php' ) ), 'webcomic_regenerate' ) ), '" class="button">', __( 'Regenerate', 'webcomic' ), '</a></div>';
 		}
 	}
 	
-	/** Add 'Webcomic Media' modal media page.
+	/**
+	 * Add 'Webcomic Media' modal media page.
 	 * 
 	 * @return array
 	 * @hook media_upload_tabs
@@ -368,7 +377,8 @@ class WebcomicMedia extends Webcomic {
 		return $tabs;
 	}
 	
-	/** Add regenerate and detach options to media table.
+	/**
+	 * Add regenerate and detach options to media table.
 	 * 
 	 * This feature is not Webcomic-specific; any attached media object
 	 * will gain a functional Detach option. With luck a future
@@ -391,7 +401,8 @@ class WebcomicMedia extends Webcomic {
 		return $actions;
 	}
 	
-	/** Display relevant status for webcomic media.
+	/**
+	 * Display relevant status for webcomic media.
 	 * 
 	 * @param array $states List of media states.
 	 * @return array
@@ -400,10 +411,26 @@ class WebcomicMedia extends Webcomic {
 	public function display_media_states( $states ) {
 		global $post;
 		
-		if ( $type = get_post_meta( $post->ID, '_wp_attachment_context', true ) and preg_match( '/^webcomic\d+(_(storyline|character))?$/', $type ) ) {
+		if ( $type = get_post_meta( $post->ID, '_wp_attachment_context', true ) and preg_match( '/^(widget-webcomic-print|widget-webcomic-donation|widget-(purchase-)?webcomic(-(collection|storyline|character|transcripts))?-link|webcomic\d+(_(storyline|character)))?$/', $type ) ) {
 			$type = explode( '_', $type );
 			
-			if ( empty( $type[ 1 ] ) ) {
+			if ( 'widget-webcomic-print' === $type[ 0 ] ) {
+				$states[] = __( 'Webcomic Print Image', 'webcomic' );
+			} elseif ( 'widget-webcomic-link' === $type[ 0 ] ) {
+				$states[] = __( 'Webcomic Link Image', 'webcomic' );
+			} elseif ( 'widget-webcomic-donation' === $type[ 0 ] ) {
+				$states[] = __( 'Webcomic Donation Image', 'webcomic' );
+			} elseif ( 'widget-purchase-webcomic-link' === $type[ 0 ] ) {
+				$states[] = __( 'Purchase Webcomic Link Image', 'webcomic' );
+			} elseif ( 'widget-webcomic-storyline-link' === $type[ 0 ] ) {
+				$states[] = __( 'Webcomic Storyline Link Image', 'webcomic' );
+			} elseif ( 'widget-webcomic-character-link' === $type[ 0 ] ) {
+				$states[] = __( 'Webcomic Character Link Image', 'webcomic' );
+			} elseif ( 'widget-webcomic-collection-link' === $type[ 0 ] ) {
+				$states[] = __( 'Webcomic Collection Link Image', 'webcomic' );
+			} elseif ( 'widget-webcomic-transcripts-link' === $type[ 0 ] ) {
+				$states[] = __( 'Webcomic Transcripts Link Image', 'webcomic' );
+			} elseif ( empty( $type[ 1 ] ) ) {
 				$states[] = sprintf( __( '%s Poster', 'webcomic' ), esc_html( self::$config[ 'collections' ][ $type[ 0 ] ][ 'name' ] ) );
 			} elseif ( 'storyline' === $type[ 1 ] ) {
 				$states[] = sprintf( __( '%s Cover', 'webcomic' ), esc_html( self::$config[ 'collections' ][ $type[ 0 ] ][ 'name' ] ) );
@@ -415,7 +442,8 @@ class WebcomicMedia extends Webcomic {
 		return $states;
 	}
 	
-	/** Add additional image sizes for inserting into posts.
+	/**
+	 * Add additional image sizes for inserting into posts.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -427,7 +455,8 @@ class WebcomicMedia extends Webcomic {
 		return $sizes;
 	}
 	
-	/** Render the webcomic attacher.
+	/**
+	 * Render the webcomic attacher.
 	 * 
 	 * @uses Webcomic::$config
 	 */
@@ -602,7 +631,8 @@ class WebcomicMedia extends Webcomic {
 		<?php
 	}
 	
-	/** Render the webcomic generator.
+	/**
+	 * Render the webcomic generator.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::get_attachments()
@@ -685,7 +715,8 @@ class WebcomicMedia extends Webcomic {
 		<?php
 	}
 	
-	/** Save new media order.
+	/**
+	 * Save new media order.
 	 * 
 	 * @param array $ids Array of attachment ID's to update.
 	 */

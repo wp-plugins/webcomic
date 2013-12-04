@@ -1,17 +1,20 @@
 <?php
-/** Contains the WebcomicShortcode class.
+/**
+ * Contains the WebcomicShortcode class.
  * 
  * @package Webcomic
  */
 
-/** Handle custom shortcodes.
+/**
+ * Handle custom shortcodes.
  * 
  * For shortcode examples see `tags.php`.
  * 
  * @package Webcomic
  */
 class WebcomicShortcode extends Webcomic {
-	/** Register hooks.
+	/**
+	 * Register hooks.
 	 * 
 	 * @uses WebcomicShortcode::init()
 	 */
@@ -19,7 +22,8 @@ class WebcomicShortcode extends Webcomic {
 		add_action( 'init', array( $this, 'init' ) );
 	}
 	
-	/** Register shortcodes.
+	/**
+	 * Register shortcodes.
 	 * 
 	 * @uses WebcomicShortcode::verify_webcomic_age()
 	 * @uses WebcomicShortcode::verify_webcomic_role()
@@ -29,7 +33,7 @@ class WebcomicShortcode extends Webcomic {
 	 * @uses WebcomicShortcode::the_webcomic_terms()
 	 * @uses WebcomicShortcode::the_related_webcomics()
 	 * @uses WebcomicShortcode::the_webcomic_term_link()
-	 * @uses WebcomicShortcode::the_webcomic_collection()
+	 * @uses WebcomicShortcode::webcomic_collection_link()
 	 * @uses WebcomicShortcode::the_webcomic_collections()
 	 * @uses WebcomicShortcode::webcomic_term_title()
 	 * @uses WebcomicShortcode::webcomic_term_description()
@@ -69,7 +73,7 @@ class WebcomicShortcode extends Webcomic {
 		add_shortcode( 'last_webcomic_link', array( $this, 'the_webcomic_link' ) );
 		add_shortcode( 'random_webcomic_link', array( $this, 'the_webcomic_link' ) );
 		add_shortcode( 'purchase_webcomic_link', array( $this, 'the_webcomic_link' ) );
-		add_shortcode( 'the_webcomic_collection', array( $this, 'the_webcomic_collection' ) );
+		add_shortcode( 'webcomic_collection_link', array( $this, 'webcomic_collection_link' ) );
 		add_shortcode( 'the_webcomic_collections', array( $this, 'the_webcomic_collections' ) );
 		add_shortcode( 'the_webcomic_storylines', array( $this, 'the_webcomic_terms' ) );
 		add_shortcode( 'the_webcomic_characters', array( $this, 'the_webcomic_terms' ) );
@@ -116,7 +120,8 @@ class WebcomicShortcode extends Webcomic {
 		add_shortcode( 'webcomic_collection_cloud', array( $this, 'webcomic_collection_cloud' ) );
 	}
 	
-	/** Handle verify_webcomic_age shortcode.
+	/**
+	 * Handle verify_webcomic_age shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -141,7 +146,8 @@ class WebcomicShortcode extends Webcomic {
 		}
 	}
 	
-	/** Handle verify_webcomic_role shortcode.
+	/**
+	 * Handle verify_webcomic_role shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -166,7 +172,8 @@ class WebcomicShortcode extends Webcomic {
 		}
 	}
 	
-	/** Handle the_webcomic shortcode.
+	/**
+	 * Handle the_webcomic shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -185,7 +192,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::the_webcomic( $size, $relative, $in_same_term, $excluded_terms, $taxonomy, $the_post );
 	}
 	
-	/** Handle webcomic_count shortcode.
+	/**
+	 * Handle webcomic_count shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -226,7 +234,8 @@ class WebcomicShortcode extends Webcomic {
 		}
 	}
 	
-	/** Handle the_related_webcomics shortcode.
+	/**
+	 * Handle the_related_webcomics shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -247,7 +256,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::the_related_webcomics( $before, $sep, $after, $image, $limit, $storylines, $characters, $the_post );
 	}
 	
-	/** Handle (relative)_webcomic_link shortcodes.
+	/**
+	 * Handle (relative)_webcomic_link shortcodes.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -299,22 +309,31 @@ class WebcomicShortcode extends Webcomic {
 		return 'purchase' === $relative ? WebcomicTag::purchase_webcomic_link( $format, $link, $the_post ) : WebcomicTag::relative_webcomic_link( $format, $link, $relative, $in_same_term, $excluded_terms, $taxonomy, $collection );
 	}
 	
-	/** Handle the_webcomic_collection shortcode.
+	/**
+	 * Handle webcomic_collection_link shortcode.
 	 * 
-	 * @deprecated 4.0.7 4.1 Use the_webcomic_collections instead.
+	 * @param array $atts Shortcode attributes.
+	 * @param string $content Shortcode content.
+	 * @param string $name Shortcode name.
+	 * @return string
+	 * @uses WebcomicTag::webcomic_collection_link()
 	 */
-	public function the_webcomic_collection( $atts ) {
+	public function webcomic_collection_link( $atts, $content, $name ) {
 		extract( shortcode_atts( array(
 			'format'     => '%link',
-			'link'       => '%title',
-			'target'     => 'archive',
+			'link'       => '',
 			'collection' => ''
 		), $atts ) );
 		
-		return WebcomicTag::webcomic_collection_link( $format, $link, $target, $collection );
+		if ( !$link and $content ) {
+			$link = do_shortcode( $content );
+		}
+		
+		return WebcomicTag::webcomic_collection_link( $format, $link, $collection );
 	}
 	
-	/** Handle the_webcomic_collections shortcode.
+	/**
+	 * Handle the_webcomic_collections shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -334,7 +353,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::get_the_webcomic_collection_list(  $id, $before, $sep, $after, $target, $image, $crossover  );
 	}
 	
-	/** Handle the_webcomic_(terms) shortcodes.
+	/**
+	 * Handle the_webcomic_(terms) shortcodes.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -362,7 +382,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::get_the_webcomic_term_list( $id, $taxonomy, $before, $sep, $after, $target, $image );
 	}
 	
-	/** Handle (relative)_webcomic_(storyline|character)_link shortcodes.
+	/**
+	 * Handle (relative)_webcomic_(storyline|character)_link shortcodes.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -426,7 +447,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::relative_webcomic_term_link( $format, $link, $target, $relative, $taxonomy, $args );
 	}
 	
-	/** Handle webcomic_(storyline|character)_title shortcode.
+	/**
+	 * Handle webcomic_(storyline|character)_title shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -455,7 +477,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_term_title( $prefix, $term, $collection ? "{$collection}_{$tax}" : '' );
 	}
 	
-	/** Handle webcomic_(storyline|character)_description shortcode.
+	/**
+	 * Handle webcomic_(storyline|character)_description shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -481,7 +504,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_term_description( $term, $collection ? "{$collection}_{$tax}" : '' );
 	}
 	
-	/** Handle webcomic_(storyline|character)_(cover|avatar) shortcode.
+	/**
+	 * Handle webcomic_(storyline|character)_(cover|avatar) shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -508,7 +532,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_term_image( $size, $term, $collection ? "{$collection}_{$tax}" : '' );
 	}
 	
-	/** Handle webcomic_crossover_title shortcode.
+	/**
+	 * Handle webcomic_crossover_title shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -525,7 +550,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_crossover_title( $prefix );
 	}
 	
-	/** Handle webcomic_collection_description shortcode.
+	/**
+	 * Handle webcomic_collection_description shortcode.
 	 * 
 	 * @return string
 	 * @uses WebcomicTag::webcomic_crossover_description()
@@ -534,7 +560,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_crossover_description();
 	}
 	
-	/** Handle webcomic_crossover_poster shortcode.
+	/**
+	 * Handle webcomic_crossover_poster shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -548,7 +575,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_crossover_image( $size );
 	}
 	
-	/** Handle webcomic_(storyline|character)_crossovers shortcode.
+	/**
+	 * Handle webcomic_(storyline|character)_crossovers shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -578,7 +606,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_term_crossovers( $term, $collection ? "{$collection}_{$tax}" : '', $before, $sep, $after, $target, $image );
 	}
 	
-	/** Handle webcomic_collection_title shortcode.
+	/**
+	 * Handle webcomic_collection_title shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -596,7 +625,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_collection_title( $prefix, $collection );
 	}
 	
-	/** Handle webcomic_collection_description shortcode.
+	/**
+	 * Handle webcomic_collection_description shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -610,7 +640,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_collection_description( $collection );
 	}
 	
-	/** Handle webcomic_collection_poster shortcode.
+	/**
+	 * Handle webcomic_collection_poster shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -625,7 +656,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_collection_image( $size, $collection );
 	}
 	
-	/** Handle webcomic_collection_print_amount shortcode.
+	/**
+	 * Handle webcomic_collection_print_amount shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -642,7 +674,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_collection_print_amount( $type, $dec, $sep, $collection );
 	}
 	
-	/** Handle webcomic_collection_crossovers shortcode.
+	/**
+	 * Handle webcomic_collection_crossovers shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -661,7 +694,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_collection_crossovers( $before, $sep, $after, $target, $image, $collection );
 	}
 	
-	/** Handle webcomic_donation_amount shortcode.
+	/**
+	 * Handle webcomic_donation_amount shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -677,7 +711,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_donation_amount( $dec, $sep, $collection );
 	}
 	
-	/** Handle webcomic_donation_form shortcode.
+	/**
+	 * Handle webcomic_donation_form shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -694,7 +729,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_donation_form( $label, $collection );
 	}
 	
-	/** Handle webcomic_print_amount shortcode.
+	/**
+	 * Handle webcomic_print_amount shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -711,7 +747,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_print_amount( $type, $dec, $sep, $the_post );
 	}
 	
-	/** Handle webcomic_print_adjustment shortcode.
+	/**
+	 * Handle webcomic_print_adjustment shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -726,7 +763,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_print_adjustment( $type, $the_post );
 	}
 	
-	/** Handle webcomic_print_form shortcode.
+	/**
+	 * Handle webcomic_print_form shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -746,7 +784,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_print_form( $type, $label, $the_post );
 	}
 	
-	/** Handle webcomic_transcripts_link shortcode.
+	/**
+	 * Handle webcomic_transcripts_link shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -765,7 +804,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_transcripts_link( $format, $none, $some, $off, $language, $the_post );
 	}
 	
-	/** Handle webcomic_dropdown_terms shortcodes.
+	/**
+	 * Handle webcomic_dropdown_terms shortcodes.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -810,7 +850,8 @@ class WebcomicShortcode extends Webcomic {
 		}
 	}
 	
-	/** Handle webcomic_dropdown_collections shortcode.
+	/**
+	 * Handle webcomic_dropdown_collections shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -837,7 +878,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_dropdown_collections( $r );
 	}
 	
-	/** Handle webcomic_list_terms shortcodes.
+	/**
+	 * Handle webcomic_list_terms shortcodes.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -887,7 +929,8 @@ class WebcomicShortcode extends Webcomic {
 		}
 	}
 	
-	/** Handle webcomic_list_collections shortcode.
+	/**
+	 * Handle webcomic_list_collections shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -921,7 +964,8 @@ class WebcomicShortcode extends Webcomic {
 		return WebcomicTag::webcomic_list_collections( $r );
 	}
 	
-	/** Handle webcomic_term_cloud shortcodes.
+	/**
+	 * Handle webcomic_term_cloud shortcodes.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @param string $content Shortcode content.
@@ -966,7 +1010,8 @@ class WebcomicShortcode extends Webcomic {
 		}
 	}
 	
-	/** Handle webcomic_collection_cloud shortcode.
+	/**
+	 * Handle webcomic_collection_cloud shortcode.
 	 * 
 	 * @param array $atts Shortcode attributes.
 	 * @return string
