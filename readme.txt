@@ -403,7 +403,7 @@ You can follow changes as they happen at [the master repository on GitHub](https
 - [Remove legacy plugin.](https://github.com/mgsisk/webcomic/commit/d95380da9d80f034e9d86dc9ad3bd30c0ec9439b)
 - [Branch Webcomic 4-beta for open testing.](https://github.com/mgsisk/webcomic/commit/c3576755123e5e6f3e14c14282280104ca3dd2e3)
 
-**Note:** Older commits have been removed to prevent truncation on WordPRess.org. You can [see the full history here.](https://github.com/mgsisk/webcomic/blob/master/readme.txt)
+**Note:** Older commits have been removed to prevent truncation on WordPress.org. You can [see the full history here.](https://github.com/mgsisk/webcomic/blob/master/readme.txt)
 
 == Upgrade Notice ==
 
