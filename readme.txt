@@ -51,6 +51,22 @@ Once installed and activated you can use Webcomic in one of three ways:
 - [Issue Tracker](http://github.com/mgsisk/webcomic/issues)
 - [Email Support](mailto:support@webcomic.nu)
 
+== Upgrade Notice ==
+
+= 4 =
+
+Existing Webcomic users should read this before upgrading: http://github.com/mgsisk/webcomic/wiki/Upgrading
+
+== Special Thanks ==
+
+To [Mihari](http://katbox.net) for ongoing feedback and feature suggestions.
+
+To [Seel](http://twitter.com/webcrumblick), [Kikirini](http://twitter.com/Kikirini) [Natty Bumpercar](http://twitter.com/nattybumpercar), and the many other users that helped to resolve legacy upgrade issues.
+
+To [BigBagel](http://twitter.com/DrPotatoMonster), [Miluette](http://twitter.com/miluette), [LordRembo](http://twitter.com/lordrembo), [Fesworks](http://twitter.com/fesworks), [Naomiyaki](http://twitter.com/naomiyaki), [AlexWoolfson](http://twitter.com/alexwoolfson), and [Kuipou](http://twitter.com/kuipou) for pre-release testing and feedback, and to the thousands of users that share their amazing work with Webcomic.
+
+To everyone that continues to use and support Webcomic.
+
 == Changelog ==
 
 You can follow changes as they happen at [the master repository on GitHub](https://github.com/mgsisk/webcomic/commits/master).
@@ -495,7 +511,7 @@ You can follow changes as they happen at [the master repository on GitHub](https
 - Metabox updates:
 	- **New** Orphan File Selector. The metabox now provides a list of orphan files that can be easily assigned to a comic post without any associated comic file.
 - Core updates:
-    - **New** Embed Formats. A new 'format' parameter on the_comic_embed() allows you to specify whether embed code should be output in standard html or bbcode.
+	- **New** Embed Formats. A new 'format' parameter on the_comic_embed() allows you to specify whether embed code should be output in standard html or bbcode.
 	- **New** Navigation Bookends. A new 'bookend' parameter on the comic navigation template tags allows you to define a beginning and ending static page (or post) that users will be setnt to when the click first/previous on the first comic or next/last on the last comic.
 	- **New** Transcript Backups. Webcomic now saves a transcript backup when an "improved" transcript is submitted by a user that can be restored if the original transcript is preferred.
 	- **New** Template tags: get_comic_buffer, the_comic_buffer, the_comic_series. the_comic_embed has a new format option which allows you to specify HTML or BBCode output. The parameter order of the chapter navigation template tags has changed, and the shortcut nav functions now accept only a single $args parameter. get_the_comic() no longer returns false when a comic file can't be found, but the 'file' property is set to false.
@@ -648,19 +664,3 @@ You can follow changes as they happen at [the master repository on GitHub](https
 	- See a total page count for volumes and a running page count for chapters.
 - Includes new template tags for WordPress themes: comics_nav_link, comic_archive, comic_loop, dropdown_comics, first_comic_link, get_the_comic, ignore_comics, last_comic_link, next_comic_link, previous_comic_link, random_comic, recent_comics, the_chapter, the_comic, the_comic_embed, the_comic_transcript, and the_volume.
 - Includes new widgets for WordPress themes: Random Comic, Recent Comics, Dropdown Comics, Comic Archive, and Recent Posts (modified to ignore comic posts).
-
-== Upgrade Notice ==
-
-= 4 =
-
-Existing Webcomic users should read this before upgrading: http://github.com/mgsisk/webcomic/wiki/Upgrading
-
-== Special Thanks ==
-
-To [Mihari](http://katbox.net) for ongoing feedback and feature suggestions.
-
-To [Seel](http://twitter.com/webcrumblick), [Kikirini](http://twitter.com/Kikirini) [Natty Bumpercar](http://twitter.com/nattybumpercar), and the many other users that helped to resolve legacy upgrade issues.
-
-To [BigBagel](http://twitter.com/DrPotatoMonster), [Miluette](http://twitter.com/miluette), [LordRembo](http://twitter.com/lordrembo), [Fesworks](http://twitter.com/fesworks), [Naomiyaki](http://twitter.com/naomiyaki), [AlexWoolfson](http://twitter.com/alexwoolfson), and [Kuipou](http://twitter.com/kuipou) for pre-release testing and feedback, and to the thousands of users that share their amazing work with Webcomic.
-
-To everyone that continues to use and support Webcomic.
