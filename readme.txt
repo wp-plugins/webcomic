@@ -403,7 +403,251 @@ You can follow changes as they happen at [the master repository on GitHub](https
 - [Remove legacy plugin.](https://github.com/mgsisk/webcomic/commit/d95380da9d80f034e9d86dc9ad3bd30c0ec9439b)
 - [Branch Webcomic 4-beta for open testing.](https://github.com/mgsisk/webcomic/commit/c3576755123e5e6f3e14c14282280104ca3dd2e3)
 
-**Note:** Older commits have been removed to prevent truncation on WordPress.org. You can [see the full history here.](https://github.com/mgsisk/webcomic/blob/master/readme.txt)
+= 3.0.10 =
+
+- [Fix potential array issue.](https://github.com/mgsisk/webcomic/commit/d03849e0928a639366942b981705396c8142e2eb)
+- [Correct archive logic.](https://github.com/mgsisk/webcomic/commit/ac2bd3b132925522d5a0d6c2ec087815a23f074c)
+- [Fix translation support.](https://github.com/mgsisk/webcomic/commit/07a9cdb3bd4deb3f440326759064a27869ff2d8b)
+- [Bump version number for release.](https://github.com/mgsisk/webcomic/commit/0766362203b95d7945ae7beb17fd216cf59a2e53)
+- [Correct HTML input button display for transcript content box.](https://github.com/mgsisk/webcomic/commit/863a5a5c3c59c1fce9cd8ee2f74381b753ca2791)
+- [Correct template tag filter caching.](https://github.com/mgsisk/webcomic/commit/dffffaa33afb5880975caa9fe7894d1e703c2400)
+- [Use wp_editor() for transcript editing.](https://github.com/mgsisk/webcomic/commit/076f53e8013a130bc1fe4fb42678801c575f8f03)
+- [Alter homepage integration.](https://github.com/mgsisk/webcomic/commit/444e57ace282f4e76f3ccad08e68b3e7cdfcedc4)
+
+= 3.0.9 =
+
+- [Update internal version number for 3.0.9 release.](https://github.com/mgsisk/webcomic/commit/97314fdfa346c3ea27d3993968320c55b23f625b)
+- [Update read me for 3.0.9 release.](https://github.com/mgsisk/webcomic/commit/21d04ca9f28d2e899589b526639b480194c8ebc2)
+- [Correct secure filename update.](https://github.com/mgsisk/webcomic/commit/f256c625775f24b13844ac0b64e93c47c7d19547)
+- [Make webcomic_character taxonomy non-hierarchical.](https://github.com/mgsisk/webcomic/commit/5f80999097dc6abb27dd19e47b0fffd34b77c53f)
+- [Revert to previous mgs_core::$cdir and mgs_core::$curl values.](https://github.com/mgsisk/webcomic/commit/72f8a30bdc325ce57928bb6a595b39c0089bea8c)
+- [Correct webcomic_transcript_author to webcomic_transcript_email.](https://github.com/mgsisk/webcomic/commit/6c29d8485b437396bfd075b1bef9b9ae19f18500)
+- [Fix get_bookmark_webcomic_url() when pretty permalinks are disabled.](https://github.com/mgsisk/webcomic/commit/4fc55ee1f648f06d81bc653038fcf4d4c18270d2)
+- [Correct page comment feeds.](https://github.com/mgsisk/webcomic/commit/02ed4a9d2041fac7372fb6d1510441c22f487e1a)
+- [Remove $p argument from add_menu_page().](https://github.com/mgsisk/webcomic/commit/42392c30d61fec0719d8a4df9d31a1d17c84863d)
+- [Prevent default collection deletion.](https://github.com/mgsisk/webcomic/commit/3bb4b6b6f92de14794edfc65dc882b2ac450376f)
+- [Fix typo for class property $cdir.](https://github.com/mgsisk/webcomic/commit/82659573dfc04eb09644a719da63ae310beaa522)
+- [Update site description, site URL, and email address.](https://github.com/mgsisk/webcomic/commit/fe8b95b04f5b8430a8583c7eafa872c9a99ef9cf)
+- [Account for GMT offset in transcript times.](https://github.com/mgsisk/webcomic/commit/2b1e735bfb042cbd2126610d105daad034d771d2)
+- [Add visibility keywords to class methods.](https://github.com/mgsisk/webcomic/commit/68c921abc892154fd7ac652c9afbf0c6834f7e2a)
+- [Use wp_content_dir() in mgs_core.](https://github.com/mgsisk/webcomic/commit/08703397056dbd6841d811d18105ab9202ceaf46)
+- [Removed get_webcomic_post_terms()](https://github.com/mgsisk/webcomic/commit/ba4da970eb25e41a671214700e9cfd84ca4a046d)
+- [Removed unnecessary style block (see previous commit).](https://github.com/mgsisk/webcomic/commit/6d1c98338910983416a06853f343c429421cf5c1)
+- [Correctly removing Webcomics menu item.](https://github.com/mgsisk/webcomic/commit/3f4069ff3b8351d4c3184119c1a299c96383b65a)
+- [Updated read me to match GitHub markdown syntax, remove extraneous information.](https://github.com/mgsisk/webcomic/commit/689087b56307dc92241eaae8656bea3e368773d2)
+- [Adding readme.md file for proper GitHub formatting.](https://github.com/mgsisk/webcomic/commit/860a9c7594f0ee2744c47a85bafa0b60bfcd2280)
+
+= 3.0.8 =
+
+- [Readme fix for 3.0.8 release](https://github.com/mgsisk/webcomic/commit/a4dcc576aadc2d7a261713d83ac8c230efdf9ca2)
+- [Added metabox.js](https://github.com/mgsisk/webcomic/commit/d6413344ce2686de120b2482c0d6c497490b39c2)
+- [Metabox javascript fix, secure index.php fix, collection directory unwritable fix](https://github.com/mgsisk/webcomic/commit/f5469ae0ae51acfab055d225cc070035c3ad4120)
+
+= 3.0.7 =
+
+- [Minor fixes for WordPress 3.2](https://github.com/mgsisk/webcomic/commit/6fcd5bf1b5870a6210e04f5eb140e8fce3b7c7f0)
+
+= 3.0.6 =
+
+- [Removed secure uRL's, various other minor bug fixes.](https://github.com/mgsisk/webcomic/commit/51a49cafc650b7851fda68a8d0ef55f89ffbad0f)
+
+= 3.0.5 =
+
+- [Minor bug fixes, added Convert Characters tool.](https://github.com/mgsisk/webcomic/commit/9b7b9dcf043e2de1c358f0a2bc41d9192b723b3a)
+
+= 3.0.4 =
+
+- [3.0.4 release](https://github.com/mgsisk/webcomic/commit/b7f8ce6ad09ed1b8b2035ca565170640bba631e4)
+
+= 3.0.3 =
+
+- [3.0.3 release](https://github.com/mgsisk/webcomic/commit/5739d1d8b4f1f953f89f1c82ea97dda5c42a2021)
+
+= 3.0.2 =
+
+- [3.0.2 fix due to svn troubles](https://github.com/mgsisk/webcomic/commit/6dfd86b28cf2423461824de33cd3990cb4df0137)
+- [3.0.2 release](https://github.com/mgsisk/webcomic/commit/bfc44866a74477b1e4501fd32bbb877b32375aa1)
+
+= 3.0.1 =
+
+- [3.0.1 release](https://github.com/mgsisk/webcomic/commit/fa8593c8201d1f9129ffd1af24fca7057ff4d6da)
+- [Removed old files](https://github.com/mgsisk/webcomic/commit/7376f6f6760837dd6203f50d99b45f66d4c7b1de)
+
+= 3 =
+
+- [Version 3 release](https://github.com/mgsisk/webcomic/commit/04b0af147d1c9c0c2801c6efce307ec6be6e1ac3)
+
+= 2.1 (July 17, 2009) =
+
+- Settings page updates:
+	- **New** Buffer Alert. When enabled, Webcomic will send an e-mail reminder the specified number of days prior to any comic buffer running out.
+	- **New** Keyboard Shortcuts. When enabled, users can quickly browser a comic series using the left and right arrow keys to see the previous or next comic. The key combinations shift+left, shift+right, and shift+down take users to the first, last, or a random comic in the series, respectively.
+	- A small donate link has been added next to the Webcomic version information.
+	- Slight reorganization for easier use. Save posts as drafts, Fallback Matching, and ComicPress Compatibility options have been removed.
+- Library page updates:
+	- **New** Screen Options. Users can now toggle displaying the collection, comments, and date columns, as well as set the number of comics listed per page.
+	- **New** Grid View for Orphan Files. When Thumbnail view is selected orphaned files are now displayed in a more practical grid view.
+	- **New** Bulk Actions for Orphan Files. Delete, Rename, and Generate Post functions have been merged into a new Bulk Actions dropdown for orphan files.
+	- Post options now provide a Publish dropdown that allows you to save posts as drafts on a case-by-case basis. Date and time options are now hidden unless an appropriate publish option is selected.
+	- Slight reorganization for easier use. Author information has been merged into the Post column and replaced with a Comments column.
+- Chapters page updates:
+	- "How to Use Chapters" instructions have been replaced with a link to the Chapters documentation.
+- Metabox updates:
+	- **New** Orphan File Selector. The metabox now provides a list of orphan files that can be easily assigned to a comic post without any associated comic file.
+- Core updates:
+    - **New** Embed Formats. A new 'format' parameter on the_comic_embed() allows you to specify whether embed code should be output in standard html or bbcode.
+	- **New** Navigation Bookends. A new 'bookend' parameter on the comic navigation template tags allows you to define a beginning and ending static page (or post) that users will be setnt to when the click first/previous on the first comic or next/last on the last comic.
+	- **New** Transcript Backups. Webcomic now saves a transcript backup when an "improved" transcript is submitted by a user that can be restored if the original transcript is preferred.
+	- **New** Template tags: get_comic_buffer, the_comic_buffer, the_comic_series. the_comic_embed has a new format option which allows you to specify HTML or BBCode output. The parameter order of the chapter navigation template tags has changed, and the shortcut nav functions now accept only a single $args parameter. get_the_comic() no longer returns false when a comic file can't be found, but the 'file' property is set to false.
+	- **New** Comic Buffer Widget. Allows you to display the total number of buffer comics for a particular series, or the date or date and time the buffer for a series will run out.
+	- **New** Widget Updates. All widgets have been updated to use the WP_Widgets class, enabling multi-widget use on all Webcomic widgets.
+	- **New** CSS Filters. Webcomic now adds comic-specific CSS classes to both the body_class and post_class template tags.
+	- Webcomic now automatically performs Fallback Matching based on post dates, slugs, and custom fields as necessary. Custom date formats have been removed; the format is always YYYY-MM-DD unless an alternate format can be found from a previous version of Webcomic, ComicPress Manager, or stripShow.
+	- Internal 1.x to 2 upgrade functions have been removed. Users may still be able to upgrade directly from Webcomic 1.x to 2.1, though certain settings will be reset to their defaults.
+	- Contextual help links now point to the new documentation at Google Code.
+	- Various other feature enhancementsa nd bug fixes.
+- Includes all point release updates:
+	- 2.0.1: Includes bug fix to address a Comic Archive widget bug that prevented comics from being organized by chapters.
+	- 2.0.1: Includes bug fix to address an array keys errror in wc-core.php.
+	- 2.0.2: Includes bug fixes for the Webcomic Add Post metabox which should address upload errors in 2.0.0 and 2.0.1
+	- 2.0.3: Includes bug fixes that prevented random_comic_link() from functioning properly on certain pages
+	- 2.0.3: Includes fixes for the "Property name must be a string" error
+	- 2.0.4: Includes a fix that should address the Secure URL's broken image issue some useres experienced.
+	- 2.0.5: Includes minor fixes to the Library page related to automatic post generation and variable names.
+	- 2.0.6: Includes minor fixes for upload functions related to getting the correct filename in older versions of PHP.
+	- 2.0.7: Includes minor fixes to various Library and Core functions.
+	- 2.0.8: Includes a minor fix to the Library related to Fallback comics.
+	- 2.0.9: Includes a fix for the category.php error experienced by some users after upgrading to WordPress 2.8
+	- 2.0.10: Includes "\" fix.
+
+= 2 (May 25, 2009) =
+
+- Completely rewritten for the 2 release to add new features, address bugs, and optimize performance.
+- Settings page updates:
+	- Reorganized structure for easier configuration.
+	- Automatic post generation options have been removed.
+	- **New** Secure URLís option. When enabled, the URL for comic images is obscured to hide both the name and location of comic files.
+	- **New** Post Drafting option. When enabled, Webcomic will save automatically generated posts as drafts instead of publishing them.
+	- **New** Transcript options. You can now enable or disable user-submitted transcripts, as well as require a name and e-mail address for user submitted transcripts.
+	- **New** Fallback Matching options. These options are actually the old method Webcomic used to match comic files with posts, remaining as a fallback option when a comic isnít already linked to a post. A new ID option is available.
+	- **New** ComicPress Compatibility. A new option for ComicPress users testing Webcomic & InkBlot on their existing WordPress site that addresses incompatibilities between the directory structures of Webcomic 2 and ComicPress. Most users can permanently disable this option.
+- Library page updates:
+	- Reorganized structure for easier use.
+	- Thumbnail view now works with the Orphan Comics list.
+	- The Publish On options are now always visible.
+	- Regenerate All Thumbnails has been removed.
+	- The Edit Comic page has been removed in favor of the Webcomic post metabox.
+	- **New** Fallback update option. The Library now recognizes comics being matched with a post using the Fallback Method and will update them for you.
+	- **New** Bulk Actions. This replaces the Update Collection dropdown and provides actions for regenerating thumbnails, deleting comics, posts, or comics and posts, and reassigning chapters for selected comics.
+	- **New** Orphan Post Generator options. The Orphan Post Generator has been completely reworked to handle almost any update schedule.
+	- **New** Single Post Generator. These options allow you to generate a post for only one orphaned comic instead of doing it en masse.
+- Chapters page updates:
+	- Reorganized structure for easier use.
+	- The Using Chapters instructions have been updated.
+- Core updates:
+	- Webcomic now always stores comics in subdirectories of the root comic directory, named after comic category slugs.
+	- Webcomic now links comic files to their associated post, eliminating the need to scan comic directories for comic files. The old matching methods remain as the Fallback Matching options.
+	- Numerous changes have been made to various Webcomic template tags to add new features, address bugs, and optimize performance.
+	- **New** Multi-Comic Themes. Webcomic can now load entirely new WordPress themes based on the current comic series a user is viewing.
+	- **New** Bookmark Comic widget. Allows users to save their place for a particular comic series. Supports multiple comics on the same site, using a unique ID to differentiate series to allow users to save one bookmark for each series running on your site. This widget uses the new bookmark_comic() template tag
+	- **New** jQuery functions. Webcomic now includes the javascrpt necessary for certain functionsñparticularly dropdown_comics()ñto function properly.
+	- **New** WordPress MU fixes. Webcomic has been updated with numerous fixes and should now properly support WordPress MU.
+	- **New** Contextual Help. The contextual help menu on Webcomic pages now includes links to Webcomic documentation.
+	- **New** Code Breaker. All Webcomic powered sites can now enable a super secret feature by entering a special code on their website.
+
+= 1.9 (April 8, 2009) =
+
+- Includes a critical bug fix that caused Series to be set as their own parent when editing them from the Chapterís page, resulting in numerous Chapter-related problems.
+- Includes numerous fixes related to I18n functions (internationalization support) to correct strings that could not be correctly translated.
+- random_comic() has been deprecated and will be removed in the next release. Use random_comic_link() instead.
+- Various minor bug fixes and feature enhancements.
+
+= 1.8 (March 19, 2009) =
+
+- Includes Multi-Comic support. Webcomic can now manage any number of webcomics on a single WordPress installation, each with itís own Library and Chapter hierarchy. All Webcomic features and functions have been upgraded to fully support multiple webcomics.
+- Includes User-Submittable Transcripts. Webcomic has a new option (transcript e-mail) that, when provided, allows users to submit individual comic transcripts to the e-mail address you provide.
+- Includes Enhanced Chapter System. Chapters now take full advantage of the WordPress Taxonomy API, allowing for Chapter archive pages and chapter feeds.
+- Includes Enhanced Template Tags. All core Webcomic template tags have been upgraded to enhance performance and enable multi-comic support.
+- Includes Enhanced Navigation Options. Webcomic can now make comic images clickable next or previous comic links, limit first/back/next/last comic navigation to the current storyline (chapter or volume), and more.
+- Includes new template tags: in_comic_category(), get_post_comic_category(), get_post_chapters(), single_chapter_title(), chapter_description(), chapters_nav_link(), first_chapter_link(), previous_chapter_link(), next_chapter_link(), last_chapter_link(), the_chapter_link() (replases the_chapter() and the_volume()).
+
+= 1.7 (February 6, 2009) =
+
+- Includes the Edit Comic option. You can now rename comics that are already associated with a post from the Library, as well as get a quick overview of what files comprise a single comic (the master file and any related thumbnail images).
+- All core functions have been rewritten to improve performance and add new features. Please check the Webcomic Codex for fully updated documentation.
+	- get_the_comic() now returns an array of comic related information instead of specifically formatted output (similar to get_the_chapter()).
+	- get_the_chapter() can now provide both chapter and volume information (get_the_volume() has been removed; use get_the_chapter(ívolumeí) instead).
+	- get_the_collection() now accepts an array argument which takes any key/value pairs that the WordPress function get_terms() will accept (see wp-includes/taxonomy.php).
+- Includes new template tags get_comic_image(), the_current_chapter(), and the_current_volume().
+- All plugin files now include inline documentation.
+- Additional bug fixes and feature enhancements.
+
+= 1.6 (January 7, 2009) =
+
+- Includes Meta Box. Webcomic now adds a new meta box to the add/edit post pages, which allows you to upload a comic directly from the add/edit post page and add custom descriptions, transcripts, and filenames more easily. Many thanks to Andrew Naylor for inspiring this addition with his original modifications.
+- Inclueds new permission scheme. Webcomic permissions have been updated to check for specific user capabilities instead of limiting all plugin access to site administrators. WordPress Authorís now have access to a limited Comic Library and WordPress Editorís now have access to the full Comic Library and Comic Chapters.
+- Includes enhanced comic library. The Comic Library now offers the option to regenerate individual comic thumbnails, delete comic posts, and now compares filenames during upload to prevent accidental overwrites (with a new option to force overwriting an existing file).
+- Includes enhanced auto post. Automatic post creation is now compatible with all file name options. When enabled, new options to set (or override for the ìDateî naming option) the publish datetime for the generated comic post are available.
+- Includes enhanced orphan post generation. Orphaned post generation is now compatible with all file name options. New options to set (or override for the ìDateî naming option) the publish datetime and interval (îPost every week starting January 1, 2009?, for example) for the generated comic posts are now available.
+- Includes internationalization support. Webcomic now makes full use of WordPressís I18n features to allow for localization.
+- The library view option is now set per-user instead of globally. If youíre using the thumbnail view when you upgrade your view will initially be reset to the list view.
+- Corrected a flaw in the search functions that prevented transcripts and custom descriptions from being found when searching for more than one term.
+- Additional minor bug fixes and feature enhancements
+
+= 1.5 (December 30, 2008) =
+
+- Added Search Integration. Comic transcripts and custom descriptions are now seamlessly integrated into the WordPress search function and will be included in searches.
+- Added custom column to the Media Library. This will display the custom field value of comic_filename (if custom filenames are being used).
+- Minor bug fixes and feature enhancements.
+
+= 1.4 (December 24, 2008) =
+
+- Added Thumbnail Options. Webcomic now has an independent set of media options for generating comic thumbnails.
+- Added Feed Options. You can now select the size of the comic image that appears in site feeds.
+- Includes new template tag: get_the_collection.
+- Most of the code base has been rewritten to improve performance, add features, and fix bugs.
+
+= 1.3 (December 21, 2008) =
+
+- Corrected secure filenames bug that prevented thumbnails from being retrieved.
+- Corrected comic_archive() and dropdown_comics() bug that displayed post revisions, autosaves, etc.
+- Added code to correctly set the total page count for Volumes.
+
+= 1.2 (December 19, 2008) =
+
+- Includes Automatic Post Creation. When enabled, Webcomic will attempt to create a new comic post during upload. This option is only available when using the Date name format, and comics must only have date information in their filename.
+- Added Generate Missing Posts option to the Library page. Webcomic will attempt to create comic posts for orphaned comics when activated. This option is only available when using the Date name format, and comics must only have date information in their filename.
+- Added a validation check to custom date names. Webcomic now checks to make sure you have (at least) a year, month, and day or week PHP date string identifier and resets to the default date format if one or more of these is missing.
+- Rewrote most of the Webcomic functions to add features and improve performance.
+- Includes new template tags: get_the_chapter and get_the_volume.
+
+= 1.1 (December 11, 2008) =
+
+- Includes Secure option for filenames. When enabled, Webcomic appends a secure hash to comic filenames during upload to prevent read-ahead and archive scraping.
+- Corrected the Markdown plugin error that prevented WordPress from automatically activating Webcomic.
+
+= 1 (December 4, 2008) =
+
+- Initial stable, feature-complete public release.
+- Includes Settings page:
+	- Set the comic category.
+	- Define the comic directory. The comic directory and the thumbs subdirectory (for storying comic thumbnails generated by Webcomic) are automatically created if they do not exist.
+	- Set the current chapter. If set, new comic posts will be automatically assigned to the current chapter.
+	- Add or remove comic images from site feeds.
+	- Select Date, Title, or Custom name formats for comic filenames.
+- Includes Library page:
+	- See all comics with related post information.
+	- Easily see which posts donít have a comic and which comics donít have a post.
+	- Upload, rename, and delete comics. Webcomic will automatically generate comic thumbnails based your WordPress media settings
+	- Regenerate all comic thumbnails if your media settings change.
+	- Quickly assign multiple comics to volumes and chapters.
+	- Choose between list or thumbnail view.
+- Includes Chapters page:
+	- Create, modify, and delete volunmes and chapters to organize your comic library.
+	- Add unique titles and descriptions volumes and chapters.
+	- See a total page count for volumes and a running page count for chapters.
+- Includes new template tags for WordPress themes: comics_nav_link, comic_archive, comic_loop, dropdown_comics, first_comic_link, get_the_comic, ignore_comics, last_comic_link, next_comic_link, previous_comic_link, random_comic, recent_comics, the_chapter, the_comic, the_comic_embed, the_comic_transcript, and the_volume.
+- Includes new widgets for WordPress themes: Random Comic, Recent Comics, Dropdown Comics, Comic Archive, and Recent Posts (modified to ignore comic posts).
 
 == Upgrade Notice ==
 
