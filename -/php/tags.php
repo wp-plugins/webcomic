@@ -1,22 +1,26 @@
 <?php
-/** Contains the WebcomicTag class and template tag functions.
+/**
+ * Contains the WebcomicTag class and template tag functions.
  * 
  * @package Webcomic
  */
 
-/** Handle custom template tag functionality.
+/**
+ * Handle custom template tag functionality.
  * 
  * @package Webcomic
  */
 class WebcomicTag extends Webcomic {
-	/** Override the parent constructor. */
+	/**
+	 * Override the parent constructor. */
 	public function __construct(){}
 	
 	///
 	// Utility Tags
 	///
 	
-	/** Return the current collection ID or configuration.
+	/**
+	 * Return the current collection ID or configuration.
 	 * 
 	 * @param boolean $config Return the entire configuration for the current collection.
 	 * @return mixed
@@ -26,7 +30,8 @@ class WebcomicTag extends Webcomic {
 		return ( $config and isset( self::$config[ 'collections' ][ self::$collection ] ) ) ? self::$config[ 'collections' ][ self::$collection ] : self::$collection;
 	}
 	
-	/** Return all collection ID's or configurations.
+	/**
+	 * Return all collection ID's or configurations.
 	 * 
 	 * @param boolean $config Return the entire configuration for all collections.
 	 * @return array
@@ -36,7 +41,8 @@ class WebcomicTag extends Webcomic {
 		return $config ? self::$config[ 'collections' ] : array_keys( self::$config[ 'collections' ] );
 	}
 	
-	/** Sort webcomic collections by name.
+	/**
+	 * Sort webcomic collections by name.
 	 * 
 	 * Useful in combination with the usort() function to sort
 	 * collections by name, like:
@@ -58,7 +64,8 @@ class WebcomicTag extends Webcomic {
 		return strcmp( $a[ 'name' ], $b[ 'name' ] );
 	}
 	
-	/** Sort webcomic collections by slug.
+	/**
+	 * Sort webcomic collections by slug.
 	 * 
 	 * Useful in combination with the usort() function to sort
 	 * collections by slug, like:
@@ -80,7 +87,8 @@ class WebcomicTag extends Webcomic {
 		return strcmp( $a[ 'slugs' ][ 'name' ], $b[ 'slugs' ][ 'name' ] );
 	}
 	
-	/** Sort webcomic collections by published post count.
+	/**
+	 * Sort webcomic collections by published post count.
 	 * 
 	 * Useful in combination with the usort() function to sort
 	 * collections by published post count, like:
@@ -111,7 +119,8 @@ class WebcomicTag extends Webcomic {
 		return $count_a < $count_b ? -1 : 1;
 	}
 	
-	/** Sort webcomic collections by last update time.
+	/**
+	 * Sort webcomic collections by last update time.
 	 * 
 	 * Useful in combination with the usort() function to sort
 	 * collections by last update time, like:
@@ -141,7 +150,8 @@ class WebcomicTag extends Webcomic {
 	// Conditional Tags
 	///
 	
-	/** Is a compatible version of Webcomic installed?
+	/**
+	 * Is a compatible version of Webcomic installed?
 	 * 
 	 * This is mostly useful to verify that a compatible version of
 	 * Webcomic is installed when constructing Webcomic-ready themes,
@@ -162,7 +172,8 @@ class WebcomicTag extends Webcomic {
 		return ( $version and version_compare( self::$version, $version, '>=' ) );
 	}
 	
-	/** Is the query for any single webcomic?
+	/**
+	 * Is the query for any single webcomic?
 	 * 
 	 * Specific collection checks should be done using the is_singular()
 	 * function directly.
@@ -175,7 +186,8 @@ class WebcomicTag extends Webcomic {
 		return ( is_singular( array_keys( self::$config[ 'collections' ] ) ) and ( !$dynamic or 'xmlhttprequest' === strtolower( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) ) );
 	}
 	
-	/** Is the query for a relatieve webcomic?
+	/**
+	 * Is the query for a relatieve webcomic?
 	 * 
 	 * @param string $relative The relative post to check for; one of 'first' or 'last'.
 	 * @param mixed $in_same_term Whether the relative webcomic should be in a same term. May also be an array or comma-separated list of inclusive term IDs.
@@ -192,10 +204,11 @@ class WebcomicTag extends Webcomic {
 			return false;
 		}
 		
-		return ( $post->ID === $the_post->ID );
+		return ( ( int ) $post->ID === ( int ) $the_post->ID );
 	}
 	
-	/** Is the query for a Webcomic-recognized attachment?
+	/**
+	 * Is the query for a Webcomic-recognized attachment?
 	 * 
 	 * @param mixed $collection Collection ID or an array of these to check.
 	 * @return boolean
@@ -209,7 +222,8 @@ class WebcomicTag extends Webcomic {
 		return ( is_attachment() and preg_match( '/^image\//', get_post_mime_type( $post ) ) and in_array( get_post_type( $post->post_parent ), $collection ) );
 	}
 	
-	/** Is the query for a webcomic-related page?
+	/**
+	 * Is the query for a webcomic-related page?
 	 * 
 	 * @param mixed $the_post Post object or ID to check.
 	 * @param mixed $collection Collection ID or an array of these to check.
@@ -225,7 +239,8 @@ class WebcomicTag extends Webcomic {
 		return ( $meta and ( !$collection or in_array( $meta, ( array ) $collection ) ) );
 	}
 	
-	/** Is the query for a webcomic archive page?
+	/**
+	 * Is the query for a webcomic archive page?
 	 * 
 	 * Specific collection checks should be done using the
 	 * is_post_type_archive() function directly.
@@ -237,7 +252,8 @@ class WebcomicTag extends Webcomic {
 		return is_post_type_archive( array_keys( self::$config[ 'collections' ] ) );
 	}
 
-	/** Is the query for a webcomic taxonomy archive page?
+	/**
+	 * Is the query for a webcomic taxonomy archive page?
 	 * 
 	 * Unlike the is_tax() function this function only checks for
 	 * Webcomic-related taxonomies, expecting them to be specified in
@@ -266,7 +282,8 @@ class WebcomicTag extends Webcomic {
 		return is_tax( $taxonomies, $term );
 	}
 	
-	/** Is the query for a webcomic crossover archive page?
+	/**
+	 * Is the query for a webcomic crossover archive page?
 	 * 
 	 * @param string $collection Collection ID to check for.
 	 * @return boolean
@@ -301,7 +318,8 @@ class WebcomicTag extends Webcomic {
 		return false;
 	}
 	
-	/** Is the current post a webcomic?
+	/**
+	 * Is the current post a webcomic?
 	 * 
 	 * Specific collection checks should be done by comparing the post
 	 * type directly.
@@ -314,7 +332,8 @@ class WebcomicTag extends Webcomic {
 		return in_array( get_post_type( $the_post ), array_keys( self::$config[ 'collections' ] ) );
 	}
 	
-	/** Is the current post a Webcomic-recognized attachment?
+	/**
+	 * Is the current post a Webcomic-recognized attachment?
 	 * 
 	 * @param mixed $the_post Post object or ID to check.
 	 * @param mixed $collection Collection ID or an array of these to check.
@@ -328,7 +347,8 @@ class WebcomicTag extends Webcomic {
 		return ( $the_post and $the_post->post_parent and preg_match( '/^image\//', get_post_mime_type( $the_post ) ) and in_array( get_post_type( $the_post->post_parent ), $collection ) );
 	}
 	
-	/** Does the current webcomic have any Webcomic-recognized attachments?
+	/**
+	 * Does the current webcomic have any Webcomic-recognized attachments?
 	 * 
 	 * @param mixed $the_post Post object or ID to check.
 	 * @return boolean
@@ -338,7 +358,8 @@ class WebcomicTag extends Webcomic {
 		return ( boolean ) self::get_attachments( $the_post );
 	}
 	
-	/** Does the current webcomic have any crossover terms?
+	/**
+	 * Does the current webcomic have any crossover terms?
 	 * 
 	 * @param mixed $scope Collection ID, taxonomy ID, or shorthand taxonomy (one of 'storyline' or 'character') to check.
 	 * @param mixed $term Term name, ID, slug, or an array of these to check.
@@ -361,7 +382,8 @@ class WebcomicTag extends Webcomic {
 		return false;
 	}
 	
-	/** Does the current webcomic have any transcripts?
+	/**
+	 * Does the current webcomic have any transcripts?
 	 * 
 	 * @param boolean $pending Does the current webcomic have any transcripts pending review?
 	 * @param string $language Language slug to limit any transcripts to.
@@ -381,7 +403,8 @@ class WebcomicTag extends Webcomic {
 		) ) : false;
 	}
 	
-	/** Does the current webcomic allow transcription?
+	/**
+	 * Does the current webcomic allow transcription?
 	 * 
 	 * @param mixed $the_post The post to check for transcription permissions.
 	 * @return boolean
@@ -391,7 +414,8 @@ class WebcomicTag extends Webcomic {
 		return ( $the_post = get_post( $the_post ) and isset( self::$config[ 'collections' ][ $the_post->post_type ] ) and get_post_meta( $the_post->ID, 'webcomic_transcripts', true ) and ( 'register' === self::$config[ 'collections' ][ $the_post->post_type ][ 'transcripts' ][ 'permission' ] ? is_user_logged_in() : true ) );
 	}
 	
-	/** Does the current webcomic have prints available?
+	/**
+	 * Does the current webcomic have prints available?
 	 * 
 	 * @param boolean $original Whether an original, traditional-media print is available.
 	 * @param mixed $the_post The post to check for prints.
@@ -402,7 +426,8 @@ class WebcomicTag extends Webcomic {
 		return ( $the_post = get_post( $the_post ) and !empty( self::$config[ 'collections' ][ $the_post->post_type ][ 'commerce' ][ 'business' ] ) and get_post_meta( $the_post->ID, 'webcomic_prints', true ) and ( $original ? get_post_meta( $the_post->ID, 'webcomic_original', true ) : true ) );
 	}
 	
-	/** Verify a users age against collection age limit.
+	/**
+	 * Verify a users age against collection age limit.
 	 * 
 	 * @param string $collection The collection to verify against.
 	 * @param object $user The user to verify (defaults to the current user).
@@ -441,7 +466,8 @@ class WebcomicTag extends Webcomic {
 		return null;
 	}
 	
-	/** Verify a users role against allowed collection roles.
+	/**
+	 * Verify a users role against allowed collection roles.
 	 * 
 	 * @param string $collection The collection to verify against.
 	 * @param object $user The user to verify (defaults to the current user).
@@ -479,7 +505,8 @@ class WebcomicTag extends Webcomic {
 	// Single Webcomic Tags
 	///
 	
-	/** Return webcomic attachments.
+	/**
+	 * Return webcomic attachments.
 	 * 
 	 * @param string $size The size attachments should be displayed at. May be any registered size; defaults are 'full', 'large', 'medium', and 'thumbnail'.
 	 * @param string $relative Whether to link the webcomic. May be one of 'self', 'next', 'previous', 'first', 'first-nocache', 'last', 'last-nocache', 'random', or 'random-nocache'.
@@ -513,7 +540,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return the number of Webcomic-recognized attachments.
+	/**
+	 * Return the number of Webcomic-recognized attachments.
 	 * 
 	 * @param mixed The post object or ID to retrieve the attachment count for.
 	 * @return integer
@@ -525,7 +553,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return an array of webomics related to the current webcomic.
+	/**
+	 * Return an array of webomics related to the current webcomic.
 	 * 
 	 * @param mixed $storylines Match based on storylines. May be boolean, '!' (only collection terms), or 'x' (only crossover terms).
 	 * @param mixed $characters Match based on characters. May be boolean, '!' (only collection terms), or 'x' (only crossover terms).
@@ -589,7 +618,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Returns a formatted list of related webcomics.
+	/**
+	 * Returns a formatted list of related webcomics.
 	 * 
 	 * @param string $before Before list.
 	 * @param string $sep Separate items using this.
@@ -628,11 +658,12 @@ class WebcomicTag extends Webcomic {
 				}
 			}
 			
-			return $before . join( $sep, $related ) . $after;
+			return $before . implode( $sep, $related ) . $after;
 		}
 	}
 	
-	/** Return a relative webcomic.
+	/**
+	 * Return a relative webcomic.
 	 * 
 	 * @param string $relative The relative post to retrieve; one of 'next', 'previous', 'first', 'last', or 'random'.
 	 * @param mixed $in_same_term Whether the linked webcomic should be in a same term. May also be an array or comma-separated list of inclusive term IDs.
@@ -687,7 +718,7 @@ class WebcomicTag extends Webcomic {
 			
 			if ( ( $in_same_term or $excluded_terms ) and $taxonomy ) {
 				$join    = " INNER JOIN {$wpdb->term_relationships} AS tr ON p.ID = tr.object_id INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id";
-				$exclude = " AND tt.taxonomy IN ( '" . join( "', '", $taxonomy ) . "' )";
+				$exclude = " AND tt.taxonomy IN ( '" . implode( "', '", $taxonomy ) . "' )";
 				
 				if ( true === $in_same_term and $post_id ) {
 					$include = wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) );
@@ -698,7 +729,7 @@ class WebcomicTag extends Webcomic {
 				}
 				
 				if ( !is_wp_error( $include ) ) {
-					$join .= " AND tt.taxonomy IN ( '" . join( "', '", $taxonomy ) . "' ) AND tt.term_id IN ( " . ( $include ? join( ', ', $include ) : 0 ) . " )";
+					$join .= " AND tt.taxonomy IN ( '" . implode( "', '", $taxonomy ) . "' ) AND tt.term_id IN ( " . ( $include ? implode( ', ', $include ) : 0 ) . " )";
 				}
 				
 				if ( $excluded_terms ) {
@@ -707,7 +738,7 @@ class WebcomicTag extends Webcomic {
 					$excluded_terms = $include ? array_diff( $excluded_terms, $include ) : $excluded_terms;
 					
 					if ( $excluded_terms ) {
-						$exclude = " AND tt.taxonomy IN ( '" . join( "', '", $taxonomy ) . "' ) AND tt.term_id NOT IN ( " . join( ', ', $excluded_terms ) . " )";
+						$exclude = " AND tt.taxonomy IN ( '" . implode( "', '", $taxonomy ) . "' ) AND tt.term_id NOT IN ( " . implode( ', ', $excluded_terms ) . " )";
 					}
 				}
 			}
@@ -749,7 +780,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a relative webcomic url.
+	/**
+	 * Return a relative webcomic url.
 	 * 
 	 * @param string $relative The relative post to retrieve; one of 'next', 'previous', 'first', 'first-nocache', 'last', 'last-nocache', 'random', or 'random-nocache'.
 	 * @param mixed $in_same_term Whether the linked webcomic should be in a same term. May also be an array or comma-separated list of inclusive term IDs.
@@ -768,7 +800,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a relative webcomic link.
+	/**
+	 * Return a relative webcomic link.
 	 * 
 	 * @param string $format Format string for the link. Should include the %link token, which will be replaced by the actual link.
 	 * @param string $link Format string for the link text. Accepts %title, %date, and image size tokens.
@@ -841,7 +874,7 @@ class WebcomicTag extends Webcomic {
 				$link = str_replace( array_keys( $tokens ), $tokens, $link );
 			}
 			
-			$link = '<a href="' . $href . '" class="' . join( ' ', $class ) . '"' . ( ( 'previous' === $relative or 'next' === $relative ) ? ' rel="' . str_replace( 'ious', '', $relative ) . '"' : '' ) . '>' . $link . '</a>';
+			$link = '<a href="' . $href . '" class="' . implode( ' ', $class ) . '"' . ( ( 'previous' === $relative or 'next' === $relative ) ? ' rel="' . str_replace( 'ious', '', $relative ) . '"' : '' ) . '>' . $link . '</a>';
 			
 			$format = str_replace( '%link', $link, $format );
 			
@@ -849,7 +882,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a purchase webcomic url.
+	/**
+	 * Return a purchase webcomic url.
 	 * 
 	 * @param mixed $the_post Post object or ID to retrive the purchase link for.
 	 * @return string
@@ -866,7 +900,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a purchase webcomic link.
+	/**
+	 * Return a purchase webcomic link.
 	 * 
 	 * @param string $format Format string for the link. Should include the %link token, which will be replaced by the actual link.
 	 * @param string $link Format string for the link text. Accepts %title, %date, and image size tokens.
@@ -908,18 +943,25 @@ class WebcomicTag extends Webcomic {
 				$link = str_replace( array_keys( $tokens ), $tokens, $link );
 			}
 			
-			$link   = '<a href="' . $href . '" class="' . join( ' ', $class ) . '">' . $link . '</a>';
+			$link   = '<a href="' . $href . '" class="' . implode( ' ', $class ) . '">' . $link . '</a>';
 			$format = str_replace( '%link', $link, $format );
 			
 			return apply_filters( 'purchase_webcomic_link', $format, $link, $the_post );
 		}
 	}
 	
-	/** Return a webcomic collection link.
+	/**
+	 * Return a webcomic collection link.
 	 * 
-	 * @deprecated 4.0.7 4.1 Use WebcomicTag::get_the_webcomic_collection_list() instead.
+	 * @param string $format Format string for the link. Should include the %link token, which will be replaced by the actual link.
+	 * @param string $link Format string for the link text. Accepts %title and image size tokens tokens.
+	 * @param string $collection The collection ID to return a link for.
+	 * @return string
+	 * @uses Webcomic::$config
+	 * @uses WebcomicTag::get_relative_webcomic_link()
+	 * @filter string webcomic_collection_link Filters the output of `the_webcomic_collection`.
 	 */
-	public static function webcomic_collection_link( $format, $link = '', $target = 'archive', $collection = '' ) {
+	public static function webcomic_collection_link( $format, $link = '', $collection = '' ) {
 		global $post;
 		
 		if ( !$collection ) {
@@ -928,8 +970,8 @@ class WebcomicTag extends Webcomic {
 		
 		if ( $collection ) {
 			$class  = array( 'webcomic-link', 'webcomic-collection-link', "{$collection}-collection-link" );
-			$href   = ( 'first' === $target or 'last' === $target or 'random' === $target ) ? self::get_relative_webcomic_link( $target, false, false, '', $collection ) : get_post_type_archive_link( $collection );
-			$link   = $link ? $link : __( '%title', 'webcomic' );
+			$href   = get_post_type_archive_link( $collection );
+			$link   = $link ? $link : self::$config[ 'collections' ][ $collection ][ 'name' ];
 			
 			if ( false !== strpos( $link, '%' ) ) {
 				$tokens = array(
@@ -947,14 +989,15 @@ class WebcomicTag extends Webcomic {
 				$link = str_replace( array_keys( $tokens ), $tokens, $link );
 			}
 			
-			$link   = '<a href="' . $href . '" class="' . join( ' ', $class ) . '">' . $link . '</a>';
+			$link   = '<a href="' . $href . '" class="' . implode( ' ', $class ) . '">' . $link . '</a>';
 			$format = str_replace( '%link', $link, $format );
 			
-			return apply_filters( 'webcomic_collection_link', $format, $link, $target, $collection );
+			return apply_filters( 'webcomic_collection_link', $format, $link, $collection );
 		}
 	}
 	
-	/** Return a formatted list of collections related to the current webcomic.
+	/**
+	 * Return a formatted list of collections related to the current webcomic.
 	 * 
 	 * @param integer $id The post ID to retrieve collections for.
 	 * @param string $before Before list.
@@ -1007,13 +1050,14 @@ class WebcomicTag extends Webcomic {
 				$collection_links[] = '<a href="' . $link . '"' . ( $k === $collection ? '' : ' class="webcomic-crossover-collection ' . $k . '-crossover-collection"' ) . '>' . $label . '</a>';
 			}
 			
-			$term_links = apply_filters( "webcomic_collection_links", $collection_links, $collections, $before, $sep, $after, $target, $image, $crossover, $collection );
+			$term_links = apply_filters( 'webcomic_collection_links', $collection_links, $collections, $before, $sep, $after, $target, $image, $crossover, $collection );
 			
-			return apply_filters( 'the_webcomic_collection_list', $before . join( $sep, $collection_links ) . $after, $id, $before, $sep, $after, $target, $image, $crossover, $collection );
+			return apply_filters( 'the_webcomic_collection_list', $before . implode( $sep, $collection_links ) . $after, $id, $before, $sep, $after, $target, $image, $crossover, $collection );
 		}
 	}
 	
-	/** Return a formatted list of terms related to the current webcomic.
+	/**
+	 * Return a formatted list of terms related to the current webcomic.
 	 * 
 	 * @param integer $id The post ID to retrieve terms for.
 	 * @param mixed $taxonomy The taxonomy or an array of taxonomies the terms must belong to. May be the shorthand 'storyline', 'character', '!storyline', '!character', 'xstoryline', or 'xcharacter'.
@@ -1083,7 +1127,7 @@ class WebcomicTag extends Webcomic {
 			$term_links = apply_filters( "webcomic_term_links-{$taxonomy}", $term_links, $terms, $before, $sep, $after, $target, $image );
 			$term_links = apply_filters( "webcomic_term_links", $term_links, $terms, $before, $sep, $after, $target, $image, $taxonomy );
 			
-			return apply_filters( 'the_webcomic_term_list', $before . join( $sep, $term_links ) . $after, $id, $before, $sep, $after, $target, $image, $taxonomy );
+			return apply_filters( 'the_webcomic_term_list', $before . implode( $sep, $term_links ) . $after, $id, $before, $sep, $after, $target, $image, $taxonomy );
 		}
 	}
 	
@@ -1091,7 +1135,8 @@ class WebcomicTag extends Webcomic {
 	// Single Term Tags
 	///
 	
-	/** Return a relative term.
+	/**
+	 * Return a relative term.
 	 * 
 	 * @param string $relative The relative term to retrieve; one of 'next', 'previous', 'first', 'last', or 'random'.
 	 * @param string $taxonomy The taxonomy the relative term must belong to.
@@ -1103,7 +1148,7 @@ class WebcomicTag extends Webcomic {
 		
 		$object = is_tax() ? get_queried_object() : false;
 		
-		if ( !taxonomy_exists( $taxonomy ) and is_tax() ) {
+		if ( !taxonomy_exists( $taxonomy ) and WebcomicTag::is_webcomic_tax() ) {
 			$taxonomy = $object->taxonomy;
 		} elseif ( ( 'next' === $relative or 'previous' === $relative ) and is_singular() and $terms = wp_get_object_terms( $post->ID, $taxonomy, array_merge( array( 'hide_empty' => true, 'orderby' => is_taxonomy_hierarchical( $taxonomy ) ? 'term_group' : 'name' ), ( array ) $args, array( 'cache_domain' => 'get_relative_webcomic_term' ) ) ) and !is_wp_error( $terms ) ) {
 			$object = 'next' === $relative ? array_pop( $terms ) : array_shift( $terms );
@@ -1111,7 +1156,7 @@ class WebcomicTag extends Webcomic {
 		
 		$args = array_merge( array( 'hide_empty' => true, 'orderby' => is_taxonomy_hierarchical( $taxonomy ) ? 'term_group' : 'name' ), ( array ) $args, array( 'cache_domain' => 'get_relative_webcomic_term' ) );
 		
-		if ( taxonomy_exists( $taxonomy ) and ( 'previous' === $relative or 'next' === $relative ) ? isset( $object ) : true ) {
+		if ( taxonomy_exists( $taxonomy ) and ( 'previous' === $relative or 'next' === $relative ) ? !empty( $object ) : true ) {
 			if ( 'first' === $relative and $terms = get_terms( $taxonomy, array_merge( $args, array( 'parent' => 0 ) ) ) and !is_wp_error( $terms ) ) {
 				$object = $terms[ 0 ];
 			} elseif ( 'random' === $relative and $terms = get_terms( $taxonomy, $args ) and !is_wp_error( $terms ) ) {
@@ -1146,7 +1191,7 @@ class WebcomicTag extends Webcomic {
 				} else {
 					$next = $object;
 					
-					while ( $next = get_term( $next->parent, $next->taxonomy ) ) {
+					while ( $next = get_term( $next->parent, $next->taxonomy ) and !is_wp_error( $next ) ) {
 						if ( $children = get_terms( $next->taxonomy, array_merge( $args, array( 'parent' => $next->parent ) ) ) and !is_wp_error( $children ) and false !== ( $key = array_search( $next, $children ) ) and isset( $children[ $key + 1 ] ) ) {
 							$object = $children[ $key + 1 ];
 							
@@ -1164,7 +1209,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a relative term url.
+	/**
+	 * Return a relative term url.
 	 * 
 	 * @param string $target The target url, one of 'archive', 'first', 'first-nocache', 'last', 'last-nocache', 'random', or 'random-nocache'.
 	 * @param string $relative The relative term to retrieve; one of 'next', 'previous', 'first', 'last', or 'random'.
@@ -1184,7 +1230,7 @@ class WebcomicTag extends Webcomic {
 		} elseif ( $term = self::get_relative_webcomic_term( $relative, $taxonomy, $args ) ) {
 			if ( 'archive' !== $target and $objects = get_objects_in_term( $term->term_id, $term->taxonomy ) ) {
 				if ( 'first' === $target or 'last' === $target ) {
-					$post_id = $wpdb->get_var( sprintf( "SELECT ID FROM {$wpdb->posts} WHERE ID IN ( %s ) ORDER BY post_date %s LIMIT 1", join( ', ', $objects ), 'last' === $target ? 'DESC' : 'ASC' ) );
+					$post_id = $wpdb->get_var( sprintf( "SELECT ID FROM {$wpdb->posts} WHERE ID IN ( %s ) ORDER BY post_date %s LIMIT 1", implode( ', ', $objects ), 'last' === $target ? 'DESC' : 'ASC' ) );
 					$link    = apply_filters( 'the_permalink', get_permalink( $post_id ) );
 				} else {
 					shuffle( $objects );
@@ -1199,7 +1245,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a relative term link.
+	/**
+	 * Return a relative term link.
 	 * 
 	 * @param string $format Format string for the link. Should include the %link token, which will be replaced by the actual link.
 	 * @param string $link Format string for the link text. Accepts %title and image size tokens.
@@ -1246,7 +1293,7 @@ class WebcomicTag extends Webcomic {
 					'%title' => $term->name
 				);
 				
-				if ( $term->webcomic_image ) {
+				if ( isset( $term->webcomic_image ) ) {
 					foreach ( array_merge( get_intermediate_image_sizes(), array( 'full' ) ) as $size ) {
 						if ( false !== strpos( $link, "%{$size}" ) ) {
 							$tokens[ "%{$size}" ] = wp_get_attachment_image( $term->webcomic_image, $size );
@@ -1257,14 +1304,15 @@ class WebcomicTag extends Webcomic {
 				$link = str_replace( array_keys( $tokens ), $tokens, $link );
 			}
 			
-			$link   = '<a href="' . $href . '" class="' . join( ' ', $class ) . '"' . ( ( 'previous' === $relative or 'next' === $relative ) ? ' rel="' . str_replace( 'ious', '', $relative ) . '"' : '' ) . '>' . $link . '</a>';
+			$link   = '<a href="' . $href . '" class="' . implode( ' ', $class ) . '"' . ( ( 'previous' === $relative or 'next' === $relative ) ? ' rel="' . str_replace( 'ious', '', $relative ) . '"' : '' ) . '>' . $link . '</a>';
 			$format = str_replace( '%link', $link, $format );
 			
 			return apply_filters( "{$relative}_webcomic_term_link", $format, $link, $target, $term, $args );
 		}
 	}
 	
-	/** Return a term title.
+	/**
+	 * Return a term title.
 	 * 
 	 * @param string $prefix Content to display before the title.
 	 * @param mixed $term Term ID or object to return a title for.
@@ -1282,7 +1330,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a term description.
+	/**
+	 * Return a term description.
 	 * 
 	 * @param integer $term Term ID to return a description for. Will use global term ID by default.
 	 * @param string $taxonomy Taxonomy the term belongs to.
@@ -1297,7 +1346,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a term image.
+	/**
+	 * Return a term image.
 	 * 
 	 * @param string $size The size of the image to return.
 	 * @param integer $term Term ID. Will use global term ID by default.
@@ -1313,7 +1363,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a crossover term link.
+	/**
+	 * Return a crossover term link.
 	 * 
 	 * @param string $collection The collection ID of the crossover.
 	 * @param mixed $term Term ID or object to return a crossover link for.
@@ -1335,7 +1386,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a formatted list of collections the current term crosses over with.
+	/**
+	 * Return a formatted list of collections the current term crosses over with.
 	 * 
 	 * @param integer $term The term ID to retrieve crossovers for.
 	 * @param mixed $taxonomy The taxonomy the term must belong to.
@@ -1378,11 +1430,12 @@ class WebcomicTag extends Webcomic {
 			
 			$term_links = apply_filters( "webcomic_term_crossover_links", $collection_links, $before, $sep, $after, $target, $image );
 			
-			return apply_filters( 'webcomic_term_crossovers', $before . join( $sep, $collection_links ) . $after, $term->term_id, $term->taxonomy, $before, $sep, $after, $target, $image );
+			return apply_filters( 'webcomic_term_crossovers', $before . implode( $sep, $collection_links ) . $after, $term->term_id, $term->taxonomy, $before, $sep, $after, $target, $image );
 		}
 	}
 	
-	/** Return a crossover collection title.
+	/**
+	 * Return a crossover collection title.
 	 * 
 	 * @param string $prefix Content to display before the title.
 	 * @return string
@@ -1402,7 +1455,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a formatted crossover collection description.
+	/**
+	 * Return a formatted crossover collection description.
 	 * 
 	 * @param string $collection The collection to retrieve a description for.
 	 * @return string
@@ -1422,7 +1476,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a crossover collection image.
+	/**
+	 * Return a crossover collection image.
 	 * 
 	 * @param string $size The size of the image to return.
 	 * @return string
@@ -1447,7 +1502,8 @@ class WebcomicTag extends Webcomic {
 	// Single Collection Tags
 	///
 	
-	/** Return a collection title.
+	/**
+	 * Return a collection title.
 	 * 
 	 * @param string $prefix Content to display before the title.
 	 * @param string $collection Collection ID to return a title for.
@@ -1465,7 +1521,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a formatted webcomic collection description.
+	/**
+	 * Return a formatted webcomic collection description.
 	 * 
 	 * @param string $collection The collection to retrieve a description for.
 	 * @return string
@@ -1479,7 +1536,8 @@ class WebcomicTag extends Webcomic {
 		return empty( self::$config[ 'collections' ][ $collection ] ) ? '' : apply_filters( 'webcomic_collection_description', wpautop( self::$config[ 'collections' ][ $collection ][ 'description' ] ), $collection );
 	}
 	
-	/** Return a collection image.
+	/**
+	 * Return a collection image.
 	 * 
 	 * @param string $size The size of the image to return.
 	 * @param string $collection Collection ID. Will use global post type by default.
@@ -1494,7 +1552,8 @@ class WebcomicTag extends Webcomic {
 		return empty( self::$config[ 'collections' ][ $collection ][ 'image' ] ) ? '' : apply_filters( 'webcomic_collection_image', wp_get_attachment_image( self::$config[ 'collections' ][ $collection ][ 'image' ], $size ), $size, $collection );
 	}
 	
-	/** Return a formatted collection print amount.
+	/**
+	 * Return a formatted collection print amount.
 	 * 
 	 * @param string $type The amount to return, one of 'domestic', 'domestic-price', 'domestic-shipping', 'international', 'international-price', 'international-shipping', 'original', 'original-price', or 'original-shipping'.
 	 * @param string $dec Decimal point for number_format().
@@ -1519,7 +1578,8 @@ class WebcomicTag extends Webcomic {
 		return apply_filters( 'webcomic_collection_print_amount', $output, $dec, $sep, $collection );
 	}
 	
-	/** Return a formatted list of collections the current collection crosses over with.
+	/**
+	 * Return a formatted list of collections the current collection crosses over with.
 	 * 
 	 * @param string $before Before list.
 	 * @param string $sep Separate items using this.
@@ -1567,7 +1627,7 @@ class WebcomicTag extends Webcomic {
 			
 			$term_links = apply_filters( "webcomic_collection_crossover_links", $collection_links, $before, $sep, $after, $target, $image );
 			
-			return apply_filters( 'webcomic_collection_crossovers', $before . join( $sep, $collection_links ) . $after, $before, $sep, $after, $target, $image, $collection );
+			return apply_filters( 'webcomic_collection_crossovers', $before . implode( $sep, $collection_links ) . $after, $before, $sep, $after, $target, $image, $collection );
 		}
 	}
 	
@@ -1575,7 +1635,8 @@ class WebcomicTag extends Webcomic {
 	// Commerce Tags
 	///
 	
-	/** Return a donation amount.
+	/**
+	 * Return a donation amount.
 	 * 
 	 * @param string $dec Decimal point for number_format().
 	 * @param string $sep Thousands separator for number_format().
@@ -1592,12 +1653,13 @@ class WebcomicTag extends Webcomic {
 			return '';
 		}
 		
-		$output = number_format( self::$config[ 'collections' ][ $collection ][ 'commerce' ][ 'donation' ], 2, $dec, $sep ) . self::$config[ 'collections' ][ $collection ][ 'commerce' ][ 'currency' ];
+		$output = number_format( self::$config[ 'collections' ][ $collection ][ 'commerce' ][ 'donation' ], 2, $dec, $sep ) . ' ' . self::$config[ 'collections' ][ $collection ][ 'commerce' ][ 'currency' ];
 		
 		return apply_filters( 'webcomic_donation_amount', $output, $dec, $sep, $collection );
 	}
 	
-	/** Return hidden donation form fields.
+	/**
+	 * Return hidden donation form fields.
 	 * 
 	 * @param string $collection The collection to render donation fields for.
 	 * @return string
@@ -1625,15 +1687,15 @@ class WebcomicTag extends Webcomic {
 		return $output;
 	}
 	
-	/** Return a donation form.
+	/**
+	 * Return a donation form.
 	 * 
-	 * https://www.paypal.com/cgi-bin/webscr | https://www.sandbox.paypal.com/cgi-bin/webscr
-	 * 
-	 * @param string $label The form submit button label.
+	 * @param string $label The form submit button label. Accepts the %amount token.
 	 * @param string $collection The collection to render a donation form for.
 	 * @return string
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::$collection
+	 * @uses WebcomicTag::webcomic_donation_amount()
 	 * @uses WebcomicTag::webcomic_donation_fields()
 	 * @filter string webcomic_donation_form Filters the output of `webcomic_donation_form`.
 	 */
@@ -1644,16 +1706,38 @@ class WebcomicTag extends Webcomic {
 			return;
 		}
 		
+		if ( !$label ) {
+			$label = sprintf( __( 'Support %s', 'webcomic' ), esc_html( self::$config[ 'collections' ][ $collection ][ 'name' ] ) );
+		} elseif ( false !== strpos( $label, '%' ) ) {
+			$match = array();
+			
+			preg_match( '/%dec(.)/', $label, $match );
+			
+			$dec = !empty( $match[ 1 ] ) ? $match[ 1 ] : '.';
+			
+			preg_match( '/%sep(.)/', $label, $match );
+			
+			$sep   = !empty( $match[ 1 ] ) ? $match[ 1 ] : ',';
+			$label = preg_replace( '/(%dec.|%sep.)/', '', $label );
+			
+			$tokens = array(
+				'%amount' => self::webcomic_donation_amount( $dec, $sep, $collection )
+			);
+			
+			$label = str_replace( array_keys( $tokens ), $tokens, $label );
+		}
+		
 		$output = '
-			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="webcomic-donation-form ' . $collection . '-donation-form">
-				<button type="submit">' . ( $label ? $label : sprintf( __( 'Support %s', 'webcomic' ), esc_html( self::$config[ 'collections' ][ $collection ][ 'name' ] ) ) ) . '</button>
+			<form action="' . ( self::$debug ? 'https://www.sandbox.paypal.com/cgi-bin/webscr' : 'https://www.paypal.com/cgi-bin/webscr' ) . '" method="post" class="webcomic-donation-form ' . $collection . '-donation-form">
+				<button type="submit">' . $label . '</button>
 				' . $fields . '
 			</form>';
 		
 		return apply_filters( 'webcomic_donation_form', $output, $label, $collection );
 	}
 	
-	/** Return a formatted webcomic print amount.
+	/**
+	 * Return a formatted webcomic print amount.
 	 * 
 	 * @param string $type The amount to return, one of 'domestic', 'domestic-price', 'domestic-shipping', 'international', 'international-price', 'international-shipping', 'original', 'original-price', or 'original-shipping'.
 	 * @param string $dec Decimal point for number_format().
@@ -1677,7 +1761,8 @@ class WebcomicTag extends Webcomic {
 		return apply_filters( 'webcomic_print_amount', $output, $type, $dec, $sep, $the_post );
 	}
 	
-	/** Return a formatted webcomic print adjustment.
+	/**
+	 * Return a formatted webcomic print adjustment.
 	 * 
 	 * @param string $type The adjustment to return, one of 'domestic', 'domestic-price', 'domestic-shipping', 'international', 'international-price', 'international-shipping', 'original', 'original-price', or 'original-shipping'.
 	 * @param mixed $the_post The post object or ID to get print adjustments for.
@@ -1698,7 +1783,8 @@ class WebcomicTag extends Webcomic {
 		return apply_filters( 'webcomic_print_adjustment', $output, $type, $the_post );
 	}
 	
-	/** Return hidden print form fields.
+	/**
+	 * Return hidden print form fields.
 	 * 
 	 * @param string $type The type of form fields to return, one of 'domestic', 'international', 'original', or 'cart'.
 	 * @param mixed $the_post The post object or ID to get print adjustments for.
@@ -1732,17 +1818,17 @@ class WebcomicTag extends Webcomic {
 		return $output;
 	}
 	
-	/** Return a print purchase form.
-	 * 
-	 * https://www.paypal.com/cgi-bin/webscr | https://www.sandbox.paypal.com/cgi-bin/webscr
+	/**
+	 * Return a print purchase form.
 	 * 
 	 * @param string $type The type of print form, one of 'domestic', 'international', 'original', or 'cart'.
-	 * @param string $label The form submit button label. Accepts %dec, %sep, %total, %price, and %shipping tokens.
+	 * @param string $label The form submit button label. Accepts %dec, %sep, %total, %price, %shipping, %collection-total, %collection-price, and %collection-shipping tokens.
 	 * @param mixed $the_post The post object or ID to get print adjustments for.
 	 * @return string
 	 * @uses Webcomic::$config
 	 * @uses WebcomicTag::webcomic_print_amount()
 	 * @uses WebcomicTag::webcomic_print_fields()
+	 * @uses WebcomicTag::webcomic_collection_print_amount()
 	 * @filter string webcomic_print_form Filters the output of `webcomic_print_form`.
 	 */
 	public static function webcomic_print_form( $type, $label = '', $the_post = false ) {
@@ -1756,8 +1842,9 @@ class WebcomicTag extends Webcomic {
 			} else {
 				$label = '_cart' === self::$config[ 'collections' ][ $the_post->post_type ][ 'commerce' ][ 'method' ] ? __( 'Add to Cart', 'webcomic' ) : __( 'Buy Now', 'webcomic' );
 			}
-		} else {
-			$match = array();
+		} elseif ( false !== strpos( $label, '%' ) ) {
+			$match      = array();
+			$collection = get_post_type( $the_post );
 			
 			preg_match( '/%dec(.)/', $label, $match );
 			
@@ -1769,16 +1856,19 @@ class WebcomicTag extends Webcomic {
 			$label = preg_replace( '/(%dec.|%sep.)/', '', $label );
 			
 			$tokens = array(
-				'%total'    => self::webcomic_print_amount( $type, $dec, $sep, $the_post ),
-				'%price'    => self::webcomic_print_amount( "{$type}-price", $dec, $sep, $the_post ),
-				'%shipping' => self::webcomic_print_amount( "{$type}-shipping", $dec, $sep, $the_post )
+				'%total'               => self::webcomic_print_amount( $type, $dec, $sep, $the_post ),
+				'%price'               => self::webcomic_print_amount( "{$type}-price", $dec, $sep, $the_post ),
+				'%shipping'            => self::webcomic_print_amount( "{$type}-shipping", $dec, $sep, $the_post ),
+				'%collection-total'    => self::webcomic_collection_print_amount( $type, $dec, $sep, $collection ),
+				'%collection-price'    => self::webcomic_collection_print_amount( "{$type}-price", $dec, $sep, $collection ),
+				'%collection-shipping' => self::webcomic_collection_print_amount( "{$type}-shipping", $dec, $sep, $collection )
 			);
 			
 			$label = str_replace( array_keys( $tokens ), $tokens, $label );
 		}
 		
 		$output = '
-			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="webcomic-print-form webcomic-' . $type . '-print-form ' . $the_post->post_type . '-print-form ' . $the_post->post_type . '-' . $type . '-print-form">
+			<form action="' . ( self::$debug ? 'https://www.sandbox.paypal.com/cgi-bin/webscr' : 'https://www.paypal.com/cgi-bin/webscr' ) . '" method="post" class="webcomic-print-form webcomic-' . $type . '-print-form ' . $the_post->post_type . '-print-form ' . $the_post->post_type . '-' . $type . '-print-form">
 				<button type="submit">' . $label . '</button>
 				' . $fields . '
 			</form>';
@@ -1790,7 +1880,8 @@ class WebcomicTag extends Webcomic {
 	// Transcript Tags
 	///
 	
-	/** Load the transcripts template file.
+	/**
+	 * Load the transcripts template file.
 	 * 
 	 * @param string $template The template file to load.
 	 * @uses Webcomic::$config
@@ -1804,7 +1895,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a webcomic transcripts url.
+	/**
+	 * Return a webcomic transcripts url.
 	 * 
 	 * @param mixed $language The language object or ID that transcripts should be limited to.
 	 * @param mixed $the_post The post object or ID to get a transcript link to.
@@ -1824,7 +1916,8 @@ class WebcomicTag extends Webcomic {
 		return apply_filters( 'get_webcomic_transcripts_link', $link . ( self::have_webcomic_transcripts( false, ( $term and !empty( $term->slug ) ) ? $term->slug : '' ) ? '#webcomic-transcripts' : '#webcomic-transcribe0' ), $language, $the_post );
 	}
 	
-	/** Return a webcomic transcripts link.
+	/**
+	 * Return a webcomic transcripts link.
 	 * 
 	 * @param string $format Format string for the link. Should include the %link token, which will be replaced by the actual link.
 	 * @param string $none Format string for the link text when no transcripts have been published. Accepts %title and image size tokens.
@@ -1849,6 +1942,7 @@ class WebcomicTag extends Webcomic {
 			
 			if ( false !== strpos( $link, '%' ) ) {
 				$tokens = array(
+					'%date'  => mysql2date( get_option( 'date_format' ), $the_post->post_date ),
 					'%title' => apply_filters( 'the_title', $the_post->post_title, $the_post->ID )
 				);
 				
@@ -1873,14 +1967,15 @@ class WebcomicTag extends Webcomic {
 				$link = str_replace( array_keys( $tokens ), $tokens, $link );
 			}
 			
-			$link   = '<a href="' . $href . '" class="' . join( ' ', $class ) . '">' . $link . '</a>';
+			$link   = '<a href="' . $href . '" class="' . implode( ' ', $class ) . '">' . $link . '</a>';
 			$format = str_replace( '%link', $link, $format );
 			
 			return apply_filters( 'webcomic_transcripts_link', $format, $link, $the_post );
 		}
 	}
 	
-	/** Return an array of post objects.
+	/**
+	 * Return an array of post objects.
 	 * 
 	 * @param boolean $pending Whether to retrieve transcripts pending review.
 	 * @param array $args An array of arguments that will be passed to get_children().
@@ -1903,7 +1998,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 	
-	/** Return a formatted list of webcomic transcript authors.
+	/**
+	 * Return a formatted list of webcomic transcript authors.
 	 * 
 	 * @param integer $id The transcript ID to retrieve authors for.
 	 * @param boolean $post_author Whether to include the WordPress-recognized post author in the list.
@@ -1930,10 +2026,11 @@ class WebcomicTag extends Webcomic {
 			}
 		}
 		
-		return apply_filters( 'the_webcomic_transcript_authors', $before . join( $sep, $output ) . $after );
+		return apply_filters( 'the_webcomic_transcript_authors', $before . implode( $sep, $output ) . $after );
 	}
 	
-	/** Return a formatted list of terms related to the current webcomic transcript.
+	/**
+	 * Return a formatted list of terms related to the current webcomic transcript.
 	 * 
 	 * @param integer $id The post ID to retrieve terms for.
 	 * @param string $taxonomy The taxonomy the terms must belong to.
@@ -1955,11 +2052,12 @@ class WebcomicTag extends Webcomic {
 				$term_list[] = '<a rel="tag">' . $term->name . '</a>';
 			}
 			
-			return apply_filters( 'the_webcomic_transcript_term_list', $before . join( $sep, $term_list ) . $after, $id, $before, $sep, $after, $taxonomy );
+			return apply_filters( 'the_webcomic_transcript_term_list', $before . implode( $sep, $term_list ) . $after, $id, $before, $sep, $after, $taxonomy );
 		}
 	}
 	
-	/** Return hidden transcript form fields.
+	/**
+	 * Return hidden transcript form fields.
 	 * 
 	 * @param mixed $transcript The post object or ID to update on submission.
 	 * @param mixed $the_post The post object or ID to submit a transcript for.
@@ -1980,7 +2078,8 @@ class WebcomicTag extends Webcomic {
 		}
 	}
 
-	/** Render a complete transcription form for templates.
+	/**
+	 * Render a complete transcription form for templates.
 	 * 
 	 * ### Arguments
 	 * 
@@ -2049,7 +2148,7 @@ class WebcomicTag extends Webcomic {
 				'email'  => '<p class="webcomic-transcript-email"><label for="webcomic-transcript-email' . $c . '">' . __( 'Email', 'webcomic' ) . '</label>' . ( $required ? '<span class="required">*</span>' : '' ) . '<input type="email" name="webcomic_transcript_email" id="webcomic-transcript-email' . $c . '" value="' . esc_attr(  $commenter[ 'comment_author_email' ] ) . '"' . ( $required ? ' required' : '' ) . '></p>',
 				'url'    => '<p class="webcomic-transcript-url"><label for="webcomic-transcript-url' . $c . '">' . __( 'Website', 'webcomic' ) . '</label><input type="url" name="webcomic_transcript_url" id="webcomic-transcript-url' . $c . '" value="' . esc_attr( $commenter[ 'comment_author_url' ] ) . '"></p>',
 			), $the_post->post_type ),
-			'language_field'           => $languages ? '<p class="webcomic-transcript-language"><label for="webcomic-transcript-language' . $c . '">' . __( 'Language', 'webcomic' ) . '</label><select name="webcomic_transcript_language" id="webcomic-transcript-language' . $c . '">' . join( '', $languages ) . '</select></p>' : '',
+			'language_field'           => $languages ? '<p class="webcomic-transcript-language"><label for="webcomic-transcript-language' . $c . '">' . __( 'Language', 'webcomic' ) . '</label><select name="webcomic_transcript_language" id="webcomic-transcript-language' . $c . '">' . implode( '', $languages ) . '</select></p>' : '',
 			'transcript_field'         => '<p class="webcomic-transcript-content"><label for="webcomic-transcript-content' . $c . '">' . __( 'Transcript', 'webcomic' ) . '</label><textarea name="webcomic_transcript_content" id="webcomic-transcript-content' . $c . '" rows="10" cols="40" required>' . ( empty( $update_post ) ? '' : esc_html( $update_post->post_content ) ) . '</textarea></p>',
 			'must_log_in'              => '<p class="must-log-in">' . sprintf( __( 'You must be <a href="%s">logged in</a> to transcribe this webcomic.' ), wp_login_url( apply_filters( 'the_permalink', get_permalink( $the_post ) ) ) ) . '</p>',
 			'logged_in_as'             => '<p class="logged-in-as">' . sprintf( __( 'Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s">Log out?</a>' ), admin_url( 'profile.php' ), $user->display_name, wp_logout_url( apply_filters( 'the_permalink', get_permalink( $the_post ) ) ) ) . '</p>',
@@ -2128,7 +2227,8 @@ class WebcomicTag extends Webcomic {
 		$c++;
 	}
 	
-	/** Return a `<select>` element of webcomic transcript terms.
+	/**
+	 * Return a `<select>` element of webcomic transcript terms.
 	 * 
 	 * Because this function relies on get_terms() to retrieve the term
 	 * list the $args parameter accepts any arguments that get_terms()
@@ -2195,14 +2295,15 @@ class WebcomicTag extends Webcomic {
 			$output = '';
 			
 			if ( ( $terms = get_terms( $r[ 'taxonomy' ], $r ) and !is_wp_error( $terms ) ) and count( $terms ) > 1 or !$hide_if_empty ) {
-				$output = $before . '<select' . ( $name ? ' name="' . esc_attr( $name ) . '"' : '' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . join( ' ', array_merge( array( 'webcomic-transcript-terms', $taxonomy ), ( array ) $class ) ) . '">' . ( $show_option_all ? '<option value="0"' . ( 0 === $selected ? ' selected' : '' ) . '>' . $show_option_all . '</option>' : '' ) . ( $show_option_none ? '<option value="-1"' . ( -1 === $selected ? ' selected' : '' ) . '>' . $show_option_none . '</option>' : '' ) . ( ( $terms and !is_wp_error( $terms ) ) ? call_user_func( array( $walker ? $walker : new Walker_WebcomicTranscriptTerm_Dropdown, 'walk' ), $terms, 0, $r ) : '' ) . '</select>' . $after;
+				$output = $before . '<select' . ( $name ? ' name="' . esc_attr( $name ) . '"' : '' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . implode( ' ', array_merge( array( 'webcomic-transcript-terms', $taxonomy ), ( array ) $class ) ) . '">' . ( $show_option_all ? '<option value="0"' . ( 0 === $selected ? ' selected' : '' ) . '>' . $show_option_all . '</option>' : '' ) . ( $show_option_none ? '<option value="-1"' . ( -1 === $selected ? ' selected' : '' ) . '>' . $show_option_none . '</option>' : '' ) . ( ( $terms and !is_wp_error( $terms ) ) ? call_user_func( array( $walker ? $walker : new Walker_WebcomicTranscriptTerm_Dropdown, 'walk' ), $terms, 0, $r ) : '' ) . '</select>' . $after;
 			}
 			
 			return apply_filters( 'webcomic_dropdown_transcript_terms', $output, $r );
 		}
 	}
 	
-	/** Return a list of webcomic transcript terms.
+	/**
+	 * Return a list of webcomic transcript terms.
 	 * 
 	 * Because this function relies on get_terms() to retrieve the term
 	 * list the $args parameter accepts any arguments that get_terms()
@@ -2263,7 +2364,7 @@ class WebcomicTag extends Webcomic {
 			$output = '';
 			
 			if ( $terms = get_terms( $r[ 'taxonomy' ], $r ) and !is_wp_error( $terms ) and count( $terms ) > 1 ) {
-				$output = $before . '<' . ( $ordered ? 'ol' : 'ul' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . join( ' ', array_merge( array( 'webcomic-transcript-terms', $taxonomy ), ( array ) $class ) ) . '">' . call_user_func( array( $walker ? $walker : new Walker_WebcomicTranscriptTerm_List, 'walk' ), $terms, $depth, $r ) . '</' . ( $ordered ? 'ol' : 'ul' ) . '>' . $after;
+				$output = $before . '<' . ( $ordered ? 'ol' : 'ul' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . implode( ' ', array_merge( array( 'webcomic-transcript-terms', $taxonomy ), ( array ) $class ) ) . '">' . call_user_func( array( $walker ? $walker : new Walker_WebcomicTranscriptTerm_List, 'walk' ), $terms, $depth, $r ) . '</' . ( $ordered ? 'ol' : 'ul' ) . '>' . $after;
 			}
 			
 			return apply_filters( 'webcomic_list_transcript_terms', $output, $r );
@@ -2274,7 +2375,8 @@ class WebcomicTag extends Webcomic {
 	// Archive Tags
 	///
 	
-	/** Return a `<select>` element of webcomic terms.
+	/**
+	 * Return a `<select>` element of webcomic terms.
 	 * 
 	 * Because this function relies on get_terms() to retrieve the term
 	 * list the $args parameter accepts any arguments that get_terms()
@@ -2340,13 +2442,14 @@ class WebcomicTag extends Webcomic {
 		$output = '';
 		
 		if ( ( $terms = get_terms( $r[ 'taxonomy' ], $r ) and !is_wp_error( $terms ) ) or !$hide_if_empty ) {
-			$output = $before . '<select' . ( $name ? ' name="' . esc_attr( $name ) . '"' : '' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . join( ' ', array_merge( array( 'webcomic-terms', $taxonomy ), ( array ) $class ) ) . '">' . ( $show_option_all ? '<option value="0"' . ( 0 === $selected ? ' selected' : '' ) . '>' . $show_option_all . '</option>' : '' ) . ( $show_option_none ? '<option value="-1"' . ( -1 === $selected ? ' selected' : '' ) . '>' . $show_option_none . '</option>' : '' ) . ( ( $terms and !is_wp_error( $terms ) ) ? call_user_func( array( $walker ? $walker : new Walker_WebcomicTerm_Dropdown, 'walk' ), $terms, $depth, $r ) : '' ) . '</select>' . $after;
+			$output = $before . '<select' . ( $name ? ' name="' . esc_attr( $name ) . '"' : '' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . implode( ' ', array_merge( array( 'webcomic-terms', $taxonomy ), ( array ) $class ) ) . '">' . ( $show_option_all ? '<option value="0"' . ( 0 === $selected ? ' selected' : '' ) . '>' . $show_option_all . '</option>' : '' ) . ( $show_option_none ? '<option value="-1"' . ( -1 === $selected ? ' selected' : '' ) . '>' . $show_option_none . '</option>' : '' ) . ( ( $terms and !is_wp_error( $terms ) ) ? call_user_func( array( $walker ? $walker : new Walker_WebcomicTerm_Dropdown, 'walk' ), $terms, $depth, $r ) : '' ) . '</select>' . $after;
 		}
 		
 		return apply_filters( 'webcomic_dropdown_terms', $output, $r );
 	}
 	
-	/** Return a `<select>` element of webcomic collections.
+	/**
+	 * Return a `<select>` element of webcomic collections.
 	 * 
 	 * ### Arguments
 	 * 
@@ -2462,13 +2565,14 @@ class WebcomicTag extends Webcomic {
 		}
 		
 		if ( $options or !$hide_if_empty ) {
-			$output = $before . '<select' . ( $name ? ' name="' . esc_attr( $name ) . '"' : '' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . join( ' ', array_merge( array( 'webcomic-collections' ), ( array ) $class ) ) . '">' . ( $show_option_all ? '<option value="0"' . ( 0 === $selected ? ' selected' : '' ) . '>' . $show_option_all . '</option>' : '' ) . ( $show_option_none ? '<option value="-1"' . ( -1 === $selected ? ' selected' : '' ) . '>' . $show_option_none . '</option>' : '' ) . $options . '</select>' . $after;
+			$output = $before . '<select' . ( $name ? ' name="' . esc_attr( $name ) . '"' : '' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . implode( ' ', array_merge( array( 'webcomic-collections' ), ( array ) $class ) ) . '">' . ( $show_option_all ? '<option value="0"' . ( 0 === $selected ? ' selected' : '' ) . '>' . $show_option_all . '</option>' : '' ) . ( $show_option_none ? '<option value="-1"' . ( -1 === $selected ? ' selected' : '' ) . '>' . $show_option_none . '</option>' : '' ) . $options . '</select>' . $after;
 		}
 		
 		return apply_filters( 'webcomic_dropdown_collections', $output, $r );
 	}
 	
-	/** Return a list of webcomic terms.
+	/**
+	 * Return a list of webcomic terms.
 	 * 
 	 * Because this function relies on get_terms() to retrieve the term
 	 * list the $args parameter accepts any arguments that get_terms()
@@ -2538,13 +2642,14 @@ class WebcomicTag extends Webcomic {
 		$output = '';
 		
 		if ( $terms = get_terms( $r[ 'taxonomy' ], $r ) and !is_wp_error( $terms ) ) {
-			$output = $before . '<' . ( $ordered ? 'ol' : 'ul' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . join( ' ', array_merge( array( 'webcomic-terms', $taxonomy ), ( array ) $class ) ) . '">' . call_user_func( array( $walker ? $walker : new Walker_WebcomicTerm_List, 'walk' ), $terms, $depth, $r ) . '</' . ( $ordered ? 'ol' : 'ul' ) . '>' . $after;
+			$output = $before . '<' . ( $ordered ? 'ol' : 'ul' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . implode( ' ', array_merge( array( 'webcomic-terms', $taxonomy ), ( array ) $class ) ) . '">' . call_user_func( array( $walker ? $walker : new Walker_WebcomicTerm_List, 'walk' ), $terms, $depth, $r ) . '</' . ( $ordered ? 'ol' : 'ul' ) . '>' . $after;
 		}
 		
 		return apply_filters( 'webcomic_list_terms', $output, $r );
 	}
 	
-	/** Return a list of webcomic collections.
+	/**
+	 * Return a list of webcomic collections.
 	 * 
 	 * ### Arguments
 	 * 
@@ -2649,7 +2754,7 @@ class WebcomicTag extends Webcomic {
 							if ( $callback ) {
 								$items .= call_user_func( $callback, $v, $r, $the_posts );
 							} else {
-								$items .= '<li class="webcomic-collection ' . $v[ 'id' ] . ( $selected === $v[ 'id' ] ? ' current' : '' ) . '"><a href="' . ( 'archive' === $target ? get_post_type_archive_link( $v[ 'id' ] ) : self::get_relative_webcomic_link( $target, false, false, '', $v[ 'id' ] ) ) . '" class="webcomic-collection-link"><div class="webcomic-collection-name">' . $collection_title . ( $show_count ? " ({$readable_count})" : '' ) .'</div>' . ( ( $show_image and $v[ 'image' ] ) ? '<div class="webcomic-collection-image">' . apply_filters( 'webcomic_collection_image', wp_get_attachment_image( $v[ 'image' ], $show_image ), $show_image, $v[ 'id' ] ) . '</div>' : '' ) . '</a>' . ( ( $show_description and $v[ 'description' ] ) ? '<div class="webcomic-collection-description">' . apply_filters( 'webcomic_collection_description', wpautop( $v[ 'description' ] ), $v[ 'id' ] ) . '</div>' : '' ) . $feed_link . '<' . ( $ordered ? 'ol' : 'ul' ) . ' class="webcomics">';
+								$items .= '<li class="webcomic-collection ' . $v[ 'id' ] . ( $selected === $v[ 'id' ] ? ' current' : '' ) . '"><a href="' . ( 'archive' === $target ? get_post_type_archive_link( $v[ 'id' ] ) : self::get_relative_webcomic_link( $target, false, false, '', $v[ 'id' ] ) ) . '" class="webcomic-collection-link"><div class="webcomic-collection-name">' . $collection_title . ( $show_count ? " ({$readable_count})" : '' ) . '</div>' . ( ( $show_image and $v[ 'image' ] ) ? '<div class="webcomic-collection-image">' . apply_filters( 'webcomic_collection_image', wp_get_attachment_image( $v[ 'image' ], $show_image ), $show_image, $v[ 'id' ] ) . '</div>' : '' ) . '</a>' . ( ( $show_description and $v[ 'description' ] ) ? '<div class="webcomic-collection-description">' . apply_filters( 'webcomic_collection_description', wpautop( $v[ 'description' ] ), $v[ 'id' ] ) . '</div>' : '' ) . $feed_link . '<' . ( $ordered ? 'ol' : 'ul' ) . ' class="webcomics">';
 								
 								$i = 0;
 								
@@ -2672,13 +2777,14 @@ class WebcomicTag extends Webcomic {
 		}
 		
 		if ( $items ) {
-			$output = $before . '<' . ( $ordered ? 'ol' : 'ul' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . join( ' ', array_merge( array( 'webcomic-collections', $collection ), ( array ) $class ) ) . '">' . $items . '</' . ( $ordered ? 'ol' : 'ul' ) . '>' . $after;
+			$output = $before . '<' . ( $ordered ? 'ol' : 'ul' ) . ( $id ? ' id="' . esc_attr( $id ) . '"' : '' ) . ' class="' . implode( ' ', array_merge( array( 'webcomic-collections', $collection ), ( array ) $class ) ) . '">' . $items . '</' . ( $ordered ? 'ol' : 'ul' ) . '>' . $after;
 		}
 		
 		return apply_filters( 'webcomic_list_collections', $output, $r );
 	}
 	
-	/** Return a "cloud" of webcomic terms.
+	/**
+	 * Return a "cloud" of webcomic terms.
 	 * 
 	 * Because this function relies on get_terms() to retrieve the term
 	 * list the $args parameter accepts any arguments that get_terms()
@@ -2771,14 +2877,15 @@ class WebcomicTag extends Webcomic {
 			}
 			
 			$id     = $id ? ' id="' . $id . '"' : '';
-			$class  = ' class="' . join( ' ', array_merge( array( 'webcomic-terms', $taxonomy, 'webcomic-terms-cloud', "{$taxonomy}-cloud" ), ( array ) $class ) ) . '"';
-			$output = $before . ( $sep ? "<div{$id}{$class}>" : '<ul{$id}{$class}><li>' ) .  join( $sep ? $sep : '</li><li>', $links ) . ( $sep ? '</div>' : '</li></ul>' ) . $after;
+			$class  = ' class="' . implode( ' ', array_merge( array( 'webcomic-terms', $taxonomy, 'webcomic-terms-cloud', "{$taxonomy}-cloud" ), ( array ) $class ) ) . '"';
+			$output = $before . ( $sep ? "<div{$id}{$class}>" : '<ul{$id}{$class}><li>' ) .  implode( $sep ? $sep : '</li><li>', $links ) . ( $sep ? '</div>' : '</li></ul>' ) . $after;
 		}
 		
 		return apply_filters( 'webcomic_term_cloud', $output, $r );
 	}
 	
-	/** Render a "cloud" of webcomic collections.
+	/**
+	 * Render a "cloud" of webcomic collections.
 	 * 
 	 * ### Arguments
 	 * 
@@ -2883,8 +2990,8 @@ class WebcomicTag extends Webcomic {
 		}
 		
 		$id     = $id ? ' id="' . $id . '"' : '';
-		$class  = ' class="' . join( ' ', array_merge( array( 'webcomic-collections', 'webcomic-collections-cloud' ), ( array ) $class ) ) . '"';
-		$output = $before . ( $sep ? "<div{$id}{$class}>" : '<ul{$id}{$class}><li>' ) .  join( $sep ? $sep : '</li><li>', $links ) . ( $sep ? '</div>' : '</li></ul>' ) . $after;
+		$class  = ' class="' . implode( ' ', array_merge( array( 'webcomic-collections', 'webcomic-collections-cloud' ), ( array ) $class ) ) . '"';
+		$output = $before . ( $sep ? "<div{$id}{$class}>" : '<ul{$id}{$class}><li>' ) .  implode( $sep ? $sep : '</li><li>', $links ) . ( $sep ? '</div>' : '</li></ul>' ) . $after;
 		
 		return apply_filters( 'webcomic_collections_cloud', $output, $r );
 	}
@@ -2895,7 +3002,8 @@ class WebcomicTag extends Webcomic {
 ///
 
 if ( !function_exists( 'get_webcomic_collection' ) ) {
-	/** Return the current collection ID or configuration.
+	/**
+	 * Return the current collection ID or configuration.
 	 * 
 	 * <code class="php">
 	 * // return the current collection ID (if any)
@@ -2916,7 +3024,8 @@ if ( !function_exists( 'get_webcomic_collection' ) ) {
 }
 
 if ( !function_exists( 'get_webcomic_collections' ) ) {
-	/** Return all collection ID's or configurations.
+	/**
+	 * Return all collection ID's or configurations.
 	 * 
 	 * <code class="php">
 	 * // return an array of all collection ID's
@@ -2941,7 +3050,8 @@ if ( !function_exists( 'get_webcomic_collections' ) ) {
 ///
 
 if ( !function_exists( 'webcomic' ) ) {
-	/** Is a compatible version of Webcomic installed?
+	/**
+	 * Is a compatible version of Webcomic installed?
 	 * 
 	 * <code class="php">
 	 * if ( webcomic() ) {
@@ -2964,7 +3074,8 @@ if ( !function_exists( 'webcomic' ) ) {
 }
 
 if ( !function_exists( 'is_webcomic' ) ) {
-	/** Is the query for any single webcomic?
+	/**
+	 * Is the query for any single webcomic?
 	 * 
 	 * <code class="php">
 	 * if ( is_webcomic() ) {
@@ -2991,7 +3102,8 @@ if ( !function_exists( 'is_webcomic' ) ) {
 }
 
 if ( !function_exists( 'is_first_webcomic' ) ) {
-	/** Is the query for the first webcomic?
+	/**
+	 * Is the query for the first webcomic?
 	 * 
 	 * <code class="php">
 	 * if ( is_first_webcomic() ) {
@@ -3021,7 +3133,8 @@ if ( !function_exists( 'is_first_webcomic' ) ) {
 }
 
 if ( !function_exists( 'is_last_webcomic' ) ) {
-	/** Is the query for the last webcomic?
+	/**
+	 * Is the query for the last webcomic?
 	 * 
 	 * <code class="php">
 	 * if ( is_last_webcomic() ) {
@@ -3051,7 +3164,8 @@ if ( !function_exists( 'is_last_webcomic' ) ) {
 }
 
 if ( !function_exists( 'is_webcomic_attachment' ) ) {
-	/** Is the query for a Webcomic-recognized attachment?
+	/**
+	 * Is the query for a Webcomic-recognized attachment?
 	 * 
 	 * <code class="php">
 	 * if ( is_webcomic_attachment() ) {
@@ -3074,7 +3188,8 @@ if ( !function_exists( 'is_webcomic_attachment' ) ) {
 }
 
 if ( !function_exists( 'is_webcomic_page' ) ) {
-	/** Is the query for a webcomic-related page?
+	/**
+	 * Is the query for a webcomic-related page?
 	 * 
 	 * <code class="php">
 	 * if ( is_webcomic_page() {
@@ -3102,7 +3217,8 @@ if ( !function_exists( 'is_webcomic_page' ) ) {
 }
 
 if ( !function_exists( 'is_webcomic_archive' ) ) {
-	/** Is the query for a webcomic archive page?
+	/**
+	 * Is the query for a webcomic archive page?
 	 * 
 	 * <code class="php">
 	 * if ( is_webcomic_archive() ) {
@@ -3124,7 +3240,8 @@ if ( !function_exists( 'is_webcomic_archive' ) ) {
 }
 
 if ( !function_exists( 'is_webcomic_storyline' ) ) {
-	/** Is the query for a webcomic storyline archive page?
+	/**
+	 * Is the query for a webcomic storyline archive page?
 	 * 
 	 * <code class="php">
 	 * if ( is_webcomic_storyline() ) {
@@ -3151,7 +3268,8 @@ if ( !function_exists( 'is_webcomic_storyline' ) ) {
 }
 
 if ( !function_exists( 'is_webcomic_character' ) ) {
-	/** Is the query for a webcomic character archive page?
+	/**
+	 * Is the query for a webcomic character archive page?
 	 * 
 	 * <code class="php">
 	 * if ( is_webcomic_character() ) {
@@ -3178,7 +3296,8 @@ if ( !function_exists( 'is_webcomic_character' ) ) {
 }
 
 if ( !function_exists( 'is_webcomic_crossover' ) ) {
-	/** Is the query for a webcomic crossover archive page?
+	/**
+	 * Is the query for a webcomic crossover archive page?
 	 * 
 	 * <code class="php">
 	 * if ( is_webcomic_crossover() ) {
@@ -3205,7 +3324,8 @@ if ( !function_exists( 'is_webcomic_crossover' ) ) {
 }
 
 if ( !function_exists( 'is_a_webcomic' ) ) {
-	/** Is the current post a webcomic?
+	/**
+	 * Is the current post a webcomic?
 	 * 
 	 * <code class="php">
 	 * if ( is_a_webcomic() ) {
@@ -3232,7 +3352,8 @@ if ( !function_exists( 'is_a_webcomic' ) ) {
 }
 
 if ( !function_exists( 'is_a_webcomic_attachment' ) ) {
-	/** Is the current post a Webcomic-recognized attachment?
+	/**
+	 * Is the current post a Webcomic-recognized attachment?
 	 * 
 	 * <code class="php">
 	 * if ( is_a_webcomic_attachment() ) {
@@ -3260,7 +3381,8 @@ if ( !function_exists( 'is_a_webcomic_attachment' ) ) {
 }
 
 if ( !function_exists( 'has_webcomic_attachments' ) ) {
-	/** Does the current webcomic have any Webcomic-recognized attachments?
+	/**
+	 * Does the current webcomic have any Webcomic-recognized attachments?
 	 * 
 	 * <code class="php">
 	 * if ( has_webcomic_attachments() ) {
@@ -3283,7 +3405,8 @@ if ( !function_exists( 'has_webcomic_attachments' ) ) {
 }
 
 if ( !function_exists( 'has_webcomic_crossover' ) ) {
-	/** Is the current webcomic a crossover?
+	/**
+	 * Is the current webcomic a crossover?
 	 * 
 	 * <code class="php">
 	 * if ( has_webcomic_crossover() ) {
@@ -3323,7 +3446,8 @@ if ( !function_exists( 'has_webcomic_crossover' ) ) {
 }
 
 if ( !function_exists( 'has_webcomic_storyline' ) ) {
-	/** Does the current post belong to a specific storyline?
+	/**
+	 * Does the current post belong to a specific storyline?
 	 * 
 	 * <code class="php">
 	 * if ( has_webcomic_storyline( 'mostly-harmless' ) ) {
@@ -3347,7 +3471,8 @@ if ( !function_exists( 'has_webcomic_storyline' ) ) {
 }
 
 if ( !function_exists( 'has_webcomic_character' ) ) {
-	/** Does the current post feature to a specific character?
+	/**
+	 * Does the current post feature to a specific character?
 	 * 
 	 * <code class="php">
 	 * if ( has_webcomic_character( 'zaphod-beeblebrox' ) ) {
@@ -3371,7 +3496,8 @@ if ( !function_exists( 'has_webcomic_character' ) ) {
 }
 
 if ( !function_exists( 'have_webcomic_transcripts' ) ) {
-	/** Does the current webcomic have any transcripts?
+	/**
+	 * Does the current webcomic have any transcripts?
 	 * 
 	 * <code class="php">
 	 * if ( have_webcomic_transcripts() ) {
@@ -3404,7 +3530,8 @@ if ( !function_exists( 'have_webcomic_transcripts' ) ) {
 }
 
 if ( !function_exists( 'webcomic_transcripts_open' ) ) {
-	/** Does the current webcomic allow transcribing?
+	/**
+	 * Does the current webcomic allow transcribing?
 	 * 
 	 * <code class="php">
 	 * if ( webcomic_transcripts_open() ) {
@@ -3427,7 +3554,8 @@ if ( !function_exists( 'webcomic_transcripts_open' ) ) {
 }
 
 if ( !function_exists( 'webcomic_prints_available' ) ) {
-	/** Does the current webcomic have prints available?
+	/**
+	 * Does the current webcomic have prints available?
 	 * 
 	 * <code class="php">
 	 * if ( webcomic_prints_available() ) {
@@ -3455,7 +3583,8 @@ if ( !function_exists( 'webcomic_prints_available' ) ) {
 }
 
 if ( !function_exists( 'verify_webcomic_age' ) ) {
-	/** Verify a users age against collection age limit.
+	/**
+	 * Verify a users age against collection age limit.
 	 * 
 	 * <code class="php">
 	 * if ( is_null( verify_webcomic_age() ) ) {
@@ -3502,7 +3631,8 @@ if ( !function_exists( 'verify_webcomic_age' ) ) {
 }
 
 if ( !function_exists( 'verify_webcomic_role' ) ) {
-	/** Verify a users role against allowed collection roles.
+	/**
+	 * Verify a users role against allowed collection roles.
 	 * 
 	 * <code class="php">
 	 * if ( is_null( verify_webcomic_role() ) ) {
@@ -3553,7 +3683,8 @@ if ( !function_exists( 'verify_webcomic_role' ) ) {
 ///
 
 if ( !function_exists( 'the_webcomic' ) ) {
-	/** Render a webcomic.
+	/**
+	 * Render a webcomic.
 	 * 
 	 * <code class="php">
 	 * // render webcomic attachments for the current post
@@ -3592,7 +3723,8 @@ if ( !function_exists( 'the_webcomic' ) ) {
 }
 
 if ( !function_exists( 'webcomic_count' ) ) {
-	/** Return the number of Webcomic-recognized attachments.
+	/**
+	 * Return the number of Webcomic-recognized attachments.
 	 * 
 	 * <code class="php">
 	 * // display the number of Webcomic-recognized attachments found on the current post
@@ -3608,7 +3740,7 @@ if ( !function_exists( 'webcomic_count' ) ) {
 	 * </code>
 	 * 
 	 * @package Webcomic
-	 * @param mixed The post object or ID to retrieve the attachment count for.
+	 * @param mixed $the_post The post object or ID to retrieve the attachment count for.
 	 * @return integer
 	 * @uses WebcomicTag::webcomic_count()
 	 */
@@ -3618,7 +3750,8 @@ if ( !function_exists( 'webcomic_count' ) ) {
 }
 
 if ( !function_exists( 'the_related_webcomics' ) ) {
-	/** Render a formatted list of related webcomics.
+	/**
+	 * Render a formatted list of related webcomics.
 	 * 
 	 * <code class="php">
 	 * // render a comma-separated list of up to five related webcomics
@@ -3659,7 +3792,8 @@ if ( !function_exists( 'the_related_webcomics' ) ) {
 }
 
 if ( !function_exists( 'previous_webcomic_link' ) ) {
-	/** Render a link to the previous chronological webcomic.
+	/**
+	 * Render a link to the previous chronological webcomic.
 	 * 
 	 * <code class="php">
 	 * // render a link to the previous webcomic
@@ -3697,7 +3831,8 @@ if ( !function_exists( 'previous_webcomic_link' ) ) {
 }
 
 if ( !function_exists( 'next_webcomic_link' ) ) {
-	/** Render a link to the next chronological webcomic.
+	/**
+	 * Render a link to the next chronological webcomic.
 	 * 
 	 * <code class="php">
 	 * // render a link to the next webcomic
@@ -3735,7 +3870,8 @@ if ( !function_exists( 'next_webcomic_link' ) ) {
 }
 
 if ( !function_exists( 'first_webcomic_link' ) ) {
-	/** Render a link to the first chronological webcomic.
+	/**
+	 * Render a link to the first chronological webcomic.
 	 * 
 	 * <code class="php">
 	 * // render a link to the first webcomic
@@ -3781,7 +3917,8 @@ if ( !function_exists( 'first_webcomic_link' ) ) {
 }
 
 if ( !function_exists( 'last_webcomic_link' ) ) {
-	/** Render a link to the last chronological webcomic.
+	/**
+	 * Render a link to the last chronological webcomic.
 	 * 
 	 * <code class="php">
 	 * // render a link to the last webcomic
@@ -3827,7 +3964,8 @@ if ( !function_exists( 'last_webcomic_link' ) ) {
 }
 
 if ( !function_exists( 'random_webcomic_link' ) ) {
-	/** Render a link to a randomly selected webcomic.
+	/**
+	 * Render a link to a randomly selected webcomic.
 	 * 
 	 * <code class="php">
 	 * // render a link to a random webcomic
@@ -3873,7 +4011,8 @@ if ( !function_exists( 'random_webcomic_link' ) ) {
 }
 
 if ( !function_exists( 'purchase_webcomic_link' ) ) {
-	/** Render a purchase webcomic link.
+	/**
+	 * Render a purchase webcomic link.
 	 * 
 	 * <code class="php">
 	 * // render a link to purchase the current webcomic
@@ -3908,18 +4047,40 @@ if ( !function_exists( 'purchase_webcomic_link' ) ) {
 	}
 }
 
-if ( !function_exists( 'the_webcomic_collection' ) ) {
-	/** Render a webcomic collection link.
+if ( !function_exists( 'webcomic_collection_link' ) ) {
+	/**
+	 * Render a webcomic collection link.
 	 * 
-	 * @deprecated 4.0.7 4.1 the_webcomic_collections
+	 * <code class="php">
+	 * // render a link to the collection archive page for the collection the current webcomic belongs to
+	 * webcomic_collection_link();
+	 * 
+	 * // render a link to the collection 42 archive with a small poster preview
+	 * webcomic_collection_link( '%link', '%thumbnail', 'webcomic42' );
+	 * </code>
+	 * 
+	 * <code class="bbcode">
+	 * // render a link to the collection archive page for the collection the current webcomic belongs to
+	 * [webcomic_collection_link]
+	 * 
+	 * // render a link to the collection 42 archive with a small poster preview
+	 * [webcomic_collection_link collection="webcomic42"]%thumbnail[/the_webcomic_collection]
+	 * </code>
+	 * 
+	 * @package Webcomic
+	 * @param string $format Format string for the link. Should include the %link token, which will be replaced by the actual link.
+	 * @param string $link Format string for the link text. Accepts %title and image size tokens tokens.
+	 * @param string $collection The collection ID to render a link for.
+	 * @uses WebcomicTag::webcomic_collection_link()
 	 */
-	function the_webcomic_collection( $format = '%link', $link = '', $target = 'archive', $collection = '' ) {
-		echo WebcomicTag::webcomic_collection_link( $format, $link, $target, $collection );
+	function webcomic_collection_link( $format = '%link', $link = '', $collection = '' ) {
+		echo WebcomicTag::webcomic_collection_link( $format, $link, $collection );
 	}
 }
 
 if ( !function_exists( 'the_webcomic_collections' ) ) {
-	/** Return a formatted list of collections related to the current webcomic.
+	/**
+	 * Return a formatted list of collections related to the current webcomic.
 	 * 
 	 * <code class="php">
 	 * // render a comma-separated list of collections related to the current webcomic
@@ -3958,7 +4119,8 @@ if ( !function_exists( 'the_webcomic_collections' ) ) {
 }
 
 if ( !function_exists( 'the_webcomic_storylines' ) ) {
-	/** Render a formatted list of storylines related to the current webcomic.
+	/**
+	 * Render a formatted list of storylines related to the current webcomic.
 	 * 
 	 * <code class="php">
 	 * // render a comma-separated list of storylines related to the current webcomic
@@ -4005,7 +4167,8 @@ if ( !function_exists( 'the_webcomic_storylines' ) ) {
 }
 
 if ( !function_exists( 'the_webcomic_characters' ) ) {
-	/** Render a formatted list of characters appearing to the current webcomic.
+	/**
+	 * Render a formatted list of characters appearing to the current webcomic.
 	 * 
 	 * <code class="php">
 	 * // render a comma-separated list of characters appearing in the current webcomic
@@ -4056,7 +4219,8 @@ if ( !function_exists( 'the_webcomic_characters' ) ) {
 ///
 
 if ( !function_exists( 'previous_webcomic_storyline_link' ) ) {
-	/** Render a link to the previous webcomic storyline.
+	/**
+	 * Render a link to the previous webcomic storyline.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page for the previous storyline
@@ -4100,7 +4264,8 @@ if ( !function_exists( 'previous_webcomic_storyline_link' ) ) {
 }
 
 if ( !function_exists( 'next_webcomic_storyline_link' ) ) {
-	/** Render a link to the next webcomic storyline.
+	/**
+	 * Render a link to the next webcomic storyline.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page for the next storyline
@@ -4144,7 +4309,8 @@ if ( !function_exists( 'next_webcomic_storyline_link' ) ) {
 }
 
 if ( !function_exists( 'first_webcomic_storyline_linke' ) ) {
-	/** Render a link to the first webcomic storyline.
+	/**
+	 * Render a link to the first webcomic storyline.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page for the first storyline
@@ -4196,7 +4362,8 @@ if ( !function_exists( 'first_webcomic_storyline_linke' ) ) {
 }
 
 if ( !function_exists( 'last_webcomic_storyline_link' ) ) {
-	/** Render a link to the last webcomic storyline.
+	/**
+	 * Render a link to the last webcomic storyline.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page for the last storyline
@@ -4248,7 +4415,8 @@ if ( !function_exists( 'last_webcomic_storyline_link' ) ) {
 }
 
 if ( !function_exists( 'random_webcomic_storyline_link' ) ) {
-	/** Render a link to a randomly selected webcomic storyline.
+	/**
+	 * Render a link to a randomly selected webcomic storyline.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page of a random webcomic
@@ -4303,7 +4471,8 @@ if ( !function_exists( 'random_webcomic_storyline_link' ) ) {
 }
 
 if ( !function_exists( 'previous_webcomic_character_link' ) ) {
-	/** Render a link to the previous webcomic character.
+	/**
+	 * Render a link to the previous webcomic character.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page for the previous character
@@ -4347,7 +4516,8 @@ if ( !function_exists( 'previous_webcomic_character_link' ) ) {
 }
 
 if ( !function_exists( 'next_webcomic_character_link' ) ) {
-	/** Render a link to the next webcomic character.
+	/**
+	 * Render a link to the next webcomic character.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page for the next character
@@ -4391,7 +4561,8 @@ if ( !function_exists( 'next_webcomic_character_link' ) ) {
 }
 
 if ( !function_exists( 'first_webcomic_character_link' ) ) {
-	/** Render a link to the first webcomic character.
+	/**
+	 * Render a link to the first webcomic character.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page for the first character
@@ -4443,7 +4614,8 @@ if ( !function_exists( 'first_webcomic_character_link' ) ) {
 }
 
 if ( !function_exists( 'last_webcomic_character_link' ) ) {
-	/** Render a link to the last webcomic character.
+	/**
+	 * Render a link to the last webcomic character.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page for the last character
@@ -4495,7 +4667,8 @@ if ( !function_exists( 'last_webcomic_character_link' ) ) {
 }
 
 if ( !function_exists( 'random_webcomic_character_link' ) ) {
-	/** Render a link to a randomly selected webcomic character.
+	/**
+	 * Render a link to a randomly selected webcomic character.
 	 * 
 	 * <code class="php">
 	 * // render a link to the archive page of a random webcomic
@@ -4551,7 +4724,8 @@ if ( !function_exists( 'random_webcomic_character_link' ) ) {
 }
 
 if ( !function_exists( 'webcomic_storyline_title' ) ) {
-	/** Render the webcomic storyline title on a storyline archive page.
+	/**
+	 * Render the webcomic storyline title on a storyline archive page.
 	 * 
 	 * <code class="php">
 	 * // render the storyline title
@@ -4581,7 +4755,8 @@ if ( !function_exists( 'webcomic_storyline_title' ) ) {
 }
 
 if ( !function_exists( 'webcomic_character_title' ) ) {
-	/** Render the webcomic character name on a character archive page.
+	/**
+	 * Render the webcomic character name on a character archive page.
 	 * 
 	 * <code class="php">
 	 * // render the character name
@@ -4611,7 +4786,8 @@ if ( !function_exists( 'webcomic_character_title' ) ) {
 }
 
 if ( !function_exists( 'webcomic_storyline_description' ) ) {
-	/** Render the description for a webcomic storyline.
+	/**
+	 * Render the description for a webcomic storyline.
 	 * 
 	 * <code class="php">
 	 * // render the description of a webcomic storyline on the storyline archive page
@@ -4641,7 +4817,8 @@ if ( !function_exists( 'webcomic_storyline_description' ) ) {
 }
 
 if ( !function_exists( 'webcomic_character_description' ) ) {
-	/** Render the description for a webcomic character.
+	/**
+	 * Render the description for a webcomic character.
 	 * 
 	 * <code class="php">
 	 * // render the description of a webcomic character on the character archive page
@@ -4671,7 +4848,8 @@ if ( !function_exists( 'webcomic_character_description' ) ) {
 }
 
 if ( !function_exists( 'webcomic_storyline_cover' ) ) {
-	/** Render the storyline cover on a storyline archive page.
+	/**
+	 * Render the storyline cover on a storyline archive page.
 	 * 
 	 * <code class="php">
 	 * // render the full size storyline cover
@@ -4701,7 +4879,8 @@ if ( !function_exists( 'webcomic_storyline_cover' ) ) {
 }
 
 if ( !function_exists( 'webcomic_character_avatar' ) ) {
-	/** Render the webcomic poster on a collection archive page.
+	/**
+	 * Render the webcomic poster on a collection archive page.
 	 * 
 	 * <code class="php">
 	 * // render the full size collection image
@@ -4731,7 +4910,8 @@ if ( !function_exists( 'webcomic_character_avatar' ) ) {
 }
 
 if ( !function_exists( 'webcomic_storyline_crossovers' ) ) {
-	/** Render a formatted list of collections the current storyline crosses over with.
+	/**
+	 * Render a formatted list of collections the current storyline crosses over with.
 	 * 
 	 * <code class="php">
 	 * // render a comma-separated list of collections the current storyline crosses over with
@@ -4771,7 +4951,8 @@ if ( !function_exists( 'webcomic_storyline_crossovers' ) ) {
 }
 
 if ( !function_exists( 'webcomic_character_crossovers' ) ) {
-	/** Render a formatted list of collections the current character crosses over with.
+	/**
+	 * Render a formatted list of collections the current character crosses over with.
 	 * 
 	 * <code class="php">
 	 * // render a comma-separated list of collections the current character crosses over with
@@ -4811,7 +4992,8 @@ if ( !function_exists( 'webcomic_character_crossovers' ) ) {
 }
 
 if ( !function_exists( 'webcomic_crossover_title' ) ) {
-	/** Render a crossover collection title.
+	/**
+	 * Render a crossover collection title.
 	 * 
 	 * <code class="php">
 	 * // render the crossover collection title
@@ -4839,7 +5021,8 @@ if ( !function_exists( 'webcomic_crossover_title' ) ) {
 }
 
 if ( !function_exists( 'webcomic_crossover_description' ) ) {
-	/** Render a formatted crossover collection description.
+	/**
+	 * Render a formatted crossover collection description.
 	 * 
 	 * <code class="php">
 	 * // render the description of a crossover collection
@@ -4864,7 +5047,8 @@ if ( !function_exists( 'webcomic_crossover_description' ) ) {
 }
 
 if ( !function_exists( 'webcomic_crossover_poster' ) ) {
-	/** Render a crossover collection image.
+	/**
+	 * Render a crossover collection image.
 	 * 
 	 * <code class="php">
 	 * // render the full size crossover collection poster
@@ -4896,7 +5080,8 @@ if ( !function_exists( 'webcomic_crossover_poster' ) ) {
 ///
 
 if ( !function_exists( 'webcomic_collection_title' ) ) {
-	/** Render the webcomic collection title on a collection archive page.
+	/**
+	 * Render the webcomic collection title on a collection archive page.
 	 * 
 	 * <code class="php">
 	 * // render the collection title
@@ -4924,7 +5109,8 @@ if ( !function_exists( 'webcomic_collection_title' ) ) {
 }
 
 if ( !function_exists( 'webcomic_collection_description' ) ) {
-	/** Render the description for a webcomic collection.
+	/**
+	 * Render the description for a webcomic collection.
 	 * 
 	 * <code class="php">
 	 * // render the description of a webcomic collection on the collection archive page
@@ -4952,7 +5138,8 @@ if ( !function_exists( 'webcomic_collection_description' ) ) {
 }
 
 if ( !function_exists( 'webcomic_collection_poster' ) ) {
-	/** Render the webcomic poster on a collection archive page.
+	/**
+	 * Render the webcomic poster on a collection archive page.
 	 * 
 	 * <code class="php">
 	 * // render the full size collection poster
@@ -4981,7 +5168,8 @@ if ( !function_exists( 'webcomic_collection_poster' ) ) {
 }
 
 if ( !function_exists( 'webcomic_collection_print_amount' ) ) {
-	/** Render a formatted collection print amount.
+	/**
+	 * Render a formatted collection print amount.
 	 * 
 	 * <code class="php">
 	 * // render the current collection's print amount for a domestic print
@@ -5012,7 +5200,8 @@ if ( !function_exists( 'webcomic_collection_print_amount' ) ) {
 }
 
 if ( !function_exists( 'webcomic_collection_crossovers' ) ) {
-	/** Return a formatted list of collections the current collection crosses over with.
+	/**
+	 * Return a formatted list of collections the current collection crosses over with.
 	 * 
 	 * <code class="php">
 	 * // render a comma-separated list of collections the current collection crosses over with
@@ -5054,7 +5243,8 @@ if ( !function_exists( 'webcomic_collection_crossovers' ) ) {
 ///
 
 if ( !function_exists( 'webcomic_donation_amount' ) ) {
-	/** Render a donation amount.
+	/**
+	 * Render a donation amount.
 	 * 
 	 * <code class="php">
 	 * // render the current collections donation amount
@@ -5084,7 +5274,8 @@ if ( !function_exists( 'webcomic_donation_amount' ) ) {
 }
 
 if ( !function_exists( 'webcomic_donation_fields' ) ) {
-	/** Render hidden donation form fields.
+	/**
+	 * Render hidden donation form fields.
 	 * 
 	 * <code class="php">
 	 * // render hidden donation fields for the current collection
@@ -5104,7 +5295,8 @@ if ( !function_exists( 'webcomic_donation_fields' ) ) {
 }
 
 if ( !function_exists( 'webcomic_donation_form' ) ) {
-	/** Render a donation form.
+	/**
+	 * Render a donation form.
 	 * 
 	 * <code class="php">
 	 * // render a donation form for the current collection
@@ -5133,7 +5325,8 @@ if ( !function_exists( 'webcomic_donation_form' ) ) {
 }
 
 if ( !function_exists( 'webcomic_print_amount' ) ) {
-	/** Render a formatted webcomic print amount.
+	/**
+	 * Render a formatted webcomic print amount.
 	 * 
 	 * <code class="php">
 	 * // render the current webcomic's print amount for a domestic print
@@ -5164,7 +5357,8 @@ if ( !function_exists( 'webcomic_print_amount' ) ) {
 }
 
 if ( !function_exists( 'webcomic_print_adjustment' ) ) {
-	/** Render a formatted webcomic print adjustment.
+	/**
+	 * Render a formatted webcomic print adjustment.
 	 * 
 	 * <code class="php">
 	 * // render the current webcomic's adjustment for a domestic print
@@ -5193,7 +5387,8 @@ if ( !function_exists( 'webcomic_print_adjustment' ) ) {
 }
 
 if ( !function_exists( 'webcomic_print_fields' ) ) {
-	/** Return hidden print form fields.
+	/**
+	 * Return hidden print form fields.
 	 * 
 	 * <code class="php">
 	 * // render hidden domestic print form fields for the current webcomic
@@ -5217,7 +5412,8 @@ if ( !function_exists( 'webcomic_print_fields' ) ) {
 }
 
 if ( !function_exists( 'webcomic_print_form' ) ) {
-	/** Render a print purchase form.
+	/**
+	 * Render a print purchase form.
 	 * 
 	 * <code class="php">
 	 * // render a purchase domestic webcomic print form
@@ -5257,7 +5453,8 @@ if ( !function_exists( 'webcomic_print_form' ) ) {
 ///
 
 if ( !function_exists( 'webcomic_transcripts_template' ) ) {
-	/** Load the transcripts template file.
+	/**
+	 * Load the transcripts template file.
 	 * 
 	 * <code class="php">
 	 * // load the standard Webcomic transcripts template
@@ -5277,7 +5474,8 @@ if ( !function_exists( 'webcomic_transcripts_template' ) ) {
 }
 
 if ( !function_exists( 'webcomic_transcripts_link' ) ) {
-	/** Render a webcomic transcripts link.
+	/**
+	 * Render a webcomic transcripts link.
 	 * 
 	 * <code class="php">
 	 * // render a transcripts link
@@ -5316,7 +5514,8 @@ if ( !function_exists( 'webcomic_transcripts_link' ) ) {
 }
 
 if ( !function_exists( 'get_webcomic_transcripts' ) ) {
-	/** Return an array of post objects.
+	/**
+	 * Return an array of post objects.
 	 * 
 	 * <code class="php">
 	 * // render published transcripts
@@ -5352,7 +5551,8 @@ if ( !function_exists( 'get_webcomic_transcripts' ) ) {
 }
 
 if ( !function_exists( 'the_webcomic_transcript_authors' ) ) {
-	/** Render a formatted list of webcomic transcript authors.
+	/**
+	 * Render a formatted list of webcomic transcript authors.
 	 * 
 	 * The WordPress-registered post author is not included in the
 	 * returned list. Standard WordPress functions like the_author()
@@ -5382,7 +5582,8 @@ if ( !function_exists( 'the_webcomic_transcript_authors' ) ) {
 }
 
 if ( !function_exists( 'the_webcomic_transcript_languages' ) ) {
-	/** Render a formatted list of languages related to the current webcomic transcript.
+	/**
+	 * Render a formatted list of languages related to the current webcomic transcript.
 	 * 
 	 * <code class="php">
 	 * // render any languages associated with the current transcript
@@ -5404,7 +5605,8 @@ if ( !function_exists( 'the_webcomic_transcript_languages' ) ) {
 }
 
 if ( !function_exists( 'webcomic_transcript_fields' ) ) {
-	/** Render hidden transcript form fields.
+	/**
+	 * Render hidden transcript form fields.
 	 * 
 	 * <code class="php">
 	 * // render hidden transcript form fields
@@ -5425,7 +5627,8 @@ if ( !function_exists( 'webcomic_transcript_fields' ) ) {
 }
 
 if ( !function_exists( 'webcomic_transcript_form' ) ) {
-	/** Render a complete transcription form for templates.
+	/**
+	 * Render a complete transcription form for templates.
 	 * 
 	 * ### Arguments
 	 * 
@@ -5466,7 +5669,8 @@ if ( !function_exists( 'webcomic_transcript_form' ) ) {
 }
 
 if ( !function_exists( 'webcomic_dropdown_transcript_languages' ) ) {
-	/** Render a `<select>` element of webcomic transcript terms.
+	/**
+	 * Render a `<select>` element of webcomic transcript terms.
 	 * 
 	 * Because this function relies on get_terms() to retrieve the term
 	 * list the $args parameter accepts any arguments that get_terms()
@@ -5530,7 +5734,8 @@ if ( !function_exists( 'webcomic_dropdown_transcript_languages' ) ) {
 }
 
 if ( !function_exists( 'webcomic_list_transcript_languages' ) ) {
-	/** Return a list of webcomic transcript terms.
+	/**
+	 * Return a list of webcomic transcript terms.
 	 * 
 	 * Because this function relies on get_terms() to retrieve the term
 	 * list the $args parameter accepts any arguments that get_terms()
@@ -5589,7 +5794,8 @@ if ( !function_exists( 'webcomic_list_transcript_languages' ) ) {
 ///
 
 if ( !function_exists( 'webcomic_dropdown_storylines' ) ) {
-	/** Render a `<select>` element for webcomic storylines.
+	/**
+	 * Render a `<select>` element for webcomic storylines.
 	 * 
 	 * ### Arguments
 	 * 
@@ -5666,7 +5872,8 @@ if ( !function_exists( 'webcomic_dropdown_storylines' ) ) {
 }
 
 if ( !function_exists( 'webcomic_dropdown_characters' ) ) {
-	/** Render a `<select>` element for webcomic characters.
+	/**
+	 * Render a `<select>` element for webcomic characters.
 	 * 
 	 * ### Arguments
 	 * 
@@ -5742,7 +5949,8 @@ if ( !function_exists( 'webcomic_dropdown_characters' ) ) {
 }
 
 if ( !function_exists( 'webcomic_dropdown_collections' ) ) {
-	/** Render a `<select>` element for webcomic collections.
+	/**
+	 * Render a `<select>` element for webcomic collections.
 	 * 
 	 * ### Arguments
 	 * 
@@ -5810,7 +6018,8 @@ if ( !function_exists( 'webcomic_dropdown_collections' ) ) {
 }
 
 if ( !function_exists( 'webcomic_list_storylines' ) ) {
-	/** Render a list of webcomic storylines.
+	/**
+	 * Render a list of webcomic storylines.
 	 * 
 	 * ### Arguments
 	 * 
@@ -5898,7 +6107,8 @@ if ( !function_exists( 'webcomic_list_storylines' ) ) {
 }
 
 if ( !function_exists( 'webcomic_list_characters' ) ) {
-	/** Render a list of webcomic characters.
+	/**
+	 * Render a list of webcomic characters.
 	 * 
 	 * ### Arguments
 	 * 
@@ -5985,7 +6195,8 @@ if ( !function_exists( 'webcomic_list_characters' ) ) {
 }
 
 if ( !function_exists( 'webcomic_list_collections' ) ) {
-	/** Return a list of webcomic collections.
+	/**
+	 * Return a list of webcomic collections.
 	 * 
 	 * ### Arguments
 	 * 
@@ -6068,7 +6279,8 @@ if ( !function_exists( 'webcomic_list_collections' ) ) {
 }
 
 if ( !function_exists( 'webcomic_storyline_cloud' ) ) {
-	/** Return a "cloud" of webcomic storylines.
+	/**
+	 * Return a "cloud" of webcomic storylines.
 	 * 
 	 * ### Arguments
 	 * 
@@ -6145,7 +6357,8 @@ if ( !function_exists( 'webcomic_storyline_cloud' ) ) {
 }
 
 if ( !function_exists( 'webcomic_character_cloud' ) ) {
-	/** Return a "cloud" of webcomic characters.
+	/**
+	 * Return a "cloud" of webcomic characters.
 	 * 
 	 * ### Arguments
 	 * 
@@ -6222,7 +6435,8 @@ if ( !function_exists( 'webcomic_character_cloud' ) ) {
 }
 
 if ( !function_exists( 'webcomic_collection_cloud' ) ) {
-	/** Render a "cloud" of webcomic collections.
+	/**
+	 * Render a "cloud" of webcomic collections.
 	 * 
 	 * ### Arguments
 	 * 
@@ -6296,12 +6510,14 @@ if ( !function_exists( 'webcomic_collection_cloud' ) ) {
 ///
 
 if ( !class_exists( 'Walker_WebcomicTerm_Dropdown' ) ) {
-	/** Handle webcomic_dropdown_term() output.
+	/**
+	 * Handle webcomic_dropdown_term() output.
 	 * 
 	 * @package Webcomic
 	 */
 	class Walker_WebcomicTerm_Dropdown extends Walker {
-		/** What the class handles.
+		/**
+		 * What the class handles.
 		 * 
 		 * Walker_WebcomicTerm_Dropdown handles both webcomic storylines and
 		 * characters of various taxonomies, so we specify the singular tree
@@ -6312,7 +6528,8 @@ if ( !class_exists( 'Walker_WebcomicTerm_Dropdown' ) ) {
 		 */
 		public $tree_type = 'webcomic_term';
 		
-		/** Database fields to use while walking the tree.
+		/**
+		 * Database fields to use while walking the tree.
 		 * @var array
 		 */
 		public $db_fields = array (
@@ -6320,7 +6537,8 @@ if ( !class_exists( 'Walker_WebcomicTerm_Dropdown' ) ) {
 			'parent' => 'parent'
 		);
 		
-		/** Start element output.
+		/**
+		 * Start element output.
 		 * 
 		 * The `<select>` element generated is inherently flat, so we can
 		 * handle everything in start_el() without the need for end_el(),
@@ -6334,7 +6552,7 @@ if ( !class_exists( 'Walker_WebcomicTerm_Dropdown' ) ) {
 		 * @filter string webcomic_term_dropdown_title Filters the term titles used by `webcomic_dropdown_storylines` and `webcomic_dropdown_characters`.
 		 * @filter string term_dropdown_webcomic_title Fitlers the webcomic titles used by `webcomic_dropdown_storylines` and `webcomic_dropdown_characters`.
 		 */
-		public function start_el( &$output, $term, $depth, $args ) {
+		public function start_el( &$output, $term, $depth = 0, $args = array(), $current = 0 ) {
 			global $post;
 			
 			extract( $args, $args[ 'hierarchical' ] ? EXTR_SKIP : EXTR_OVERWRITE );
@@ -6381,12 +6599,14 @@ if ( !class_exists( 'Walker_WebcomicTerm_Dropdown' ) ) {
 }
 
 if ( !class_exists( 'Walker_WebcomicTerm_List' ) ) {
-	/** Handle webcomic_list_term() output.
+	/**
+	 * Handle webcomic_list_term() output.
 	 * 
 	 * @package Webcomic
 	 */
 	class Walker_WebcomicTerm_List extends Walker {
-		/** What the class handles.
+		/**
+		 * What the class handles.
 		 * 
 		 * Walker_WebcomicTerm_List handles both webcomic storylines and
 		 * characters of various taxonomies, so we specify the singular tree
@@ -6397,7 +6617,8 @@ if ( !class_exists( 'Walker_WebcomicTerm_List' ) ) {
 		 */
 		public $tree_type = 'webcomic_term';
 		
-		/** Database fields to use while walking the tree.
+		/**
+		 * Database fields to use while walking the tree.
 		 * @var array
 		 */
 		public $db_fields = array (
@@ -6405,31 +6626,34 @@ if ( !class_exists( 'Walker_WebcomicTerm_List' ) ) {
 			'parent' => 'parent'
 		);
 		
-		/** Start level output.
+		/**
+		 * Start level output.
 		 * 
 		 * @param string $output Walker output string.
 		 * @param integer $depth Depth the walker is currently at.
 		 * @param array $args Arguments passed to the walker.
 		 */
-		public function start_lvl( &$output, $depth, $args ) {
+		public function start_lvl( &$output, $depth = 0, $args = array() ) {
 			if ( $args[ 'hierarchical' ] ) {
 				$output .= $args[ 'ordered' ] ? '<ol class="children">' : '<ul class="children">';
 			}
 		}
 		
-		/** End level output.
+		/**
+		 * End level output.
 		 * 
 		 * @param string $output Walker output string.
 		 * @param integer $depth Depth the walker is currently at.
 		 * @param array $args Arguments passed to the walker.
 		 */
-		public function end_lvl( &$output, $depth, $args ) {
+		public function end_lvl( &$output, $depth = 0, $args = array() ) {
 			if ( $args[ 'hierarchical' ] ) {
 				$output .= $args[ 'ordered' ] ? '</ol>' : '</ul>';
 			}
 		}
 		
-		/** Start element output.
+		/**
+		 * Start element output.
 		 * 
 		 * @param string $output Walker output string.
 		 * @param object $term Current term being handled by the walker.
@@ -6441,7 +6665,7 @@ if ( !class_exists( 'Walker_WebcomicTerm_List' ) ) {
 		 * @filter string webcomic_term_description Filters the term titles used by `webcomic_dropdown_transcript_languages`.
 		 * @filter string term_list_webcomic_title Fitlers the webcomic titles used by `webcomic_list_storylines` and `webcomic_list_characters`.
 		 */
-		public function start_el( &$output, $term, $depth, $args ) {
+		public function start_el( &$output, $term, $depth = 0, $args = array(), $current = 0 ) {
 			global $post;
 			
 			extract( $args, $args[ 'hierarchical' ] ? EXTR_SKIP : EXTR_OVERWRITE );
@@ -6486,26 +6710,29 @@ if ( !class_exists( 'Walker_WebcomicTerm_List' ) ) {
 			}
 		}
 		
-		/** End element output.
+		/**
+		 * End element output.
 		 * 
 		 * @param string $output Walker output string.
 		 * @param object $term Current term being handled by the walker.
 		 * @param integer $depth Depth the walker is currently at.
 		 * @param array $args Arguments passed to the walker.
 		 */
-		public function end_el( &$output, $term, $depth, $args ) {
+		public function end_el( &$output, $term, $depth = 0, $args = array() ) {
 			$output .= '</li>';
 		}
 	}
 }
 
 if ( !class_exists( 'Walker_WebcomicTranscriptTerm_Dropdown' ) ) {
-	/** Handle webcomic_dropdown_transcript_term() output.
+	/**
+	 * Handle webcomic_dropdown_transcript_term() output.
 	 * 
 	 * @package Webcomic
 	 */
 	class Walker_WebcomicTranscriptTerm_Dropdown extends Walker {
-		/** What the class handles.
+		/**
+		 * What the class handles.
 		 * 
 		 * Walker_WebcomicTranscriptTerm_Dropdown may handle various
 		 * taxonomies, so we specify the singular tree type as the
@@ -6516,7 +6743,8 @@ if ( !class_exists( 'Walker_WebcomicTranscriptTerm_Dropdown' ) ) {
 		 */
 		public $tree_type = 'webcomic_transcript_term';
 		
-		/** Database fields to use while walking the tree.
+		/**
+		 * Database fields to use while walking the tree.
 		 * @var array
 		 */
 		public $db_fields = array (
@@ -6524,7 +6752,8 @@ if ( !class_exists( 'Walker_WebcomicTranscriptTerm_Dropdown' ) ) {
 			'parent' => 'parent'
 		);
 		
-		/** Start element output.
+		/**
+		 * Start element output.
 		 * 
 		 * The `<select>` element generated is inherently flat, so we can
 		 * handle everything in start_el() without the need for end_el(),
@@ -6537,7 +6766,7 @@ if ( !class_exists( 'Walker_WebcomicTranscriptTerm_Dropdown' ) ) {
 		 * @uses WebcomicTag::get_webcomic_transcripts_link()
 		 * @filter string webcomic_transcript_term_dropdown_title Filters the term titles used by `webcomic_dropdown_transcript_languages`.
 		 */
-		public function start_el( &$output, $term, $depth, $args ) {
+		public function start_el( &$output, $term, $depth = 0, $args = array(), $current = 0 ) {
 			extract( $args, $args[ 'hierarchical' ] ? EXTR_SKIP : EXTR_OVERWRITE );
 			
 			$term_title = apply_filters( 'webcomic_transcript_term_dropdown_title', esc_attr( $term->name ), $term );
@@ -6547,12 +6776,14 @@ if ( !class_exists( 'Walker_WebcomicTranscriptTerm_Dropdown' ) ) {
 }
 
 if ( !class_exists( 'Walker_WebcomicTranscriptTerm_List' ) ) {
-	/** Handle webcomic_list_transcript_term() output.
+	/**
+	 * Handle webcomic_list_transcript_term() output.
 	 * 
 	 * @package Webcomic
 	 */
 	class Walker_WebcomicTranscriptTerm_List extends Walker {
-		/** What the class handles.
+		/**
+		 * What the class handles.
 		 * 
 		 * Walker_WebcomicTerm_List handles both webcomic storylines and
 		 * characters of various taxonomies, so we specify the singular tree
@@ -6563,7 +6794,8 @@ if ( !class_exists( 'Walker_WebcomicTranscriptTerm_List' ) ) {
 		 */
 		public $tree_type = 'webcomic_transcript_term';
 		
-		/** Database fields to use while walking the tree.
+		/**
+		 * Database fields to use while walking the tree.
 		 * @var array
 		 */
 		public $db_fields = array (
@@ -6571,31 +6803,34 @@ if ( !class_exists( 'Walker_WebcomicTranscriptTerm_List' ) ) {
 			'parent' => 'parent'
 		);
 		
-		/** Start level output.
+		/**
+		 * Start level output.
 		 * 
 		 * @param string $output Walker output string.
 		 * @param integer $depth Depth the walker is currently at.
 		 * @param array $args Arguments passed to the walker.
 		 */
-		public function start_lvl( &$output, $depth, $args ) {
+		public function start_lvl( &$output, $depth = 0, $args = array() ) {
 			if ( $args[ 'hierarchical' ] ) {
 				$output .= $args[ 'ordered' ] ? '<ol class="children">' : '<ul class="children">';
 			}
 		}
 		
-		/** End level output.
+		/**
+		 * End level output.
 		 * 
 		 * @param string $output Walker output string.
 		 * @param integer $depth Depth the walker is currently at.
 		 * @param array $args Arguments passed to the walker.
 		 */
-		public function end_lvl( &$output, $depth, $args ) {
+		public function end_lvl( &$output, $depth = 0, $args = array() ) {
 			if ( $args[ 'hierarchical' ] ) {
 				$output .= $args[ 'ordered' ] ? '</ol>' : '</ul>';
 			}
 		}
 		
-		/** Start element output.
+		/**
+		 * Start element output.
 		 * 
 		 * @param string $output Walker output string.
 		 * @param object $term Current term being handled by the walker.
@@ -6604,21 +6839,22 @@ if ( !class_exists( 'Walker_WebcomicTranscriptTerm_List' ) ) {
 		 * @uses WebcomicTag::get_webcomic_transcripts_link()
 		 * @filter string webcomic_transcript_term_list_title Filters the term titles used by `webcomic_list_transcript_languages`.
 		 */
-		public function start_el( &$output, $term, $depth, $args ) {
+		public function start_el( &$output, $term, $depth = 0, $args = array(), $current = 0 ) {
 			extract( $args, $args[ 'hierarchical' ] ? EXTR_SKIP : EXTR_OVERWRITE );
 			
 			$term_title = apply_filters( 'webcomic_transcript_term_list_title', esc_attr( $term->name ), $term );
 			$output    .= '<li class="webcomic-transcript-term ' . $term->taxonomy . ' webcomic-transcript-term-' . $term->term_id . ( $selected === $term->term_id ? ' current' : '' ) . '"><a href="' . WebcomicTag::get_webcomic_transcripts_link( $term, $the_post ) . '" class="webcomic-term-link">' . $term_title . '</a>';
 		}
 		
-		/** End element output.
+		/**
+		 * End element output.
 		 * 
 		 * @param string $output Walker output string.
 		 * @param object $term Current term being handled by the walker.
 		 * @param integer $depth Depth the walker is currently at.
 		 * @param array $args Arguments passed to the walker.
 		 */
-		public function end_el( &$output, $term, $depth, $args ) {
+		public function end_el( &$output, $term, $depth = 0, $args = array() ) {
 			$output .= '</li>';
 		}
 	}

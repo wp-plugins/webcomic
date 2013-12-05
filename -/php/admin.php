@@ -1,15 +1,18 @@
 <?php
-/** Contains the WebcomicAdmin class.
+/**
+ * Contains the WebcomicAdmin class.
  * 
  * @package Webcomic
  */
 
-/** Handle general administrative tasks.
+/**
+ * Handle general administrative tasks.
  * 
  * @package Webcomic
  */
 class WebcomicAdmin extends Webcomic {
-	/** Register hooks and istantiate the administrative classes.
+	/**
+	 * Register hooks and istantiate the administrative classes.
 	 * 
 	 * @uses Webcomic::$dir
 	 * @uses Webcomic::$config
@@ -41,7 +44,7 @@ class WebcomicAdmin extends Webcomic {
 		if ( !self::$config or version_compare( self::$config[ 'version' ], self::$version, '<' ) ) {
 			add_action( 'admin_init', array( $this, 'activate' ) );
 		}
-		
+				
 		if ( self::$config and version_compare( self::$config[ 'version' ], '4x', '>=' ) ) {
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
 			add_action( 'admin_head', array( $this, 'admin_head' ) );
@@ -52,22 +55,23 @@ class WebcomicAdmin extends Webcomic {
 			add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 3 );
 			add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 4 );
 			
-			require_once self::$dir . '-/php/posts.php';		new WebcomicPosts;
-			require_once self::$dir . '-/php/pages.php';		new WebcomicPages;
-			require_once self::$dir . '-/php/users.php';		new WebcomicUsers;
-			require_once self::$dir . '-/php/media.php';		new WebcomicMedia;
-			require_once self::$dir . '-/php/config.php';		new WebcomicConfig;
+			require_once self::$dir . '-/php/posts.php';			new WebcomicPosts;
+			require_once self::$dir . '-/php/pages.php';			new WebcomicPages;
+			require_once self::$dir . '-/php/users.php';			new WebcomicUsers;
+			require_once self::$dir . '-/php/media.php';			new WebcomicMedia;
+			require_once self::$dir . '-/php/config.php';			new WebcomicConfig;
 			require_once self::$dir . '-/php/commerce.php';		new WebcomicCommerce;
 			require_once self::$dir . '-/php/taxonomy.php';		new WebcomicTaxonomy;
 			require_once self::$dir . '-/php/transcripts.php';	new WebcomicTranscripts;
 			
 			if ( !empty( self::$config[ 'legacy' ] ) ) {
-				require_once self::$dir . '-/php/legacy.php'; new WebcomicLegacy;
+				require_once self::$dir . '-/php/legacy.php';	new WebcomicLegacy;
 			}
 		}
 	}
 	
-	/** Activation hook.
+	/**
+	 * Activation hook.
 	 *
 	 * If no configuration exists or a legacy configuration is detected
 	 * we load the default configuration (saving legacy configurations
@@ -83,8 +87,8 @@ class WebcomicAdmin extends Webcomic {
 	 */
 	public function activate() {
 		if ( !self::$config or version_compare( self::$config[ 'version' ], '4x', '<' ) ) {
-			$name   = __( 'Untitled Webcomic', 'webcomic' );
-			$slug   = sanitize_title( $name );
+			$name = __( 'Untitled Webcomic', 'webcomic' );
+			$slug = sanitize_title( $name );
 			$legacy = self::$config ? self::$config : get_option( 'webcomic_version' );
 			
 			self::$config = array(
@@ -256,15 +260,15 @@ class WebcomicAdmin extends Webcomic {
 					delete_option( 'comic_thumbnail_size_w' );
 					delete_option( 'comic_thumbnail_size_h' );
 				}
-			} elseif ( $legacy_config = get_option( 'comicpress-options' ) ) {
+			} elseif ( $legacy_config = get_option( "comicpress-options" ) or $legacy_config = get_option( "cp-options" ) ) {
 				global $comiccat, $comic_folder;
 				
-				self::$config[ 'legacy' ] = 'ComicPress';
+				self::$config[ "legacy" ] = "ComicPress";
 				
 				$legacy_config = array_merge( array(
-					'comiccat'     => $comiccat,
-					'date_format'  => CP_DATE_FORMAT,
-					'comic_folder' => $comic_folder
+					"comiccat" => $comiccat,
+					"date_format" => defined( "CP_DATE_FORMAT" ) ? CP_DATE_FORMAT : "Y-m-d",
+					"comic_folder" => $comic_folder
 				), $legacy_config );
 			}
 			
@@ -288,7 +292,8 @@ class WebcomicAdmin extends Webcomic {
 		flush_rewrite_rules();
 	}
 	
-	/** Deactivation hook.
+	/**
+	 * Deactivation hook.
 	 * 
 	 * Flushes rewrite rules and purges Webcomic Network data when
 	 * deactivated. If the uninstall option has been set we also need to
@@ -333,7 +338,7 @@ class WebcomicAdmin extends Webcomic {
 						}
 						
 						if ( $values ) {
-							$wpdb->query( sprintf( "INSERT INTO {$wpdb->term_relationships} ( object_id, term_taxonomy_id, term_order ) VALUES %s ON DUPLICATE KEY UPDATE term_order = VALUES( term_order )", join( ',', $values ) ) );
+							$wpdb->query( sprintf( "INSERT INTO {$wpdb->term_relationships} ( object_id, term_taxonomy_id, term_order ) VALUES %s ON DUPLICATE KEY UPDATE term_order = VALUES( term_order )", implode( ',', $values ) ) );
 							
 							$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->term_relationships} WHERE term_taxonomy_id = %d", $language->term_id ) );
 							
@@ -420,7 +425,8 @@ class WebcomicAdmin extends Webcomic {
 		flush_rewrite_rules();
 	}
 	
-	/** Handle dynamic requests and remove taxonomy submenus.
+	/**
+	 * Handle dynamic requests and remove taxonomy submenus.
 	 * 
 	 * Dynamic request must have a 'webcomic_admin_ajax' value that is a
 	 * valid callback in the form of a static class method, like
@@ -444,7 +450,8 @@ class WebcomicAdmin extends Webcomic {
 		}
 	}
 	
-	/** Add contextual help and change the post type icon.
+	/**
+	 * Add contextual help.
 	 * 
 	 * @uses Webcomic::$dir
 	 * @uses Webcomic::$url
@@ -458,16 +465,11 @@ class WebcomicAdmin extends Webcomic {
 			require_once self::$dir . '-/php/help.php';
 			
 			new WebcomicHelp( $screen );
-			
-			if ( preg_match( '/^(edit-)?webcomic_(transcript|language)$/', $screen->id ) ) {
-				echo '<style>#icon-edit{background:url("', self::$url, '-/img/transcript.png")}</style>';
-			} elseif ( 'admin_page_webcomic-term-sort' === $screen->id or preg_match( '/^(edit-)?webcomic\d+(_storyline|_character)?$/', $screen->id ) ) {
-				echo '<style>#icon-edit{background:url("', self::$url, '-/img/webcomic.png")}</style>';
-			}
 		}
 	}
 	
-	/** Render administrative notifications and the thank you message.
+	/**
+	 * Render administrative notifications and the thank you message.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::$version
@@ -477,17 +479,17 @@ class WebcomicAdmin extends Webcomic {
 		if ( $notice = get_transient( 'webcomic_notice' ) ) {
 			delete_transient( 'webcomic_notice' );
 			
-			echo '<div class="updated"><p>', join( '</p></div><div class="updated"><p>', $notice ), '</p></div>';
+			echo '<div class="updated"><p>', implode( '</p></div><div class="updated"><p>', $notice ), '</p></div>';
 		}
 		
 		if ( $error = get_transient( 'webcomic_error' ) ) {
 			delete_transient( 'webcomic_error' );
 			
-			echo '<div class="error"><p>', join( '</p></div><div class="error"><p>', $error ), '</p></div>';
+			echo '<div class="error"><p>', implode( '</p></div><div class="error"><p>', $error ), '</p></div>';
 		}
 		
 		if ( isset( self::$config[ 'thanks' ] ) ) {
-			echo '<div class="updated webcomic"><a href="' . add_query_arg( array( 'cmd' => 's-xclick', 'hosted_button_id' => 'UD3J2DJPSN9UC' ), '//paypal.com/cgi-bin/webscr' ) . '" target="_blank"><b>&#x2764;</b>', sprintf( __( 'Thank you for using %s', 'webcomic' ), 'Webcomic ' . self::$version ), '</a></div>';
+			echo '<div class="updated webcomic"><a href="https://flattr.com/submit/auto?user_id=mgsisk&amp;url=http://webcomic.nu&title=Webcomic&amp;description=Comic%20publishing%20power%20for%20the%20web.&amp;language=en_GB&amp;tags=webcomics,wordpress&amp;category=software" target="_blank"><b>&#x2764;</b>', sprintf( __( 'Thank you for using %s', 'webcomic' ), 'Webcomic ' . self::$version ), '</a></div>';
 			
 			unset( self::$config[ 'thanks' ] );
 			
@@ -495,7 +497,8 @@ class WebcomicAdmin extends Webcomic {
 		}
 	}
 	
-	/** Add administrative dashboard widgets.
+	/**
+	 * Add administrative dashboard widgets.
 	 * 
 	 * @uses WebcomicAdmin::widget_showcase()
 	 * @hook wp_dhasboard_setup
@@ -504,7 +507,8 @@ class WebcomicAdmin extends Webcomic {
 		wp_add_dashboard_widget( 'webcomic-showcase', __( 'Webcomic Showcase', 'webcomic' ), array( $this, 'widget_showcase' ), array( $this, 'widget_showcase_config' ) );
 	}
 	
-	/** Enqueue custom styles for thank you message.
+	/**
+	 * Enqueue custom styles for thank you message.
 	 * 
 	 * @uses Webcomic::$url
 	 * @uses Webcomic::$config
@@ -514,9 +518,8 @@ class WebcomicAdmin extends Webcomic {
 		$screen = get_current_screen();
 		
 		if ( 'dashboard' === $screen->id and self::$config[ 'api' ] ) {
-			wp_register_style( 'webcomic-google-font', 'http://fonts.googleapis.com/css?family=Maven+Pro' );
+			wp_enqueue_style( 'webcomic-showcase', self::$url . '-/css/admin-showcase.css' );
 			
-			wp_enqueue_style( 'webcomic-showcase', self::$url . '-/css/admin-showcase.css', array( 'webcomic-google-font' ) );
 			wp_enqueue_script( 'webcomic-showcase', self::$url . '-/js/admin-showcase.js' );
 		}
 		
@@ -527,7 +530,8 @@ class WebcomicAdmin extends Webcomic {
 		}
 	}
 	
-	/** Add donate link and uninstallation reminder.
+	/**
+	 * Add donate link and uninstallation reminder.
 	 * 
 	 * @param array $meta Array of metadata.
 	 * @param array $file Plugin basename.
@@ -538,7 +542,8 @@ class WebcomicAdmin extends Webcomic {
 	 */
 	public function plugin_row_meta( $meta, $file, $data ) {
 		if ( 'Webcomic' === $data[ 'Name' ] ) {
-			$meta[] = '<a href="' . add_query_arg( array( 'cmd' => 's-xclick', 'hosted_button_id' => 'UD3J2DJPSN9UC' ), '//paypal.com/cgi-bin/webscr' ) . '" target="_blank">' . __( 'Donate', 'webcomic' ) . '</a>';
+			$meta[] = '<a href="http://wordpress.org/support/view/plugin-reviews/webcomic#postform" target="_blank">' . __( 'Review', 'webcomic' ) . '</a>';
+			$meta[] = '<a href="https://flattr.com/submit/auto?user_id=mgsisk&amp;url=http://webcomic.nu&title=Webcomic&amp;description=Comic%20publishing%20power%20for%20the%20web.&amp;language=en_GB&amp;tags=webcomics,wordpress&amp;category=software" target="_blank">' . __( 'Donate', 'webcomic' ) . '</a>';
 			
 			if ( self::$config[ 'uninstall' ] ) {
 				$meta[] = '<b style="color:#d98500">' . ( self::$config[ 'convert' ] ?  __( 'Webcomic data will be converted if the plugin is deactivated.', 'webcomic' ) : __( 'Webcomic data will be deleted if the plugin is deactivated.', 'webcomic' ) ) . '</b>';
@@ -552,7 +557,8 @@ class WebcomicAdmin extends Webcomic {
 		return $meta;
 	}
 	
-	/** Add quick links to the general settings page and official support.
+	/**
+	 * Add quick links to the general settings page and official support.
 	 * 
 	 * @param array $actions Array of actions.
 	 * @param array $file Plugin basename.
@@ -570,7 +576,8 @@ class WebcomicAdmin extends Webcomic {
 		return $actions;
 	}
 	
-	/** Save collection data as posts, categories, and tags.
+	/**
+	 * Save collection data as posts, categories, and tags.
 	 * 
 	 * @param string $collection ID of the collection to save.
 	 */
@@ -581,6 +588,8 @@ class WebcomicAdmin extends Webcomic {
 		
 		$webcomics = get_posts( array( 'numberposts' => -1, 'post_type' => $collection, 'post_status' => get_post_stati() ) );
 		$terms     = array_merge( ( array ) get_terms( "{$collection}_storyline", array( 'get' => 'all' ) ), ( array ) get_terms( "{$collection}_character", array( 'get' => 'all' ) ) );
+		
+		delete_post_meta( self::$config[ 'collections' ][ $collection ][ 'image' ], '_wp_attachment_context', $collection );
 		
 		foreach ( $webcomics as $webcomic ) {
 			wp_update_post( array( 'ID' => $webcomic->ID, 'post_type' => 'post' ) );
@@ -604,7 +613,7 @@ class WebcomicAdmin extends Webcomic {
 				}
 				
 				if ( $values ) {
-					$wpdb->query( sprintf( "INSERT INTO {$wpdb->term_relationships} ( object_id, term_taxonomy_id, term_order ) VALUES %s ON DUPLICATE KEY UPDATE term_order = VALUES( term_order )", join( ',', $values ) ) );
+					$wpdb->query( sprintf( "INSERT INTO {$wpdb->term_relationships} ( object_id, term_taxonomy_id, term_order ) VALUES %s ON DUPLICATE KEY UPDATE term_order = VALUES( term_order )", implode( ',', $values ) ) );
 					
 					$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->term_relationships} WHERE term_taxonomy_id = %d", $term->term_id ) );
 					
@@ -628,7 +637,8 @@ class WebcomicAdmin extends Webcomic {
 		}
 	}
 	
-	/** Render the Webcomic Showcase dashboard widget.
+	/**
+	 * Render the Webcomic Showcase dashboard widget.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::api_request()
@@ -657,15 +667,15 @@ class WebcomicAdmin extends Webcomic {
 						}
 						
 						$caption = empty( $entry[ 'template' ] ) ? sprintf( __( 'Created by %1$s with %2$s', 'webcomic' ),
-							join( ', ', $entry[ 'creators' ] ),
+							implode( ', ', $entry[ 'creators' ] ),
 							'<a href="' . $entry[ 'theme' ][ 'url' ] . '" target="_blank">' . $entry[ 'theme' ][ 'name' ] . '</a>'
 						) : sprintf( __( 'Created by %1$s with %3$s (based on %4$s)', 'webcomic' ),
-							join( ', ', $entry[ 'creators' ] ),
+							implode( ', ', $entry[ 'creators' ] ),
 							'<a href="' . $entry[ 'theme' ][ 'url' ] . '" target="_blank">' . $entry[ 'theme' ][ 'name' ] . '</a>',
 							'<a href="' . $entry[ 'template' ][ 'url' ] . '" target="_blank">' . $entry[ 'template' ][ 'name' ] . '</a>'
 						);
 						
-						echo '<figure><a href="', $entry[ 'url' ], '" target="_blank"><img src="', $entry[ 'image' ], '" alt=""><h4>', $entry[ 'name' ], '</h4><blockquote>', wpautop( $entry[ 'description' ] ), '</blockquote></a><figcaption>', $caption, ' <span>#', $entry[ 'rating' ], $entry[ 'genre' ] ? ' #' . join( ' #', $entry[ 'genre' ] ) : '', '</span></figcaption></figure>';
+						echo '<figure><a href="', $entry[ 'url' ], '" target="_blank"><img src="', $entry[ 'image' ], '" alt=""><h4>', $entry[ 'name' ], '</h4><blockquote>', wpautop( $entry[ 'description' ] ), '</blockquote></a><figcaption>', $caption, ' <span>#', $entry[ 'rating' ], $entry[ 'genre' ] ? ' #' . implode( ' #', $entry[ 'genre' ] ) : '', '</span></figcaption></figure>';
 					}
 					
 					echo '</div></div>';
@@ -678,7 +688,9 @@ class WebcomicAdmin extends Webcomic {
 		}
 	}
 	
-	/** Render the Webcomic Showcase dashboard widget configuration form. */
+	/**
+	 * Render the Webcomic Showcase dashboard widget configuration form.
+	 */
 	public function widget_showcase_config() {
 		$options = get_option( 'dashboard_widget_options' );
 		
@@ -758,7 +770,8 @@ class WebcomicAdmin extends Webcomic {
 		<?php
 	}
 	
-	/** Save administrative notifications.
+	/**
+	 * Save administrative notifications.
 	 * 
 	 * @param string $message The message to display.
 	 * @param string $type The type of message, one of 'notice' or 'error'.
