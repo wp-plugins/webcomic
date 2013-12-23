@@ -4,76 +4,88 @@ Text Domain: webcomic
 Plugin Name: Webcomic
 Plugin URI: http://webcomic.nu
 Description: Comic publishing power for the web.
-Version: 4.0.9
+Version: 4.1.0.3
 Author: Michael Sisk
 Author URI: http://mgsisk.com
-License: GPL2
+License: GPL3
+License URI: http://www.gnu.org/licenses/gpl.html
 
-Copyright 2008 - 2013 Michael Sisk (contact@mgsisk.com)
+Copyright 2008 - 2014 Michael Sisk (contact@mgsisk.com)
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of
-the License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-02110-1301 USA
+along with this program.  If not, see http://www.gnu.org/licenses.
 */
 
-/** Comic Publishing Power for the Web
- * 
- * @todo core.trac.wordpress.org/ticket/16031
+/**
+ * Comic Publishing Power for the Web
  * 
  * @package Webcomic
- * @copyright 2008 - 2013 Michael Sisk
- * @license http://gnu.org/licenses/gpl-2.0.html GPL2
- * @version 4.0.9
- * @link http://webcomic.nu
+ * @copyright 2008 - 2014 Michael Sisk
+ * @license gnu.org/licenses/gpl.html GPL3
+ * @version 4.1.0.3
+ * @link webcomic.nu
  */
 
-/** Initialize the plugin.
+/**
+ * Initialize the plugin.
  * 
  * @package Webcomic
  */
 class Webcomic {
-	/** Internal version number.
+	/**
+	 * Internal version number.
 	 * @var string
 	 */
-	protected static $version = '4.0.9';
+	protected static $version = "4.1.0.3";
 	
-	/** Absolute path to the Webcomic directory.
+	/**
+	 * Absolute path to the Webcomic directory.
 	 * @var string
 	 */
-	protected static $dir = '';
+	protected static $dir = "";
 	
-	/** URL to the Webcomic directory.
+	/**
+	 * URL to the Webcomic directory.
 	 * @var string
 	 */
-	protected static $url = '';
+	protected static $url = "";
 	
-	/** Stores the configuration.
+	/**
+	 * Whether to enable debug mode.
+	 * @var boolean
+	 */
+	protected static $debug = false;
+	
+	/**
+	 * Stores the configuration.
 	 * @var array
 	 */
 	protected static $config = array();
 	
-	/** Whether to attempt integration with the active theme.
+	/**
+	 * Whether to attempt integration with the active theme.
 	 * @var boolean
 	 */
 	protected static $integrate = false;
 	
-	/** Stores the collection the current page is related to.
+	/**
+	 * Stores the collection the current page is related to.
 	 * @var string
 	 */
-	protected static $collection = '';
+	protected static $collection = "";
 	
-	/** Set class properties and register hooks.
+	/**
+	 * Set class properties and register hooks.
 	 * 
 	 * @uses Webcomic::$dir
 	 * @uses Webcomic::$url
@@ -115,9 +127,9 @@ class Webcomic {
 	 * @uses WebcomicShortcode
 	 */
 	public function __construct() {
-		self::$dir    = plugin_dir_path( __FILE__ );
-		self::$url    = plugin_dir_url( __FILE__ );
-		self::$config = get_option( 'webcomic_options' );
+		self::$dir = plugin_dir_path( __FILE__ );
+		self::$url = plugin_dir_url( __FILE__ );
+		self::$config = get_option( "webcomic_options" );
 		
 		if ( self::$config and version_compare( self::$config[ 'version' ], '4x', '>=' ) ) {
 			add_action( 'init', array( $this, 'init' ) );
@@ -159,12 +171,13 @@ class Webcomic {
 			}
 			
 			require_once self::$dir . '-/php/tags.php';
-			require_once self::$dir . '-/php/widgets.php';		new WebcomicWidget;
+			require_once self::$dir . '-/php/widgets.php';	new WebcomicWidget;
 			require_once self::$dir . '-/php/shortcodes.php';	new WebcomicShortcode;
 		}
 	}
 	
-	/** Initialize major plugin features.
+	/**
+	 * Initialize major plugin features.
 	 * 
 	 * This hook performs a number of important functions, including
 	 * loading the plugin text domain, defining the 'prints',
@@ -207,7 +220,7 @@ class Webcomic {
 				),
 				'description' => esc_html( $v[ 'description' ] ),
 				'public'      => true,
-				'menu_icon'   => self::$url . '-/img/webcomic-small.png',
+				'menu_icon'   => self::$url . '-/img/webcomic.png',
 				'supports'    => $v[ 'supports' ],
 				'has_archive' => $v[ 'slugs' ][ 'archive' ],
 				'rewrite' => array(
@@ -260,9 +273,9 @@ class Webcomic {
 				),
 				'show_admin_column' => true,
 				'rewrite' => array(
-					'slug'       => $v[ 'slugs' ][ 'character' ],
+					'slug' => $v[ 'slugs' ][ 'character' ],
 					'with_front' => false,
-					'ep_mask'      => EP_WEBCOMIC_TERM
+					'ep_mask' => EP_WEBCOMIC_TERM
 				)
 			) );
 		}
@@ -291,7 +304,7 @@ class Webcomic {
 			'show_ui'   => true,
 			'exclude_from_search' => false,
 			'supports'  => array( 'editor', 'author', 'revisions' ),
-			'menu_icon' => self::$url . '-/img/transcript-small.png'
+			'menu_icon' => self::$url . '-/img/transcript.png'
 		) );
 		
 		register_taxonomy( 'webcomic_language', 'webcomic_transcript', array(
@@ -314,30 +327,32 @@ class Webcomic {
 			'show_in_nav_menus' => false,
 			'show_admin_column' => true
 		) );
+		
+		register_post_type( 'webcomic_commerce', array(
+			'public'   => false,
+			'supports' => false
+		) );
 	}
 	
-	/** Handle PayPal IPN's.
+	/**
+	 * Handle PayPal IPN's.
 	 * 
 	 * Logs instant payment notifications and updates the original print
-	 * availability of webcomics as necessary. Logs are saved to
-	 * /webcomic/-/logs/ipn-{$blog_id}.php
+	 * availability of webcomics as necessary.
 	 * 
-	 * https://www.paypal.com/cgi-bin/webscr | https://www.sandbox.paypal.com/cgi-bin/webscr
+	 * @todo developer.paypal.com/webapps/developer/docs/api
 	 * 
 	 * @uses Webcomic::$config
 	 * @action webcomic_ipn Triggered prior to processing a Paypal IPN request.
 	 * @hook init
 	 */
 	public function log_ipn() {
-		global $blog_id;
+		global $wpdb;
 		
 		if ( isset( $_GET[ 'webcomic_commerce_ipn' ] ) and !empty( $_POST ) ) {
 			do_action( 'webcomic_ipn' );
 			
-			$output  = array();
-			$header  = $message = $error = '';
-			$blog_id = $blog_id ? $blog_id : 1;
-			$logfile = self::$dir . "-/log/ipn-{$blog_id}.php";
+			$excerpt = $content = $header = $error = '';
 			$request = 'cmd=' . urlencode( '_notify-validate' );
 			
 			foreach ( $_POST as $k => $v ) {
@@ -345,82 +360,74 @@ class Webcomic {
 				$request .= "&{$k}={$value}";
 			}
 			
-			if ( $curl = curl_init() ) {
-				curl_setopt_array( $curl, array(
-					CURLOPT_URL    => 'https://www.paypal.com/cgi-bin/webscr',
-					CURLOPT_HEADER => 0,
-					CURLOPT_POST => 1,
-					CURLOPT_RETURNTRANSFER => 1,
-					CURLOPT_POSTFIELDS => $request,
-					CURLOPT_SSL_VERIFYPEER => 1,
-					CURLOPT_SSL_VERIFYHOST => 2,
-					CURLOPT_HTTPHEADER => array( 'Host: www.paypal.com' )
-				) );
-				
-				$log      = is_readable( $logfile ) ? file_get_contents( $logfile ) : '';
-				$response = curl_exec( $curl );
+			$remote = wp_remote_post( self::$debug ? 'https://www.sandbox.paypal.com/cgi-bin/webscr' : 'https://www.paypal.com/cgi-bin/webscr', array(
+				'body' => $request,
+				'headers' => array(
+					'Host' => self::$debug ? 'www.sandbox.paypal.com' : 'www.paypal.com'
+				),
+				'sslverify' => true
+			) );
+			
+			if ( 200 === wp_remote_retrieve_response_code( $remote ) ) {
+				$date     = date( 'Y-m-d H:i:s', strtotime( $_POST[ 'payment_date' ] ) );
+				$response = wp_remote_retrieve_body( $remote );
 				
 				if ( 0 === strcmp( $response, 'VERIFIED' ) ) {
 					if ( 'Completed' !== $_POST[ 'payment_status' ] ) {
 						$error   = true;
-						$message = __( 'Incomplete transaction', 'webcomic' );
-					} elseif ( preg_match( '/^' . $_POST[ 'txn_id' ] . '/', $log ) ) {
+						$excerpt = __( 'Incomplete transaction', 'webcomic' );
+					} elseif ( $wpdb->get_var( $wpdb->prepare( "SELECT post_title FROM {$wpdb->posts} WHERE post_title = %s", $_POST[ 'txn_id' ] ) ) ) {
 						$error   = true;
-						$message = __( 'Transaction already completed', 'webcomic' );
+						$excerpt = __( 'Transaction already completed', 'webcomic' );
 					} elseif ( 'cart' === $_POST[ 'txn_type' ] ) {
 						$i = 1;
-						$e = 0;
+						$excerpt = __( 'Shopping Cart', 'webcomic' );
+						$content = '<dl>';
 						
 						while ( isset( $_POST[ "item_number{$i}" ] ) ) {
 							$item     = explode( '-', $_POST[ "item_number{$i}" ] );
 							$commerce = get_post_meta( $item[ 0 ], 'webcomic_commerce', true );
 							
 							if ( empty( self::$config[ 'collections' ][ $item[ 1 ] ] ) ) {
-								$e++;
-								$error   = true;
-								$message = sprintf( __( 'Invalid collection %s', 'webcomic' ), $item[ 1 ] );
+								$content .= '<dt class="error">' . $_POST[ "item_number{$i}" ] . '</dt>';
+								$content .= '<dd class="error">' . sprintf( __( 'Invalid collection %s', 'webcomic' ), $item[ 1 ] ) . '</dd>';
 							} elseif ( self::$config[ 'collections' ][ $item[ 1 ] ][ 'commerce' ][ 'business' ] !== $_POST[ 'receiver_email' ] ) {
-								$e++;
-								$error   = true;
-								$message = sprintf( __( 'Incorrect business email %s', 'webcomic' ), $_POST[ 'receiver_email' ] );
+								$content .= '<dt class="error">' . $_POST[ "item_number{$i}" ] . '</dt>';
+								$content .= '<dd>' . sprintf( __( 'Incorrect business email %s', 'webcomic' ), $_POST[ 'receiver_email' ] ) . '</dd>';
 							} elseif ( $_POST[ "quantity{$i}" ] and number_format( $commerce[ 'total' ][ $item[ 2 ] ], 2 ) !== number_format( $_POST[ "mc_gross_{$i}" ] / $_POST[ "quantity{$i}" ], 2 ) ) {
-								$e++;
-								$error   = true;
-								$message = sprintf( __( 'Incorrect price %s', 'webcomic' ), number_format( $_POST[ "mc_gross_{$i}" ] / $_POST[ "quantity{$i}" ], 2 ) );
+								$content .= '<dt class="error">' . $_POST[ "item_number{$i}" ] . '</dt>';
+								$content .= '<dd>' . sprintf( __( 'Incorrect price %s', 'webcomic' ), number_format( $_POST[ "mc_gross_{$i}" ] / $_POST[ "quantity{$i}" ], 2 ) ) . '</dd>';
 							} elseif ( self::$config[ 'collections' ][ $item[ 1 ] ][ 'commerce' ][ 'currency' ] !== $_POST[ 'mc_currency' ] ) {
-								$e++;
-								$error   = true;
-								$message = sprintf( __( 'Incorrect currency %s', 'webcomic' ), $_POST[ 'mc_currency' ] );
+								$content .= '<dt class="error">' . $_POST[ "item_number{$i}" ] . '</dt>';
+								$content .= '<dd>' . sprintf( __( 'Incorrect currency %s', 'webcomic' ), $_POST[ 'mc_currency' ] ) . '</dd>';
 							} else {
 								if ( 'original' === $item[ 2 ] ) {
 									update_post_meta( $item[ 0 ], 'webcomic_original', false );
 								}
 								
-								$message = __( 'Good', 'webcomic' );
+								$content .= '<dt>' . $_POST[ "item_number{$i}" ] . '</dt>';
+								$content .= '<dd>' . __( 'Sale Get!', 'webcomic' ) . '</dd>';
 							}
-							
-							$output[] = "\t\t" . $_POST[ "item_number{$i}" ] . "\t{$message}\t" . ( $error ? 'x' : '' );
-							$error = false;
 							
 							$i++;
 						}
 						
-						array_unshift( $output, $_POST[ 'txn_id' ] . "\t" . $_POST[ 'payment_date' ] . "\t\t" . ( $e ? sprintf( _n( '%s Error', '%s Errors', $e, 'webcomic' ), $e ) : __( 'Sale Get!', 'webcomic' ) ) . "\t" . ( $e ? 'x' : '' ) );
+						$content .= '</dl>';
 					} elseif ( 'donation' === $_GET[ 'webcomic_commerce_ipn' ] ) {
 						if ( empty( self::$config[ 'collections' ][ $_POST[ 'item_number' ] ] ) ) {
 							$error   = true;
-							$message = sprintf( __( 'Invalid collection %s', 'webcomic' ), $_POST[ 'item_number' ] );
+							$excerpt = sprintf( __( 'Invalid collection %s', 'webcomic' ), $_POST[ 'item_number' ] );
 						} elseif ( self::$config[ 'collections' ][ $_POST[ 'item_number' ] ][ 'commerce' ][ 'business' ] !== $_POST[ 'receiver_email' ] ) {
 							$error   = true;
-							$message = sprintf( __( 'Incorrect business email %s', 'webcomic' ), $_POST[ 'receiver_email' ] );
+							$excerpt = sprintf( __( 'Incorrect business email %s', 'webcomic' ), $_POST[ 'receiver_email' ] );
 						} elseif ( self::$config[ 'collections' ][ $_POST[ 'item_number' ] ][ 'commerce' ][ 'donation' ] and ( number_format( self::$config[ 'collections' ][ $_POST[ 'item_number' ] ][ 'commerce' ][ 'donation' ], 2 ) !== number_format( $_POST[ 'mc_gross' ], 2 ) ) ) {
 							$error   = true;
-							$message = sprintf( __( 'Incorrect price %s', 'webcomic' ), number_format( $_POST[ 'mc_gross' ], 2 ) );
+							$excerpt = sprintf( __( 'Incorrect price %s', 'webcomic' ), number_format( $_POST[ 'mc_gross' ], 2 ) );
 						} elseif ( self::$config[ 'collections' ][ $_POST[ 'item_number' ] ][ 'commerce' ][ 'currency' ] !== $_POST[ 'mc_currency' ] ) {
 							$error   = true;
-							$message = sprintf( __( 'Incorrect currency %s', 'webcomic' ), $_POST[ 'mc_currency' ] );
+							$excerpt = sprintf( __( 'Incorrect currency %s', 'webcomic' ), $_POST[ 'mc_currency' ] );
 						} else {
-							$message = __( 'Donation Get!', 'webcomic' );
+							$excerpt = __( 'Donation Get!', 'webcomic' );
 						}
 					} else {
 						$item     = explode( '-', $_POST[ 'item_number' ] );
@@ -428,50 +435,58 @@ class Webcomic {
 						
 						if ( empty( self::$config[ 'collections' ][ $item[ 1 ] ] ) ) {
 							$error   = true;
-							$message = sprintf( __( 'Invalid collection %s', 'webcomic' ), $item[ 1 ] );
+							$excerpt = sprintf( __( 'Invalid collection %s', 'webcomic' ), $item[ 1 ] );
 						} elseif ( self::$config[ 'collections' ][ $item[ 1 ] ][ 'commerce' ][ 'business' ] !== $_POST[ 'receiver_email' ] ) {
 							$error   = true;
-							$message = sprintf( __( 'Incorrect business email %s', 'webcomic' ), $_POST[ 'receiver_email' ] );
+							$excerpt = sprintf( __( 'Incorrect business email %s', 'webcomic' ), $_POST[ 'receiver_email' ] );
 						} elseif ( $_POST[ 'quantity' ] and number_format( $commerce[ 'total' ][ $item[ 2 ] ], 2 ) !== number_format( $_POST[ 'mc_gross' ] / $_POST[ 'quantity' ], 2 ) ) {
 							$error   = true;
-							$message = sprintf( __( 'Incorrect price %s', 'webcomic' ), number_format( $_POST[ 'mc_gross' ] / $_POST[ 'quantity' ], 2 ) );
+							$excerpt = sprintf( __( 'Incorrect price %s', 'webcomic' ), number_format( $_POST[ 'mc_gross' ] / $_POST[ 'quantity' ], 2 ) );
 						} elseif ( self::$config[ 'collections' ][ $item[ 1 ] ][ 'commerce' ][ 'currency' ] !== $_POST[ 'mc_currency' ] ) {
 							$error   = true;
-							$message = sprintf( __( 'Incorrect currency %s', 'webcomic' ), $_POST[ 'mc_currency' ] );
+							$excerpt = sprintf( __( 'Incorrect currency %s', 'webcomic' ), $_POST[ 'mc_currency' ] );
 						} else {
 							if ( 'original' === $item[ 2 ] ) {
 								update_post_meta( $item[ 0 ], 'webcomic_original', false );
 							}
 							
-							$message = __( 'Sale Get!', 'webcomic' );
+							$excerpt = __( 'Sale Get!', 'webcomic' );
 						}
 					}
 				} elseif ( 0 === strcmp( $response, 'INVALID' ) ) {
 					$error   = true;
-					$message = __( 'Invalid response', 'webcomic' );
+					$excerpt = __( 'Invalid response', 'webcomic' );
 				}
-				
-				curl_close( $curl );
 			} else {
-				$message = __( 'HTTP Error', 'webcomic' );
+				$error   = true;
+				$excerpt = sprintf( __( 'HTTP Error %s', 'webcomic' ), wp_remote_retrieve_response_code( $remote ) );
 			}
 			
-			if ( !$output ) {
-				$output[] = $_POST[ 'txn_id' ] . "\t" . $_POST[ 'payment_date' ] . "\t" . $_POST[ 'item_number' ] . "\t" . $message . "\t" . ( $error ? 'x' : '' );
+			if ( !$content and !empty( $_POST[ 'item_number' ] ) ) {
+				$content = $_POST[ 'item_number' ];
 			}
 			
-			if ( file_exists( $logfile ) and is_writable( $logfile ) ) {
-				file_put_contents( $logfile, join( "\n", $output ) . "\n", FILE_APPEND );
-			} elseif ( is_writable( dirname( $logfile ) ) ) {
-				file_put_contents( $logfile, "<?php die; ?>\n" . join( "\n", $output ) . "\n" );
+			if ( $id = wp_insert_post( array(
+				'post_name'     => sanitize_title( $_POST[ 'txn_id' ] ),
+				'post_type'     => 'webcomic_commerce',
+				'post_date'     => $date,
+				'post_title'    => $_POST[ 'txn_id' ],
+				'post_author'   => 1,
+				'post_status'   => 'puglish',
+				'post_content'  => $content,
+				'post_excerpt'  => $excerpt,
+				'post_date_gmt' => get_gmt_from_date( $date )
+			) ) and !is_wp_error( $id ) and $error ) {
+				update_post_meta( $id, 'webcomic_commerce_error', true );
 			}
 		}
 	}
 	
-	/** Add Generator, Open Graph, and Twitter Card metadata.
+	/**
+	 * Add Generator, Open Graph, and Twitter Card metadata.
 	 * 
 	 * Use of the 'property' attribute is obnoxious but intentional; see
-	 * [ogp.me](http://ogp.me/) for details on the Open Graph protocol.
+	 * [ogp.me](http://ogp.me) for details on the Open Graph protocol.
 	 * 
 	 * @uses Webcomic::$config
 	 * @uses Webcomic::$collection
@@ -515,15 +530,15 @@ class Webcomic {
 					}
 				}
 			} elseif ( is_tax() ) {
-				$output[ 'og:url' ]         = get_term_link( ( integer ) $object->term_id, $object->taxonomy );
-				$output[ 'og:title' ]       = esc_attr( single_term_title( '', false ) );
+				$output[ 'og:url' ]   = get_term_link( ( integer ) $object->term_id, $object->taxonomy );
+				$output[ 'og:title' ] = esc_attr( single_term_title( '', false ) );
 				
 				if ( $description = esc_attr( strip_tags( term_description( $object->term_id, $object->taxonomy ) ) ) ) {
 					$output[ 'og:description' ] = $description;
 				}
 			} else {
-				$output[ 'og:url' ]         = get_post_type_archive_link( $object->name );
-				$output[ 'og:title' ]       = esc_attr( self::$config[ 'collections' ][ $object->name ][ 'name' ] );
+				$output[ 'og:url' ]   = get_post_type_archive_link( $object->name );
+				$output[ 'og:title' ] = esc_attr( self::$config[ 'collections' ][ $object->name ][ 'name' ] );
 				
 				if ( $description = esc_attr( strip_tags( self::$config[ 'collections' ][ $object->name ][ 'description' ] ) ) ) {
 					$output[ 'og:description' ] = $description;
@@ -573,7 +588,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Handle Twitter OAuth authentication.
+	/**
+	 * Handle Twitter OAuth authentication.
 	 * 
 	 * @uses Webcomic::$config
 	 * @hook init
@@ -612,7 +628,7 @@ class Webcomic {
 					$oauth->config[ 'user_token' ]  = $response[ 'oauth_token' ];
 					$oauth->config[ 'user_secret' ] = $response[ 'oauth_token_secret' ];
 					
-					$code = $oauth->request( 'GET', $oauth->url( '1/account/verify_credentials' ) );
+					$code = $oauth->request( 'GET', $oauth->url( '1.1/account/verify_credentials' ) );
 					
 					if ( 200 === intval( $code ) ) {
 						$response = json_decode( $oauth->response[ 'response' ] );
@@ -633,7 +649,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Handle transcript submissions.
+	/**
+	 * Handle transcript submissions.
 	 * 
 	 * @uses Webcomic::$config
 	 * @action webcomic_transcript_submit Triggered prior to processing a user-submitted transcript.
@@ -731,7 +748,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Get default dynamic webcomic container URL's.
+	/**
+	 * Get default dynamic webcomic container URL's.
 	 * 
 	 * @hook init
 	 */
@@ -752,7 +770,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Handle parameterized webcomic URL's.
+	/**
+	 * Handle parameterized webcomic URL's.
 	 * 
 	 * @uses WebcomicTag::get_relative_webcomic_term_link()
 	 * @uses WebcomicTag::get_relative_webcomic_link()
@@ -804,7 +823,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Check to see if the current page is webcomic-related.
+	/**
+	 * Check to see if the current page is webcomic-related.
 	 * 
 	 * We have to do this as early as possible to ensure that the
 	 * correct template can be set if the collection is using a custom
@@ -844,14 +864,14 @@ class Webcomic {
 		
 		if (
 				(
-					preg_match( '/webcomic\d+(_(storyline|character))?/', join( ' ', array_keys( $_GET ) ), $match )
+					preg_match( '/webcomic\d+(_(storyline|character))?/', implode( ' ', array_keys( $_GET ) ), $match )
 					or ( isset( $_GET[ 'post_type' ] ) and isset( self::$config[ 'collections' ][ $_GET[ 'post_type' ] ] ) and $match[ 0 ] = $_GET[ 'post_type' ] )
-					or ( $wp_rewrite->using_permalinks() and preg_match( '{/(' . join( '|', $permalinks ) . ')/}', $_SERVER[ 'REQUEST_URI' ], $match ) )
+					or ( $wp_rewrite->using_permalinks() and preg_match( '{/(' . implode( '|', $permalinks ) . ')/}', $_SERVER[ 'REQUEST_URI' ], $match ) )
 					or ( $id = url_to_postid( $_SERVER[ 'REQUEST_URI' ] ) and $match[ 0 ] = get_post_meta( $id, 'webcomic_collection', true ) and isset( self::$config[ 'collections' ][ $match[ 0 ] ] ) )
 				)
 			and $match
 		) {
-			if ( 2 < count( $match ) ) {
+			if ( 2 < count( $match ) and $permalinks ) {
 				foreach ( $permalinks as $k => $v ) {
 					if ( false !== strpos( $k, '_webcomic' ) and preg_match( '{' . $v . '}', $match[ 1 ] ) ) {
 						self::$collection = str_replace( '_webcomic', '', $k );
@@ -859,7 +879,7 @@ class Webcomic {
 					}
 				}
 			} else {
-				$match[ 0 ]       = preg_replace( '/_(storyline|character)$/', '', $match[ 0 ] );
+				$match[ 0 ] = preg_replace( '/_(storyline|character)$/', '', $match[ 0 ] );
 				self::$collection = empty( self::$config[ 'collections' ][ $match[ 0 ] ] ) ? preg_replace( '/_(archive|webcomic|storyline|character)$/', '', array_search( $match[ 1 ], $permalinks ) ) : $match[ 0 ];
 			}
 		}
@@ -868,7 +888,8 @@ class Webcomic {
 		self::$integrate = !$active_theme->get( 'Webcomic' );
 	}
 	
-	/** Filter titles and content for restricted webcomics.
+	/**
+	 * Filter titles and content for restricted webcomics.
 	 * 
 	 * @param object $post The global post object.
 	 * @uses WebcomicTag::verify_webcomic_age()
@@ -895,7 +916,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Include webcomic posts on standard archive pages.
+	/**
+	 * Include webcomic posts on standard archive pages.
 	 * 
 	 * Also handles the crossover ep_mask for term crossover archives.
 	 * 
@@ -946,14 +968,15 @@ class Webcomic {
 			}
 		}
 		
-		if ( $query->is_main_query() and is_archive() and !$query->get( 'post_type' ) ) {
-			$query->set( 'post_type', array_merge( array( 'post' ), array_keys( self::$config[ 'collections' ] ) ) );
+		if ( $query->is_main_query() and !$query->get( 'post_type' ) and is_archive() ) {
+			$query->set( 'post_type', array_merge( get_post_types( array( 'public' => true ) ), array_keys( self::$config[ 'collections' ] ) ) );
 		}
 		
 		return $query;
 	}
 	
-	/** Email buffer alert notifications.
+	/**
+	 * Email buffer alert notifications.
 	 * 
 	 * Hooks into the webcomic_buffer_alert event scheduled during
 	 * installation. As with all WordPress scheduled events this
@@ -973,7 +996,7 @@ class Webcomic {
 				wp_mail(
 					$v[ 'buffer' ][ 'email' ],
 					sprintf( _n( '[%s] %s Buffer Alert - %s Day Left', '[%s] %s Buffer Alert - %s Days Left', $eta, 'webcomic' ), get_bloginfo( 'name' ), $v[ 'name' ], $eta ),
-					sprintf( __( 'This is an automated reminder that the buffer for %1$s expires on %2%s.', 'webcomic' ),
+					sprintf( __( 'This is an automated reminder that the buffer for %1$s expires on %2$s.', 'webcomic' ),
 						'<a href="' . esc_url( admin_url( "edit.php?post_type={$k}" ) ) . '">' . $v[ 'name' ] . '</a>',
 						date( 'j F Y', $buffer )
 					),
@@ -983,7 +1006,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Register and enqueue javascript.
+	/**
+	 * Register and enqueue javascript.
 	 * 
 	 * @uses Webcomic::$config
 	 * @hook wp_enqueue_scripts
@@ -1004,7 +1028,8 @@ class Webcomic {
 		wp_enqueue_script( 'webcomic-dropdown', self::$url . '-/js/dropdown.js', array( 'jquery' ), false, true );
 	}
 	
-	/** Auto tweet on webcomic publish.
+	/**
+	 * Auto tweet on webcomic publish.
 	 * 
 	 * @param string $new New post status.
 	 * @param string $old Old post status.
@@ -1040,29 +1065,29 @@ class Webcomic {
 					$tokens[ "%{$size}" ] = ( false !== strpos( $status, "%{$size}" ) and $image = wp_get_attachment_image_src( $attachment->ID, $size ) ) ? $image[ 0 ] : '';
 				}
 				
-				if ( preg_match( '/%' .  join( '|%', array_merge( array( 'storyline', 'character' ), self::$config[ 'collections' ][ $post->post_type ][ 'taxonomies' ] ) ) . '/', self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ] ) and $terms = wp_get_object_terms( $post->ID, array_merge( array( "{$post->post_type}_storyline", "{$post->post_type}_character" ), self::$config[ 'collections' ][ $post->post_type ][ 'taxonomies' ] ) ) and !is_wp_error( $terms ) ) {
+				if ( preg_match( '/%' .  implode( '|%', array_merge( array( 'storyline', 'character' ), self::$config[ 'collections' ][ $post->post_type ][ 'taxonomies' ] ) ) . '/', self::$config[ 'collections' ][ $post->post_type ][ 'twitter' ][ 'format' ] ) and $terms = wp_get_object_terms( $post->ID, array_merge( array( "{$post->post_type}_storyline", "{$post->post_type}_character" ), self::$config[ 'collections' ][ $post->post_type ][ 'taxonomies' ] ) ) and !is_wp_error( $terms ) ) {
 					foreach ( $terms as $term ) {
 						$hash = str_replace( array( '_', '-' ), '', "#{$term->slug}" );
-					
+						
 						if ( preg_match( '/^webcomic\d+_(storyline|character)$/', $term->taxonomy ) ) {
 							$parts = explode( '_', $term->taxonomy );
-						
+							
 							if ( false === strpos( $tokens[ 'collection-names' ], self::$config[ 'collections' ][ $parts[ 0 ] ][ 'name' ] ) ) {
 								$tokens[ '%collections' ]       .= ' #' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $parts[ 0 ] ][ 'slugs' ][ 'name' ] );
 								$tokens[ '%collection-names' ]  .= ' ' . self::$config[ 'collections' ][ $parts[ 0 ] ][ 'name' ];
 								$tokens[ '%xcollections' ]      .= empty( $tokens[ '%xcollection-names' ] ) ? '#' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $parts[ 0 ] ][ 'slugs' ][ 'name' ] ) : ' #' . str_replace( array( '_', '-' ), '', self::$config[ 'collections' ][ $parts[ 0 ] ][ 'slugs' ][ 'name' ] );
 								$tokens[ '%xcollection-names' ] .= empty( $tokens[ '%xcollection-names' ] ) ? self::$config[ 'collections' ][ $parts[ 0 ] ][ 'name' ] : ' ' . self::$config[ 'collections' ][ $parts[ 0 ] ][ 'name' ];
 							}
-						
-							$tokens[ "%{$parts[ 1 ]}s" ]      .= empty( $tokens[ '%{$parts[ 1 ]}s' ] ) ? "{$hash}" : " {$hash}";
-							$tokens[ "%{$parts[ 1 ]}-names" ] .= empty( $tokens[ '%{$parts[ 1 ]}-names' ] ) ? "{$term->name}" : " {$term->name}";
-						
+							
+							$tokens[ "%{$parts[ 1 ]}s" ]      .= empty( $tokens[ "%{$parts[ 1 ]}s" ] ) ? "{$hash}" : " {$hash}";
+							$tokens[ "%{$parts[ 1 ]}-names" ] .= empty( $tokens[ "%{$parts[ 1 ]}-names" ] ) ? "{$term->name}" : " {$term->name}";
+							
 							if ( 0 === strpos( $term->taxonomy, $post->post_type ) ) {
-								$tokens[ '%!{$parts[ 1 ]}s' ]      .= empty( $tokens[ '%!{$parts[ 1 ]}s' ] ) ? "{$hash}" : " {$hash}";
-								$tokens[ '%!{$parts[ 1 ]}-names' ] .= empty( $tokens[ '%!{$parts[ 1 ]}-names' ] ) ? "{$term->name}" : " {$term->name}";
+								$tokens[ "%!{$parts[ 1 ]}s" ]      .= empty( $tokens[ "%!{$parts[ 1 ]}s" ] ) ? "{$hash}" : " {$hash}";
+								$tokens[ "%!{$parts[ 1 ]}-names" ] .= empty( $tokens[ "%!{$parts[ 1 ]}-names" ] ) ? "{$term->name}" : " {$term->name}";
 							} else {
-								$tokens[ '%x{$parts[ 1 ]}s' ]      .= empty( $tokens[ '%x{$parts[ 1 ]}s' ] ) ? "{$hash}" : " {$hash}";
-								$tokens[ '%x{$parts[ 1 ]}-names' ] .= empty( $tokens[ '%x{$parts[ 1 ]}-names' ] ) ? "{$term->name}" : " {$term->name}";
+								$tokens[ "%x{$parts[ 1 ]}s" ]      .= empty( $tokens[ "%x{$parts[ 1 ]}s" ] ) ? "{$hash}" : " {$hash}";
+								$tokens[ "%x{$parts[ 1 ]}-names" ] .= empty( $tokens[ "%x{$parts[ 1 ]}-names" ] ) ? "{$term->name}" : " {$term->name}";
 							}
 						} else {
 							$tokens[ "%{$term->taxonomy}-names" ] = isset( $tokens[ "%{$term->taxonomy}-names" ] ) ? $tokens[ "%{$term->taxonomy}-names" ] . " {$term->name}" : "{$term->name}";
@@ -1102,7 +1127,7 @@ class Webcomic {
 						'status'  => substr( strip_tags( $status ), 0, 140 )
 					), true, true );
 				} else {
-					$code = $oauth->request( 'POST', $oauth->url( '1/statuses/update' ), array(
+					$code = $oauth->request( 'POST', $oauth->url( '1.1/statuses/update' ), array(
 						'status'  => substr( strip_tags( $status ), 0, 140 )
 					) );
 				}
@@ -1116,7 +1141,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Integrate webcomics into the main site feed.
+	/**
+	 * Integrate webcomics into the main site feed.
 	 * 
 	 * @param array $query Post request query.
 	 * @return array
@@ -1141,7 +1167,8 @@ class Webcomic {
 		return $query;
 	}
 	
-	/** Add a webcomic_image property to term objects.
+	/**
+	 * Add a webcomic_image property to term objects.
 	 * 
 	 * @param object $term Retrieved term.
 	 * @param string $taxonomy Taxonomy the term belongs to.
@@ -1157,7 +1184,8 @@ class Webcomic {
 		return $term;
 	}
 	
-	/** Return the appropriate theme ID for custom collection themes.
+	/**
+	 * Return the appropriate theme ID for custom collection themes.
 	 * 
 	 * @param string $theme Name of the current theme.
 	 * @return string
@@ -1169,7 +1197,8 @@ class Webcomic {
 		return ( self::$collection and self::$config[ 'collections' ][ self::$collection ][ 'theme' ] and $template = substr( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], 0, strpos( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], '|' ) ) and is_readable( get_theme_root() . "/{$template}" ) ) ? $template : $theme;
 	}
 	
-	/** Display webcomics in place of transcripts in searches.
+	/**
+	 * Display webcomics in place of transcripts in searches.
 	 * 
 	 * @param array $posts Posts array.
 	 * @param object $query WP_Query object.
@@ -1196,7 +1225,8 @@ class Webcomic {
 		return $posts;
 	}
 	
-	/** Add a webcomic_image property to term objects.
+	/**
+	 * Add a webcomic_image property to term objects.
 	 * 
 	 * @param array $terms Array of retrieved terms.
 	 * @param array $taxonomies Array of taxonomies the terms belong to.
@@ -1206,7 +1236,7 @@ class Webcomic {
 	 * @hook get_terms
 	 */
 	public function get_terms( $terms, $taxonomies, $args ) {
-		if ( preg_match( '/webcomic\d+_(storyline|character)/', join( ' ', ( array ) $taxonomies ) ) ) {
+		if ( preg_match( '/webcomic\d+_(storyline|character)/', implode( ' ', ( array ) $taxonomies ) ) ) {
 			foreach ( $terms as $k => $v ) {
 				if ( isset( $v->taxonomy ) and preg_match( '/^webcomic\d+_(storyline|character)$/', $v->taxonomy ) ) {
 					$terms[ $k ]->webcomic_image = empty( self::$config[ 'terms' ][ $v->term_id ][ 'image' ] ) ? 0 : self::$config[ 'terms' ][ $v->term_id ][ 'image' ];
@@ -1217,7 +1247,8 @@ class Webcomic {
 		return $terms;
 	}
 	
-	/** Return the appropriate theme ID for custom collection themes.
+	/**
+	 * Return the appropriate theme ID for custom collection themes.
 	 * 
 	 * @param string $theme Name of the current theme.
 	 * @return string
@@ -1229,7 +1260,8 @@ class Webcomic {
 		return ( self::$collection and self::$config[ 'collections' ][ self::$collection ][ 'theme' ] and $stylesheet = substr( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], strpos( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], '|' ) + 1 ) and is_readable( get_theme_root() . "/{$stylesheet}" ) ) ? $stylesheet : $theme;
 	}
 	
-	/** Add webcomic classes to the body tag.
+	/**
+	 * Add webcomic classes to the body tag.
 	 * 
 	 * @param array $classes Array of body classes.
 	 * @param mixed $class Additional classes passed to body_class().
@@ -1248,7 +1280,8 @@ class Webcomic {
 		return $classes;
 	}
 	
-	/** Add webcomic classes to posts.
+	/**
+	 * Add webcomic classes to posts.
 	 * 
 	 * @param array $classes Array of post classes.
 	 * @param mixed $class Additional classes passed to post_class().
@@ -1276,14 +1309,15 @@ class Webcomic {
 			}
 			
 			if ( $crossovers = array_unique( $crossovers ) ) {
-				$classes[] = join( ' ', $crossovers );
+				$classes[] = implode( ' ', $crossovers );
 			}
 		}
 		
 		return $classes;
 	}
 	
-	/** Add a webcomic_image property to term objects.
+	/**
+	 * Add a webcomic_image property to term objects.
 	 * 
 	 * @param array $terms Array of retrieved terms.
 	 * @param integer $id Object ID the terms are related to.
@@ -1302,9 +1336,10 @@ class Webcomic {
 		return $terms;
 	}
 	
-	/** Handle custom permalink tokens.
+	/**
+	 * Handle custom permalink tokens.
 	 * 
-	 * @todo Use get_term_parents; see core.trac.wordpress.org/ticket/17069
+	 * @todo core.trac.wordpress.org/ticket/17069
 	 * 
 	 * @param string $link Permalink to swap tokens in.
 	 * @param object $post Post object.
@@ -1331,7 +1366,7 @@ class Webcomic {
 			}
 			
 			$storyline = array_reverse( $storyline );
-			$storyline = join( '/', $storyline );
+			$storyline = implode( '/', $storyline );
 		} else {
 			$storyline = '';
 		}
@@ -1352,7 +1387,8 @@ class Webcomic {
 		return str_replace( array_keys( $tokens ), $tokens, $link );
 	}
 	
-	/** Load custom templates for Webcomic-related pages.
+	/**
+	 * Load custom templates for Webcomic-related pages.
 	 * 
 	 * Changes the template hierarchy when a Webcomic-related page is
 	 * found, loadig Webcomic-specific templates from a `webcomic`
@@ -1421,7 +1457,8 @@ class Webcomic {
 		return locate_template( $template );
 	}
 	
-	/** Add webcomic previews to feed content.
+	/**
+	 * Add webcomic previews to feed content.
 	 * 
 	 * @param string $content The post content.
 	 * @return string
@@ -1449,7 +1486,8 @@ class Webcomic {
 		return $content;
 	}
 	
-	/** Add a webcomic_image property to term objects.
+	/**
+	 * Add a webcomic_image property to term objects.
 	 * 
 	 * @param array $terms Array of retrieved terms.
 	 * @param integer $objects Object ID's the terms are related to.
@@ -1460,7 +1498,7 @@ class Webcomic {
 	 * @hook get_the_terms
 	 */
 	public function wp_get_object_terms( $terms, $objects, $taxonomies, $args ) {
-		if ( 'all' === $args[ 'fields' ] and preg_match( '/webcomic\d+_(storyline|character)/', join( ' ', ( array ) $taxonomies ) ) ) {
+		if ( 'all' === $args[ 'fields' ] and preg_match( '/webcomic\d+_(storyline|character)/', implode( ' ', ( array ) $taxonomies ) ) ) {
 			foreach ( $terms as $k => $v ) {
 				if ( isset( $v->taxonomy ) and preg_match( '/^webcomic\d+_(storyline|character)$/', $v->taxonomy ) ) {
 					$terms[ $k ]->webcomic_image = empty( self::$config[ 'terms' ][ $v->term_id ][ 'image' ] ) ? 0 : self::$config[ 'terms' ][ $v->term_id ][ 'image' ];
@@ -1471,13 +1509,14 @@ class Webcomic {
 		return $terms;
 	}
 	
-	/** Add the 'Webcomic' key for theme headers.
+	/**
+	 * Add the 'Webcomic' key for theme headers.
 	 * 
 	 * Theme authors can specify a theme as being 'Webcomic ready' by
 	 * adding a Webcomic key with the minimum required version of
 	 * Webcomic, like:
 	 * 
-	 * `Webcomic: 4.0.9`
+	 * `Webcomic: 4.1`
 	 * 
 	 * @param array $extra Extra theme header fields.
 	 * @return array
@@ -1489,7 +1528,8 @@ class Webcomic {
 		return $extra;
 	}
 	
-	/** Use caption for title of media objects attached to a webcomic.
+	/**
+	 * Use caption for title of media objects attached to a webcomic.
 	 *  
 	 * @param array $attributes An array of media attributes.
 	 * @param object $attachment The media object.
@@ -1509,7 +1549,8 @@ class Webcomic {
 		return $attributes;
 	}
 	
-	/** Automagically integrate basic webcomic functionality.
+	/**
+	 * Automagically integrate basic webcomic functionality.
 	 * 
 	 * @param object $query WP_Query object for the loop.
 	 * @return null
@@ -1533,7 +1574,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Automagically integrate basic webcomic functionality.
+	/**
+	 * Automagically integrate basic webcomic functionality.
 	 * 
 	 * @param object $query WP_Query object for the loop.
 	 * @return null
@@ -1567,7 +1609,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Automagically integrate basic webcomic functionality.
+	/**
+	 * Automagically integrate basic webcomic functionality.
 	 * 
 	 * @param string $excerpt The post excerpt.
 	 * @return string
@@ -1590,7 +1633,8 @@ class Webcomic {
 		return $excerpt;
 	}
 	
-	/** Automagically integrate basic webcomic functionality.
+	/**
+	 * Automagically integrate basic webcomic functionality.
 	 * 
 	 * @param string $content The post content.
 	 * @return string
@@ -1615,7 +1659,8 @@ class Webcomic {
 		return $content;
 	}
 	
-	/** Automagically integrate basic webcomic functionality.
+	/**
+	 * Automagically integrate basic webcomic functionality.
 	 * 
 	 * Reorders webcomics on post type and taxonomy archive pages so
 	 * that they appear in chronological order.
@@ -1631,22 +1676,8 @@ class Webcomic {
 		}
 	}
 	
-	/** Return Webcomic attachments for a post.
-	 * 
-	 * @param integer $id Post ID to retrieve attachments for.
-	 * @return array
-	 */
-	protected function get_attachments( $id = 0 ) {
-		return get_children( array(
-			'order'          => 'ASC',
-			'orderby'        => 'menu_order',
-			'post_type'      => 'attachment',
-			'post_parent'    => $id,
-			'post_mime_type' => 'image'
-		) );
-	}
-	
-	/** Perform a Webcomic API request.
+	/**
+	 * Perform a Webcomic API request.
 	 * 
 	 * @param string $method The request method.
 	 * @param string $endpoing The API endpoint to access.
@@ -1654,22 +1685,37 @@ class Webcomic {
 	 * @return array
 	 */
 	protected function api_request( $endpoint, $method = 'GET', $data = array() ) {
-		$curl             = curl_init( "http://webcomic.nu/api/{$endpoint}" );
 		$data[ 'domain' ] = home_url();
 		$data[ 'key' ]    = self::$config[ 'api' ];
 		$data[ 0 ]        = hash( 'whirlpool', serialize( $data ) );
 		
-		curl_setopt_array( $curl, array(
-			CURLOPT_REFERER        => home_url(),
-			CURLOPT_POSTFIELDS     => json_encode( $data ),
-			CURLOPT_CUSTOMREQUEST  => $method,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_FOLLOWLOCATION => true
+		$remote = wp_remote_request( "http://webcomic.nu/api/{$endpoint}", array(
+			'body'    => json_encode( $data ),
+			'method'  => $method,
+			'headers' => array(
+				'Referer' => home_url()
+			)
 		) );
 		
-		$response = curl_exec( $curl );
+		$code = wp_remote_retrieve_response_code( $remote );
 		
-		return array( curl_getinfo( $curl, CURLINFO_HTTP_CODE ) => json_decode( $response, true ) );
+		return $code ? array( $code => json_decode( wp_remote_retrieve_body( $remote ), true ) ) : array( 999 => __( 'The Webcomic Network is currently unavailable.', 'webcomic' ) );
+	}
+	
+	/**
+	 * Return Webcomic attachments for a post.
+	 * 
+	 * @param integer $id Post ID to retrieve attachments for.
+	 * @return array
+	 */
+	protected static function get_attachments( $id = 0 ) {
+		return get_children( array(
+			'order'          => 'ASC',
+			'orderby'        => 'menu_order',
+			'post_type'      => 'attachment',
+			'post_parent'    => $id,
+			'post_mime_type' => 'image'
+		) );
 	}
 }
 
