@@ -2,15 +2,15 @@
 /*
 Text Domain: webcomic
 Plugin Name: Webcomic
-Plugin URI: http://webcomic.nu
+Plugin URI: http://github.com/mgsisk/webcomic
 Description: Comic publishing power for the web.
-Version: 4.1.0.4
+Version: 4.2
 Author: Michael Sisk
 Author URI: http://mgsisk.com
-License: GPL3
+License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 
-Copyright 2008 - 2014 Michael Sisk (contact@mgsisk.com)
+Copyright 2008 - 2015 Michael Sisk (me@mgsisk.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,16 +27,6 @@ along with this program.  If not, see http://www.gnu.org/licenses.
 */
 
 /**
- * Comic Publishing Power for the Web
- * 
- * @package Webcomic
- * @copyright 2008 - 2014 Michael Sisk
- * @license gnu.org/licenses/gpl.html GPL3
- * @version 4.1.0.4
- * @link webcomic.nu
- */
-
-/**
  * Initialize the plugin.
  * 
  * @package Webcomic
@@ -46,7 +36,7 @@ class Webcomic {
 	 * Internal version number.
 	 * @var string
 	 */
-	protected static $version = "4.1.0.4";
+	protected static $version = "4.2";
 	
 	/**
 	 * Absolute path to the Webcomic directory.
@@ -105,18 +95,18 @@ class Webcomic {
 	 * @uses Webcomic::tweet_webcomic()
 	 * @uses Webcomic::request()
 	 * @uses Webcomic::get_term()
-	 * @uses Webcomic::template()
 	 * @uses Webcomic::the_posts()
 	 * @uses Webcomic::get_terms()
-	 * @uses Webcomic::stylesheet()
 	 * @uses Webcomic::body_class()
 	 * @uses Webcomic::post_class()
 	 * @uses Webcomic::get_the_terms()
 	 * @uses Webcomic::post_type_link()
+	 * @uses Webcomic::pre_option_template()
 	 * @uses Webcomic::template_include()
 	 * @uses Webcomic::the_content_feed()
 	 * @uses Webcomic::wp_get_object_terms()
 	 * @uses Webcomic::extra_theme_headers()
+	 * @uses Webcomic::pre_option_stylesheet()
 	 * @uses Webcomic::wp_get_attachment_image_attributes()
 	 * @uses Webcomic::loop_end()
 	 * @uses Webcomic::loop_start()
@@ -148,16 +138,16 @@ class Webcomic {
 			
 			add_filter( 'request', array( $this, 'request' ), 10, 1 );
 			add_filter( 'get_term', array( $this, 'get_term' ), 10, 2 );
-			add_filter( 'template', array( $this, 'template' ), 10, 1 );
 			add_filter( 'the_posts', array( $this, 'the_posts' ), 10, 2 );
 			add_filter( 'get_terms', array( $this, 'get_terms' ), 10, 3 );
-			add_filter( 'stylesheet', array( $this, 'stylesheet' ), 10, 1 );
 			add_filter( 'body_class', array( $this, 'body_class' ), 10, 2 );
 			add_filter( 'post_class', array( $this, 'post_class' ), 10, 3 );
 			add_filter( 'get_the_terms', array( $this, 'get_the_terms' ), 10, 3 );
 			add_action( 'post_type_link', array( $this, 'post_type_link' ), 10, 4 );
+			add_filter( 'pre_option_template', array( $this, 'pre_option_template' ) );
 			add_filter( 'template_include', array( $this, 'template_include' ), 10, 1 );
 			add_filter( 'the_content_feed', array( $this, 'the_content_feed' ), 10, 1 );
+			add_filter( 'pre_option_stylesheet', array( $this, 'pre_option_stylesheet' ) );
 			add_filter( 'wp_get_object_terms', array( $this, 'wp_get_object_terms' ), 10, 4 );
 			add_filter( 'extra_theme_headers', array( $this, 'extra_theme_headers' ), 10, 1 );
 			add_filter( 'wp_get_attachment_image_attributes', array( $this, 'wp_get_attachment_image_attributes' ), 10, 2 );
@@ -220,7 +210,7 @@ class Webcomic {
 				),
 				'description' => esc_html( $v[ 'description' ] ),
 				'public'      => true,
-				'menu_icon'   => self::$url . '-/img/webcomic.png',
+				'menu_icon'   => 'dashicons-images-alt2',
 				'supports'    => $v[ 'supports' ],
 				'has_archive' => $v[ 'slugs' ][ 'archive' ],
 				'rewrite' => array(
@@ -304,7 +294,7 @@ class Webcomic {
 			'show_ui'   => true,
 			'exclude_from_search' => false,
 			'supports'  => array( 'editor', 'author', 'revisions' ),
-			'menu_icon' => self::$url . '-/img/transcript.png'
+			'menu_icon' => 'dashicons-testimonial'
 		) );
 		
 		register_taxonomy( 'webcomic_language', 'webcomic_transcript', array(
@@ -905,12 +895,10 @@ class Webcomic {
 					$post->post_title = __( 'Restricted Content', 'webcomic' );
 					$pages            = array( is_user_logged_in() ? __( "You don't have permission to view this content.", 'webcomic' ) : sprintf( __( 'You must <a href="%s">log in</a> to view this content.', 'webcomic' ), wp_login_url( get_permalink( $post->ID ) ) ) );
 					$post->content    = $pages[ 0 ];
-					$post->ID         = 0;
-				} elseif ( !$clear = WebcomicTag::verify_webcomic_age( $post->post_type ) ) {
+				} elseif ( ! $clear = WebcomicTag::verify_webcomic_age( $post->post_type ) ) {
 					$post->post_title = __( 'Restricted Content', 'webcomic' );
 					$pages            = array( is_null( $clear ) ? sprintf( __( 'Please <a href="%s">verify your age</a> to view this content.', 'webcomic' ), get_permalink( $post->ID ) ) : __( "You don't have permission to view this content.", 'webcomic' ) );
 					$post->content    = $pages[ 0 ];
-					$post->ID         = 0;
 				}
 			}
 		}
@@ -1050,7 +1038,7 @@ class Webcomic {
 					'%url'               => $link ? $link : get_permalink( $post->ID ),
 					'%date'              => get_the_time( get_option( 'date_format' ), $post ),
 					'%time'              => get_the_time( get_option( 'time_format' ), $post ),
-					'%title'             => get_the_title( $post->ID ),
+					'%title'             => html_entity_decode( get_the_title( $post->ID ), ENT_QUOTES, "UTF-8" ),
 					'%author'            => get_the_author_meta( 'display_name', $post->post_author ),
 					'%site-url'          => home_url(),
 					'%permalink'         => get_permalink( $post->ID ),
@@ -1185,19 +1173,6 @@ class Webcomic {
 	}
 	
 	/**
-	 * Return the appropriate theme ID for custom collection themes.
-	 * 
-	 * @param string $theme Name of the current theme.
-	 * @return string
-	 * @uses Webcomic::$config
-	 * @uses Webcomic::$collection
-	 * @hook template
-	 */
-	public function template( $theme ) {
-		return ( self::$collection and self::$config[ 'collections' ][ self::$collection ][ 'theme' ] and $template = substr( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], 0, strpos( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], '|' ) ) and is_readable( get_theme_root() . "/{$template}" ) ) ? $template : $theme;
-	}
-	
-	/**
 	 * Display webcomics in place of transcripts in searches.
 	 * 
 	 * @param array $posts Posts array.
@@ -1245,19 +1220,6 @@ class Webcomic {
 		}
 		
 		return $terms;
-	}
-	
-	/**
-	 * Return the appropriate theme ID for custom collection themes.
-	 * 
-	 * @param string $theme Name of the current theme.
-	 * @return string
-	 * @uses Webcomic::$config
-	 * @uses Webcomic::$collection
-	 * @hook stylesheet
-	 */
-	public function stylesheet( $theme ) {
-		return ( self::$collection and self::$config[ 'collections' ][ self::$collection ][ 'theme' ] and $stylesheet = substr( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], strpos( self::$config[ 'collections' ][ self::$collection ][ 'theme' ], '|' ) + 1 ) and is_readable( get_theme_root() . "/{$stylesheet}" ) ) ? $stylesheet : $theme;
 	}
 	
 	/**
@@ -1388,6 +1350,20 @@ class Webcomic {
 	}
 	
 	/**
+	 * Return the appropriate theme ID for custom collection themes.
+	 * 
+	 * @return mixed
+	 * @hook pre_option_stylesheet
+	 */
+	public function pre_option_template() {
+		if (self::$collection and isset(self::$config['collections'][self::$collection]['theme']) and $template = substr(self::$config['collections'][self::$collection]['theme'], 0, strpos(self::$config['collections'][self::$collection]['theme'], '|')) and is_readable(get_theme_root() . "/{$template}")) {
+			return $template;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Load custom templates for Webcomic-related pages.
 	 * 
 	 * Changes the template hierarchy when a Webcomic-related page is
@@ -1484,6 +1460,20 @@ class Webcomic {
 		}
 		
 		return $content;
+	}
+	
+	/**
+	 * Return the appropriate theme ID for custom collection themes.
+	 * 
+	 * @return mixed
+	 * @hook pre_option_stylesheet
+	 */
+	public function pre_option_stylesheet() {
+		if (self::$collection and isset(self::$config['collections'][self::$collection]['theme']) and $stylesheet = substr(self::$config['collections'][self::$collection]['theme'], strpos(self::$config['collections'][self::$collection]['theme'], '|') + 1) and is_readable(get_theme_root() . "/{$stylesheet}")) {
+			return $stylesheet;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -1677,38 +1667,16 @@ class Webcomic {
 	}
 	
 	/**
-	 * Perform a Webcomic API request.
-	 * 
-	 * @param string $method The request method.
-	 * @param string $endpoing The API endpoint to access.
-	 * @param array $data A data bundle to send to the API.
-	 * @return array
-	 */
-	protected function api_request( $endpoint, $method = 'GET', $data = array() ) {
-		$data[ 'domain' ] = home_url();
-		$data[ 'key' ]    = self::$config[ 'api' ];
-		$data[ 0 ]        = hash( 'whirlpool', serialize( $data ) );
-		
-		$remote = wp_remote_request( "http://webcomic.nu/api/{$endpoint}", array(
-			'body'    => json_encode( $data ),
-			'method'  => $method,
-			'headers' => array(
-				'Referer' => home_url()
-			)
-		) );
-		
-		$code = wp_remote_retrieve_response_code( $remote );
-		
-		return $code ? array( $code => json_decode( wp_remote_retrieve_body( $remote ), true ) ) : array( 999 => __( 'The Webcomic Network is currently unavailable.', 'webcomic' ) );
-	}
-	
-	/**
 	 * Return Webcomic attachments for a post.
 	 * 
 	 * @param integer $id Post ID to retrieve attachments for.
 	 * @return array
 	 */
 	protected static function get_attachments( $id = 0 ) {
+		if ( ! current_user_can('edit_post', $id) and ( ! WebcomicTag::verify_webcomic_role(get_post_type($id)) or ! WebcomicTag::verify_webcomic_age(get_post_type($id)))) {
+			return array();
+		}
+		
 		return get_children( array(
 			'order'          => 'ASC',
 			'orderby'        => 'menu_order',

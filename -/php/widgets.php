@@ -68,8 +68,8 @@ class WebcomicWidget extends Webcomic {
 	public function admin_enqueue_scripts() {
 		$screen = get_current_screen();
 		
-		if ( 'widgets' === $screen->id ) {
-			wp_enqueue_script( 'webcomic-widgets', self::$url . '-/js/admin-widgets.js', array( 'jquery' ) );
+		if ('widgets' === $screen->id or 'customize' === $screen->id) {
+			wp_enqueue_script('webcomic-widgets', self::$url . '-/js/admin-widgets.js', array('jquery'));
 			
 			wp_enqueue_media();
 		}
@@ -109,7 +109,7 @@ class Widget_WebcomicLink extends WP_Widget {
 		extract( $args );
 		extract( $instance );
 		
-		$collection = $collection ? $collection : WebcomicTag::get_webcomic_collection();
+		$collection = isset( $collection ) ? $collection : WebcomicTag::get_webcomic_collection();
 		
 		if ( !empty( $image ) and $image = wp_get_attachment_image( $image, 'full' ) ) {
 			$link = preg_replace( '/alt=".+?"/', 'alt="' . esc_attr( $link ) . '"', $image );
