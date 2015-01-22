@@ -4,7 +4,7 @@ Text Domain: webcomic
 Plugin Name: Webcomic
 Plugin URI: http://github.com/mgsisk/webcomic
 Description: Comic publishing power for the web.
-Version: 4.2
+Version: 4.3
 Author: Michael Sisk
 Author URI: http://mgsisk.com
 License: GPLv3
@@ -36,7 +36,7 @@ class Webcomic {
 	 * Internal version number.
 	 * @var string
 	 */
-	protected static $version = "4.2";
+	protected static $version = "4.3";
 	
 	/**
 	 * Absolute path to the Webcomic directory.
@@ -126,6 +126,7 @@ class Webcomic {
 			add_action( 'init', array( $this, 'log_ipn' ) );
 			add_action( 'wp_head', array( $this, 'wp_head' ), 1 );
 			add_action( 'init', array( $this, 'twitter_oauth' ) );
+			add_action( 'wp_loaded', array( $this, 'wp_loaded' ) );
 			add_action( 'init', array( $this, 'save_transcript' ) );
 			add_action( 'init', array( $this, 'dynamic_defaults' ) );
 			add_action( 'init', array( $this, 'webcomic_redirect' ) );
@@ -640,6 +641,40 @@ class Webcomic {
 	}
 	
 	/**
+	 * Handle infinite scroll.
+	 * 
+	 * @hook wp_loaded
+	 */
+	public function wp_loaded() {
+		if (isset($_POST['webcomic-infinite'])) {
+			$collections = get_webcomic_collections();
+			
+			$webcomics = new WP_Query(array(
+				'posts_per_page' => 2,
+				'post_type' => in_array($_POST['collection'], $collections) ? $_POST['collection'] : $collections,
+				'offset' => (int) $_POST['offset'],
+				'order' => in_array($_POST['order'], array('ASC', 'DESC')) ? $_POST['order'] : 'DESC'
+			));
+			
+			if ($webcomics->have_posts()) {
+				$webcomics->the_post();
+				
+				if ( !locate_template( array( 'webcomic/infinite.php' ), true ) ) {
+					require self::$dir . '-/php/integrate/infinite.php';
+				}
+			}
+			
+			if (2 > $webcomics->post_count) {
+				if ( !locate_template( array( 'webcomic/infinite-end.php' ), true ) ) {
+					require self::$dir . '-/php/integrate/infinite-end.php';
+				}
+			}
+			
+			exit;
+		}
+	}
+	
+	/**
 	 * Handle transcript submissions.
 	 * 
 	 * @uses Webcomic::$config
@@ -1013,6 +1048,7 @@ class Webcomic {
 			wp_enqueue_script( 'webcomic-gestures', self::$url . '-/js/gestures.js', array( 'jquery' ), false, true );
 		}
 		
+		wp_enqueue_script('webcomic-infinite', self::$url . '-/js/infinite.js', array('jquery'), false, true);
 		wp_enqueue_script( 'webcomic-dropdown', self::$url . '-/js/dropdown.js', array( 'jquery' ), false, true );
 	}
 	

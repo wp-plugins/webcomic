@@ -4,7 +4,7 @@ Contributors: mgsisk
 Donate link: http://patreon.com/mgsisk
 Requires at least: 4.1
 Tested up to: 4.1
-Stable tag: 4.2
+Stable tag: 4.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 Tags: webcomics, comics, multiple comics, storylines, characters, custom post type, custom taxonomy, template tags, shortcodes, widgets, twitter, facebook, open graph
@@ -227,9 +227,5 @@ Existing Webcomic users should read this before upgrading: http://github.com/mgs
 == Special Thanks ==
 
 To [Mihari](http://katbox.net) for ongoing feedback and feature suggestions.
-
-To [Seel](http://twitter.com/webcrumblick), [Kikirini](http://twitter.com/Kikirini) [Natty Bumpercar](http://twitter.com/nattybumpercar), and the many other users that helped to resolve legacy upgrade issues.
-
-To [BigBagel](http://twitter.com/DrPotatoMonster), [Miluette](http://twitter.com/miluette), [LordRembo](http://twitter.com/lordrembo), [Fesworks](http://twitter.com/fesworks), [Naomiyaki](http://twitter.com/naomiyaki), [AlexWoolfson](http://twitter.com/alexwoolfson), and [Kuipou](http://twitter.com/kuipou) for pre-release testing and feedback, and to the thousands of users that share their amazing work with Webcomic.
 
 To everyone that continues to use and support Webcomic.
