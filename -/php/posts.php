@@ -64,6 +64,7 @@ class WebcomicPosts extends Webcomic {
 	public function add_meta_boxes() {
 		foreach ( array_keys( self::$config[ 'collections' ] ) as $k ) {
 			add_meta_box( 'webcomic-media', __( 'Webcomic Media', 'webcomic' ), array( $this, 'box_media' ), $k, 'side', 'high' );
+			add_meta_box( 'webcomic-access', __( 'Webcomic Access', 'webcomic' ), array( $this, 'box_access' ), $k, 'normal', 'high' );
 			add_meta_box( 'webcomic-commerce', __( 'Webcomic Commerce', 'webcomic' ), array( $this, 'box_commerce' ), $k, 'normal', 'high' );
 			add_meta_box( 'webcomic-transcripts', __( 'Webcomic Transcripts', 'webcomic' ), array( $this, 'box_transcripts' ), $k, 'normal', 'high' );
 		}
@@ -432,6 +433,44 @@ class WebcomicPosts extends Webcomic {
 	public function box_media( $post ) {
 		?>
 		<div id="webcomic_media_preview" data-webcomic-admin-url="<?php echo admin_url(); ?>"><?php self::ajax_media_preview( $post->ID ); ?></div>
+		<?php
+	}
+	
+	/**
+	 * Render the webcomic access meta box.
+	 * 
+	 * @param object $post Current post object.
+	 */
+	public function box_access( $post ) {
+		?>
+		<p>
+			<label><input type="checkbox" name="webcomic_access_byage" id="webcomic_access_byage"<?php checked( self::$config[ 'collections' ][ $post->post_type ][ 'access' ][ 'byage' ] ); ?>></label>
+			<label>
+			<?php
+				printf( __( 'People must be at least %s years or older to view this webcomic', 'webcomic' ),
+					'<input type="number" name="webcomic_access_age" value="' . esc_attr( self::$config[ 'collections' ][ $post->post_type ][ 'access' ][ 'age' ] ) . '" min="0" class="small-text" style="text-align:center">'
+				);
+			?>
+			</label>
+		</p>
+		<p>
+			<label><input type="checkbox" name="webcomic_access_byrole" id="webcomic_access_byrole"<?php checked( self::$config[ 'collections' ][ $post->post_type ][ 'access' ][ 'byrole' ] ); ?>> <?php _e( 'People must be registered and logged in to view this webcomic', 'webcomic' ); ?></label><br>
+		</p>
+		<p>
+			<select name="webcomic_access_roles[]" style="min-height:8em;vertical-align:top" multiple>
+				<optgroup label="<?php esc_attr_e( 'Allowed Roles', 'webcomic' ); ?>">
+					<option value="!"<?php selected( ( isset( self::$config[ 'collections' ][ $post->post_type ][ 'access' ][ 'roles' ][ 0 ]  ) and '!' === self::$config[ 'collections' ][ $post->post_type ][ 'access' ][ 'roles' ][ 0 ] ) ); ?>><?php _e( '(any)', 'webcomic' ); ?></option>
+					<?php
+						$roles = get_editable_roles();
+						
+						foreach ( $roles as $k => $v ) {
+							echo '<option value="', $k, '"', selected( in_array( $k, self::$config[ 'collections' ][ $post->post_type ][ 'access' ][ 'roles' ] ), true, false ), '>', translate_user_role( $v[ 'name' ] ), '</option>';
+						}
+					?>
+				</optgroup>
+			</select>
+			<p class="description"><?php _e( 'Hold <code>CTRL</code>, <code>Command</code>, or <code>Shift</code> to select multiple roles.', 'webcomic' ); ?></p>
+		</p>
 		<?php
 	}
 	

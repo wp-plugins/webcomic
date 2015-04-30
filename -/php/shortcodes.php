@@ -113,7 +113,7 @@ class WebcomicShortcode extends Webcomic {
 		add_shortcode( 'webcomic_dropdown_characters', array( $this, 'webcomic_dropdown_terms' ) );
 		add_shortcode( 'webcomic_dropdown_collections', array( $this, 'webcomic_dropdown_collections' ) );
 		add_shortcode( 'webcomic_list_storylines', array( $this, 'webcomic_list_terms' ) );
-		add_shortcode( 'webcomic_list_character', array( $this, 'webcomic_list_terms' ) );
+		add_shortcode( 'webcomic_list_characters', array( $this, 'webcomic_list_terms' ) );
 		add_shortcode( 'webcomic_list_collections', array( $this, 'webcomic_list_collections' ) );
 		add_shortcode( 'webcomic_storyline_cloud', array( $this, 'webcomic_term_cloud' ) );
 		add_shortcode( 'webcomic_character_cloud', array( $this, 'webcomic_term_cloud' ) );
@@ -816,7 +816,7 @@ class WebcomicShortcode extends Webcomic {
 	 */
 	public function webcomic_dropdown_terms( $atts, $content, $name ) {
 		$r = shortcode_atts( array(
-			'name'             => 'webcomic_terms',
+			'select_name'      => 'webcomic_terms',
 			'id'               => '',
 			'class'            => '',
 			'show_option_all'  => '',
@@ -859,7 +859,7 @@ class WebcomicShortcode extends Webcomic {
 	 */
 	public function webcomic_dropdown_collections( $atts ) {
 		$r = shortcode_atts( array(
-			'name'             => 'webcomic_collections',
+			'select_name'      => 'webcomic_collections',
 			'id'               => '',
 			'class'            => '',
 			'show_option_all'  => '',

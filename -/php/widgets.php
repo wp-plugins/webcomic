@@ -109,6 +109,7 @@ class Widget_WebcomicLink extends WP_Widget {
 		extract( $args );
 		extract( $instance );
 		
+		$relative = $cache ? "{$relative}-nocache" : $relative;
 		$collection = isset( $collection ) ? $collection : WebcomicTag::get_webcomic_collection();
 		
 		if ( !empty( $image ) and $image = wp_get_attachment_image( $image, 'full' ) ) {
@@ -145,6 +146,7 @@ class Widget_WebcomicLink extends WP_Widget {
 		$old[ 'relative' ]     = $new[ 'relative' ];
 		$old[ 'collection' ]   = $new[ 'collection' ];
 		$old[ 'in_same_term' ] = $new[ 'in_same_term' ];
+		$old[ 'cache' ] = (bool) $new[ 'cache' ];
 		
 		return $old;
 	}
@@ -199,6 +201,12 @@ class Widget_WebcomicLink extends WP_Widget {
 					<option value="character"<?php empty( $in_same_term ) ? '' : selected( 'character', $in_same_term ); ?>><?php _e( 'Characters', 'webcomic' ); ?></option>
 				</select><br>
 				<span class="description"><?php _e( 'Limit navigation to the storylines or characters of the current webcomic.', 'webcomic' ); ?></span>
+			</label>
+		</p>
+		<p>
+			<label>
+				<input type="checkbox" name="<?php echo $this->get_field_name( 'cache' ); ?>" value="1"<?php empty($cache) ? '' : checked($cache); ?>> <?php _e('Parameterize URL'); ?><br>
+				<span class="description"><?php _e('For first, last, and random webcomic links.', 'webcomic'); ?></span>
 			</label>
 		</p>
 		<p>
@@ -954,6 +962,8 @@ class Widget_WebcomicStorylines extends WP_Widget {
 		$a      = array_merge( $args, $instance );
 		$object = get_queried_object();
 		
+		unset($a['name']);
+		
 		$a[ 'target' ]           = empty( $a[ 'target' ] ) ? 'archive' : $a[ 'target' ];
 		$a[ 'taxonomy' ]         = $collection ? "{$collection}_storyline" : WebcomicTag::get_webcomic_collection() . '_storyline';
 		$a[ 'show_option_none' ] = __( 'Select Storyline', 'webcomic' );
@@ -1083,6 +1093,8 @@ class Widget_WebcomicCharacters extends WP_Widget {
 		$a      = array_merge( $args, $instance );
 		$object = get_queried_object();
 		
+		unset($a['name']);
+		
 		$a[ 'target' ]           = empty( $a[ 'target' ] ) ? 'archive' : $a[ 'target' ];
 		$a[ 'taxonomy' ]         = $collection ? "{$collection}_character" : WebcomicTag::get_webcomic_collection() . '_character';
 		$a[ 'show_option_none' ] = __( 'Select Character', 'webcomic' );
@@ -1210,6 +1222,8 @@ class Widget_WebcomicCollections extends WP_Widget {
 		
 		$a      = array_merge( $args, $instance );
 		$object = get_queried_object();
+		
+		unset($a['name']);
 		
 		$a[ 'target' ]           = empty( $a[ 'target' ] ) ? 'archive' : $a[ 'target' ];
 		$a[ 'orderby' ]          = 'name';
